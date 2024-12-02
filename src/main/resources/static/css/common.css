@@ -1,0 +1,587 @@
+@charset "UTF-8";
+
+@import url("http://fonts.googleapis.com/css?family=Roboto:400,300,100,500,700");
+
+/*노토산스*/
+@font-face{
+    font-family:'NotoSansKR';
+    src:url('/assets/fonts/NotoSansKR-Black-Hestia.eot');
+    src:url('/assets/fonts/NotoSansKR-Black-Hestia.woff') format('woff'),
+    url('/assets/fonts/NotoSansKR-Black-Hestia.otf') format('opentype');
+    font-weight:700;
+    font-style:normal;
+}
+/*@font-face{*/
+/*    font-family:'NotoSansKR';*/
+/*    src:url('/assets/fonts/Roboto-Black-Hestia.eot');*/
+/*    src:url('/assets/fonts/Roboto-Black-Hestia.woff') format('woff'),*/
+/*    url('/assets/fonts/Roboto-Black-Hestia.ttf') format('ttf');*/
+/*    font-weight:700;*/
+/*    font-style:normal;*/
+/*}Roboto-Black-Hestia.woff*/
+
+@font-face{
+    font-family:'NotoSansKR';
+    src:url('/assets/fonts/NotoSansKR-Bold-Hestia.eot');
+    src:url('/assets/fonts/NotoSansKR-Bold-Hestia.woff') format('woff'),
+    url('/assets/fonts/NotoSansKR-Bold-Hestia.otf') format('ttf');
+    font-weight:600;
+    font-style:normal;
+}
+@font-face{
+    font-family:'NotoSansKR';
+    src:url('/assets/fonts/Roboto-Bold.eot');
+    src:url('/assets/fonts/Roboto-Bold.woff') format('woff'),
+    url('/assets/fonts/Roboto-Bold.otf') format('ttf');
+    unicode-range: U+0030-0039;
+    font-weight:600;
+    font-style:normal;
+}
+
+@font-face{
+    font-family:'NotoSansKR';
+    src:url('/assets/fonts/NotoSansKR-Medium-Hestia.eot');
+    src:url('/assets/fonts/NotoSansKR-Medium-Hestia.woff') format('woff'),
+    url('/assets/fonts/NotoSansKR-Medium-Hestia.otf') format('opentype');
+    font-weight:500;
+    font-style:normal;
+}
+@font-face{
+    font-family:'NotoSansKR';
+    src:url('/assets/fonts/Roboto-Medium.eot');
+    src:url('/assets/fonts/Roboto-Medium.woff') format('woff'),
+    url('/assets/fonts/Roboto-Medium.otf') format('ttf');
+    unicode-range: U+0030-0039;
+    font-weight:500;
+    font-style:normal;
+}
+
+@font-face{
+    font-family:'NotoSansKR';
+    src:url('/assets/fonts/NotoSansKR-Regular-Hestia.eot');
+    src:url('/assets/fonts/NotoSansKR-Regular-Hestia.woff') format('woff'),
+    url('/assets/fonts/NotoSansKR-Regular-Hestia.otf') format('opentype');
+    font-weight:400;
+    font-style:normal;
+}
+@font-face{
+    font-family:'NotoSansKR';
+    src:url('/assets/fonts/Roboto-Regular.eot');
+    src:url('/assets/fonts/Roboto-Regular.woff') format('woff'),
+    url('/assets/fonts/Roboto-Regular.otf') format('ttf');
+    unicode-range: U+0030-0039;
+    font-weight:400;
+    font-style:normal;
+}
+
+@font-face{
+    font-family:'NotoSansKR';
+    src:url('/assets/fonts/NotoSansKR-DemiLight-Hestia.eot');
+    src:url('/assets/fonts/NotoSansKR-DemiLight-Hestia.woff') format('woff'),
+    url('/assets/fonts/NotoSansKR-DemiLight-Hestia.otf') format('opentype');
+    font-weight:300;
+    font-style:normal;
+}
+@font-face{
+    font-family:'NotoSansKR';
+    src:url('/assets/fonts/Roboto-DemiLight.eot');
+    src:url('/assets/fonts/Roboto-DemiLight.woff') format('woff'),
+    url('/assets/fonts/Roboto-DemiLight.ttf') format('ttf');
+    unicode-range: U+0030-0039;
+    font-weight:300;
+    font-style:normal;
+}
+
+@font-face{
+    font-family:'NotoSansKR';
+    src:url('/assets/fonts/NotoSansKR-Light-Hestia.eot');
+    src:url('/assets/fonts/NotoSansKR-Light-Hestia.woff') format('woff'),
+    url('/assets/fonts/NotoSansKR-Light-Hestia.otf') format('opentype');
+    font-weight:200;
+    font-style:normal;
+}
+@font-face{
+    font-family:'NotoSansKR';
+    src:url('/assets/fonts/Roboto-Light.eot');
+    src:url('/assets/fonts/Roboto-Light.woff') format('woff'),
+    url('/assets/fonts/Roboto-Light.otf') format('ttf');
+    unicode-range: U+0030-0039;
+    font-weight:200;
+    font-style:normal;
+}
+
+@font-face{
+    font-family:'NotoSansKR';
+    src:url('/assets/fonts/NotoSansKR-Thin-Hestia.eot');
+    src:url('/assets/fonts/NotoSansKR-Thin-Hestia.woff') format('woff'),
+    url('/assets/fonts/NotoSansKR-Thin-Hestia.otf') format('opentype');
+    font-weight:100;
+    font-style:normal;
+}
+@font-face{
+    font-family:'NotoSansKR';
+    src:url('/assets/fonts/Roboto-Thin.eot');
+    src:url('/assets/fonts/Roboto-Thin.woff') format('woff'),
+    url('/assets/fonts/Roboto-Thin.otf') format('ttf');
+    unicode-range: U+0030-0039;
+    font-weight:100;
+    font-style:normal;
+}
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center, div,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video, hr {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    /*font-size: 100%;*/
+    /*font: inherit;*/
+    /*vertical-align: middle;*/
+    outline: none;
+}
+
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+    display: block;
+}
+
+
+/* 공통 스타일 */
+body {
+    margin: 0;
+    font-family: 'Open Sans', sans-serif; /* 기본 폰트 */
+}
+
+
+.app-container {
+    max-width: 425px; /* 최대 너비 */
+    width: 100%;
+    margin: 0 auto; /* 중앙 정렬 */
+    background: #262626;
+    min-height: 100vh; /* 전체 화면 높이 */
+    display: flex;
+    flex-direction: column;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+img, span {
+    display: block;
+}
+
+/* Header */
+.header {
+    width: 100%;
+    max-width: 390px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    margin: 0 auto;
+    background: #262626;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+}
+
+/* Header content container */
+.header--cnt {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+/* Logo section */
+.header--logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: bold;
+    color: #007bff;
+    text-align: center;
+    flex-grow: 1;
+}
+
+/* Icon buttons */
+.header--icon {
+    display: flex;
+    align-items: center;
+}
+
+.header--icon .icon-button {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    transition: transform 0.2s ease;
+}
+
+.header--icon .icon-button:hover {
+    transform: scale(1.1);
+}
+
+/* Icon styling (e.g., SVG or custom images) */
+.icon-button span {
+    display: block;
+    width: 24px;
+    height: 24px;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.header--logo-img {
+    max-width: 150px;     /* 이미지 최대 너비 */
+    max-height: 40px;     /* 이미지 최대 높이 (헤더 높이에 맞춤) */
+    width: auto;          /* 비율 유지 */
+    height: auto;         /* 비율 유지 */
+    object-fit: contain;  /* 비율을 유지하며 영역 안에 맞춤 */
+}
+
+/* Main Content */
+
+/* Main Content */
+.main-content {
+    padding: 16px;
+    margin-top: 20px;
+}
+
+.header-logo {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 15px;
+}
+
+/* Profile Section */
+.profile-section {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.profile-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+}
+
+.profile-subtitle {
+    font-size: 16px;
+    color: #666;
+    margin: 8px 0;
+    text-align: left;
+}
+
+.profile-description {
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 16px;
+    text-align: left;
+}
+
+.profile-actions .btn {
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 8px 16px;
+    margin: 4px;
+    cursor: pointer;
+}
+
+/* Stats Section */
+.stats-section {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.gray-bar-wrapper {
+    margin: 0 -16px; /* 부모의 padding 값을 제거 */
+}
+.gray-bar {
+    width: 100%;
+    height: 5px;
+    background: #484848;
+    margin: 16px 0 10px 0;
+}
+
+.stats-card {
+    background-color: #ffffff;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+#stats-chart {
+    max-width: 100%;
+    height: auto;
+}
+
+.stats h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.stats-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0 auto;
+}
+
+.stats-table th,
+.stats-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+.stats-table th {
+    background-color: #f0f0f0;
+    font-weight: bold;
+}
+
+.stats-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.stats-card {
+    background-color: white;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.stats-summary {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 16px;
+}
+
+.stat {
+    font-size: 14px;
+    text-align: center;
+}
+
+/* Popular Section */
+.popular-section {
+    margin-bottom: 32px;
+}
+
+.popular-list {
+    list-style: none;
+}
+
+.popular-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+    background-color: white;
+    border-radius: 8px;
+    padding: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.popular-thumbnail {
+    width: 50px;
+    height: 50px;
+    margin-right: 16px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.popular-title {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.popular-stats {
+    font-size: 12px;
+    color: #666;
+}
+
+
+#cnt {
+    margin-top: 70px;
+    width: 96%;
+    padding: 16px;
+    max-width: 390px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.card-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.card {
+    display: flex;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.card-thumbnail {
+    width: 100px;
+    height: 100px;
+    background: #ddd;
+    flex-shrink: 0;
+}
+
+.card-body {
+    padding: 8px 16px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card-title {
+    font-size: 14px;
+    font-weight: bold;
+    margin: 0 0 4px;
+}
+
+.card-subtitle {
+    font-size: 12px;
+    color: #888;
+    margin: 0 0 8px;
+}
+
+.card-price {
+    font-size: 14px;
+    color: #007bff;
+    font-weight: bold;
+    margin: 0;
+}
+
+/* Footer */
+.footer {
+    width: 100%;
+    max-width: 390px;
+    background: #262626;
+    padding: 12px 16px;
+    box-shadow: 0 -4px 4px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+}
+
+.footer--cnt {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.footer--item {
+    text-align: center;
+    font-size: 12px;
+}
+
+.footer--item span {
+    font-size: 24px;
+}
+
+.footer--item p {
+    margin: 4px 0 0;
+}
+
+@media screen and (max-width: 480px) {
+    .header, .footer {
+        max-width: 100%;
+        background: #262626;
+    }
+
+    #cnt {
+        padding: 8px; /* 콘텐츠 패딩 축소 */
+    }
+
+    .card-thumbnail {
+        width: 80px; /* 썸네일 크기 조정 */
+        height: 80px;
+    }
+
+    .card-title {
+        font-size: 13px;
+    }
+
+    .card-subtitle {
+        font-size: 11px;
+    }
+
+    .footer--cnt {
+        gap: 8px; /* 푸터 아이템 간 간격 */
+    }
+
+    .footer--item span {
+        font-size: 20px; /* 푸터 아이콘 크기 */
+    }
+
+    .footer--item p {
+        font-size: 10px; /* 푸터 텍스트 크기 */
+    }
+}
+
+.splash-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #262626;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+.splash-screen.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.splash-content {
+    text-align: center;
+    color: white;
+}
+
+.splash-logo {
+    width: 150px;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+.splash-text {
+    font-size: 18px;
+    font-weight: bold;
+}

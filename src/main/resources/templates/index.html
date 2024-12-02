@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>TongLink</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" th:href="@{/css/common.css}" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div id="splash-screen" class="splash-screen">
+    <div class="splash-content">
+        <img src="/images/tonglink-splash-white.png" alt="서비스 로고" class="splash-logo">
+    </div>
+</div>
+<div class="app-container">
+
+
+<!--    <div th:replace="fragments/header :: header"></div>-->
+<!--    <div class="header&#45;&#45;logo">-->
+<!--        <img src="/images/tonglink-textlogo-white.png" alt="서비스명 로고" class="header&#45;&#45;logo-img">-->
+<!--    </div>-->
+    <!-- Main Content -->
+<!--    <main id="cnt">-->
+<!--        <div class="content">-->
+<!--            <section class="card-list">-->
+<!--                &lt;!&ndash; Card 1 &ndash;&gt;-->
+<!--                <div class="card">-->
+<!--                    <div class="card-thumbnail"></div>-->
+<!--                    <div class="card-body">-->
+<!--                        <h3 class="card-title">제목</h3>-->
+<!--                        <p class="card-subtitle">서브 제목</p>-->
+<!--                        <p class="card-price">포인트 주기</p>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </section>-->
+<!--        </div>-->
+<!--    </main>-->
+
+    <main class="main-content">
+        <section class="profile-section">
+            <div class="header-logo">
+                <img src="/images/tonglink-logo-white.png" alt="서비스명 로고" class="header&#45;&#45;logo-img">
+                <img src="/images/tonglink-textlogo-white.png" alt="서비스명 로고" class="header&#45;&#45;logo-img">
+            </div>
+            <p class="profile-subtitle">전체 조회수 : <strong>123</strong></p>
+            <p class="profile-description">조회 통계를 내고 싶은 링크를 입력하면, 오늘부터 바로 통계를 확인하실 수 있어요! 😁</p>
+        </section>
+        <section class="stats-section">
+            <div class="stats-card">
+                <canvas id="stats-chart" width="400" height="200"></canvas>
+            </div>
+        </section>
+        <div class="gray-bar-wrapper">
+            <div class="gray-bar"></div>
+        </div>
+        <section class="popular-section" style="margin-top: 30px;">
+            <h2>인기글</h2>
+            <ul class="popular-list">
+                <li class="popular-item">
+                    <img src="/images/kubernetes-icon.png" alt="쿠버네티스" class="popular-thumbnail">
+                    <div class="popular-content">
+                        <h3 class="popular-title">쿠버네티스 구축하기 Ubuntu 22.04</h3>
+                        <p class="popular-stats">조회 8</p>
+                    </div>
+                </li>
+                <li class="popular-item">
+                    <img src="/images/mqtt-icon.png" alt="mqtt" class="popular-thumbnail">
+                    <div class="popular-content">
+                        <h3 class="popular-title">[Ubuntu] Linux 에서 mqtt설치</h3>
+                        <p class="popular-stats">조회 12</p>
+                    </div>
+                </li>
+            </ul>
+        </section>
+    </main>
+
+
+    <div th:replace="fragments/footer :: footer"></div>
+</div>
+</body>
+<script>
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const splashScreen = document.getElementById('splash-screen');
+
+        // 첫 방문 여부 확인 (localStorage에 방문 여부 저장)
+        const hasVisited = localStorage.getItem('hasVisited');
+
+        if (!hasVisited) {
+            // 첫 방문인 경우, 스플래시 화면 보여주기
+            setTimeout(() => {
+                splashScreen.classList.add('hidden'); // 스플래시 숨기기
+            }, 2000); // 2초 후 스플래시 사라짐
+            localStorage.setItem('hasVisited', 'true'); // 방문 여부 저장
+        } else {
+            // 이미 방문한 경우, 스플래시 즉시 숨김
+            splashScreen.classList.add('hidden');
+        }
+    });
+
+    const ctx = document.getElementById('stats-chart').getContext('2d');
+
+    const statsChart = new Chart(ctx, {
+        type: 'bar', // 막대 그래프를 기본으로 설정
+        data: {
+            labels: ['12/01', '12/02', '12/03', '12/04', '12/05'], // x축 레이블
+            datasets: [
+                {
+                    type: 'line', // 선 그래프
+                    label: '조회수',
+                    data: [123, 98, 76, 150, 130], // 조회수 데이터
+                    borderColor: 'rgba(255, 99, 132, 1)', // 선 색상
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)', // 채우기 색상
+                    tension: 0.3, // 선 곡률
+                    fill: true, // 선 아래 채우기
+                },
+                {
+                    type: 'bar', // 막대 그래프
+                    label: '방문자',
+                    data: [90, 70, 60, 120, 100], // 방문자 데이터
+                    backgroundColor: 'rgba(54, 162, 235, 0.7)', // 막대 색상
+                    borderRadius: 8, // 막대 모서리 둥글게
+                },
+            ],
+        },
+        options: {
+            responsive: true, // 반응형 지원
+            plugins: {
+                legend: {
+                    position: 'top', // 범례 위치
+                    labels: {
+                        font: {
+                            size: 14, // 글씨 크기
+                        },
+                    },
+                },
+                tooltip: {
+                    enabled: true, // 툴팁 활성화
+                    callbacks: {
+                        label: function (context) {
+                            return `${context.dataset.label}: ${context.raw}회`;
+                        },
+                    },
+                },
+            },
+            scales: {
+                x: {
+                    grid: {
+                        display: false, // x축 그리드 숨김
+                    },
+                },
+                y: {
+                    beginAtZero: true, // y축 0부터 시작
+                    grid: {
+                        color: '#e0e0e0', // y축 그리드 색상
+                    },
+                    ticks: {
+                        stepSize: 50, // y축 눈금 간격
+                    },
+                },
+            },
+        },
+    });
+</script>
+</html>
