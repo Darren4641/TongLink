@@ -11,7 +11,7 @@ ENV SPRING_PROFILES_ACTIVE=dev
 # JAR 파일을 실행합니다.
 ENTRYPOINT ["java", "-Xms512m", "-Xmx768m", "-XX:+UseG1GC", "-jar", "app.jar"]
 
-## docker build --platform linux/amd64 -t tonglink:0.0.2 .
-## docker run -d -p 8082:8080 tonglink:0.0.2
+## docker build --platform linux/amd64 -t tonglink:0.0.4 .
+## docker run -d -p 8082:8080 tonglink:0.0.4
 
 
