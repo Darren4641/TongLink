@@ -7,7 +7,7 @@ spring:
       enabled: always
   profiles:
     active:
-      - dev
+      - local
   web:
     resources:
       static-locations: classpath:/static/

@@ -1,0 +1,12 @@
+
+
+spring:
+  config:
+    activate:
+      on-profile: local
+  web:
+    resources:
+      static-locations: classpath:/static/
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
