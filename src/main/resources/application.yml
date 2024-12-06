@@ -1,4 +1,16 @@
 spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  output:
+    ansi:
+      enabled: always
+  profiles:
+    active:
+      - dev
+  web:
+    resources:
+      static-locations: classpath:/static/
   thymeleaf:
     prefix: classpath:/templates/
     suffix: .html

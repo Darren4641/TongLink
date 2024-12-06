@@ -1,0 +1,18 @@
+server:
+  ssl:
+    key-store-type: PKCS12
+    key-store: "classpath:keystore.p12"
+    key-store-password: your-password
+    key-alias: your-alias
+
+
+spring:
+  config:
+    activate:
+      on-profile: dev
+  web:
+    resources:
+      static-locations: classpath:/static/
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
