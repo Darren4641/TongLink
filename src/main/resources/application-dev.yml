@@ -16,3 +16,15 @@ spring:
   thymeleaf:
     prefix: classpath:/templates/
     suffix: .html
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${DB_URL:jdbc:mysql://semtle.catholic.ac.kr:3306/tonglink}
+    username: ${DB_USERNAME:dodi}
+    password: ${DB_PASSWORD:AdjhbrSKF}
+  jpa:
+    properties:
+      hibernate:
+        ddl-auto: update
+    show-sql: true
+    generate-ddl: true

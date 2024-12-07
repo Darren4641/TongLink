@@ -8,40 +8,20 @@
     <link rel="icon" type="image/png" sizes="32x32" th:href="@{/images/favicon-32x32.png}">
     <link rel="stylesheet" th:href="@{/css/common.css}" />
     <link rel="manifest" th:href="@{/manifest.json}">
+    <script th:src="@{/js/user.js}" defer></script>
+    <script th:src="@{/js/index-modal.js}" defer></script>
+    <script th:src="@{/js/tonglink-list.js}" defer></script>
+    <script th:src="@{/js/service-worker.js}" defer></script>
     <meta name="theme-color" content="#262626">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-
 <div id="splash-screen" class="splash-screen">
     <div class="splash-content">
         <img src="/images/tonglink-splash-white.png" alt="서비스 로고" class="splash-logo">
     </div>
 </div>
 <div class="app-container">
-
-
-<!--    <div th:replace="fragments/header :: header"></div>-->
-<!--    <div class="header&#45;&#45;logo">-->
-<!--        <img src="/images/tonglink-textlogo-white.png" alt="서비스명 로고" class="header&#45;&#45;logo-img">-->
-<!--    </div>-->
-    <!-- Main Content -->
-<!--    <main id="cnt">-->
-<!--        <div class="content">-->
-<!--            <section class="card-list">-->
-<!--                &lt;!&ndash; Card 1 &ndash;&gt;-->
-<!--                <div class="card">-->
-<!--                    <div class="card-thumbnail"></div>-->
-<!--                    <div class="card-body">-->
-<!--                        <h3 class="card-title">제목</h3>-->
-<!--                        <p class="card-subtitle">서브 제목</p>-->
-<!--                        <p class="card-price">포인트 주기</p>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </section>-->
-<!--        </div>-->
-<!--    </main>-->
-
     <main class="main-content">
         <section class="profile-section">
             <div class="header-logo">
@@ -60,48 +40,124 @@
             <div class="gray-bar"></div>
         </div>
         <section class="popular-section" style="margin-top: 30px;">
-            <h2>인기글</h2>
-            <ul class="popular-list">
-                <li class="popular-item">
-                    <img src="/images/kubernetes-icon.png" alt="쿠버네티스" class="popular-thumbnail">
-                    <div class="popular-content">
-                        <h3 class="popular-title">쿠버네티스 구축하기 Ubuntu 22.04</h3>
-                        <p class="popular-stats">조회 8</p>
+            <div class="popular-header">
+                <h2>My 통링</h2>
+                <button class="floating-button" id="open-modal">+</button>
+
+                <!-- Modal -->
+                <div class="modal-overlay" id="modal">
+                    <div class="modal-content">
+                        <h2 class="modal-title">링크 입력</h2>
+                        <form id="link-form">
+                            <label for="title">제목</label>
+                            <input type="text" id="title" name="title" placeholder="링크 제목을 입력하세요" required maxlength="50">
+
+                            <label for="originUrl">원본 URL</label>
+                            <input type="text" id="originUrl" name="originUrl" placeholder="https://example.com" required>
+
+                            <p class="modal-warning">생성일로부터 14일간만 유지됩니다.</p>
+                            <div class="modal-buttons">
+                                <button type="button" class="btn btn-cancel" id="close-modal">취소</button>
+                                <button type="submit" class="btn btn-submit">저장</button>
+                            </div>
+                        </form>
                     </div>
-                </li>
-                <li class="popular-item">
-                    <img src="/images/mqtt-icon.png" alt="mqtt" class="popular-thumbnail">
-                    <div class="popular-content">
-                        <h3 class="popular-title">[Ubuntu] Linux 에서 mqtt설치</h3>
-                        <p class="popular-stats">조회 12</p>
-                    </div>
-                </li>
-            </ul>
+                </div>
+            </div>
+            <div id="tonglink-list"></div>
+
         </section>
     </main>
 
-
+    <!-- Fixed Button -->
+    <div class="footer-top"></div>
     <div th:replace="fragments/footer :: footer"></div>
 </div>
 </body>
 <script>
-
+    if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("/js/service-worker.js")
+            .then(() => console.log("Service Worker 등록 성공"))
+            .catch((error) => console.error("Service Worker 등록 실패:", error));
+    }
     document.addEventListener('DOMContentLoaded', () => {
+        // PWA 설치 후 실행될 로직
+        window.addEventListener("appinstalled", () => {
+            console.log("PWA가 설치되었습니다!");
+
+            let userUUID = localStorage.getItem("userUUID");
+            if (!userUUID) {
+                // UUID가 없으면 새로 생성
+                userUUID = crypto.randomUUID();
+                localStorage.setItem("userUUID", userUUID);
+            }
+
+            // 서버로 UUID 전송
+            sendUUIDToServerPWA(userUUID);
+        });
+
+        /* 모달 관련 */
+        const modal = document.getElementById("modal");
+        const openModalButton = document.getElementById("open-modal");
+        const closeModalButton = document.getElementById("close-modal");
+        const form = document.getElementById("link-form");
+
+        /* Splash 관련 */
         const splashScreen = document.getElementById('splash-screen');
+
+        /* My 통링 관련 */
+        const container = document.getElementById("tonglink-list");
 
         // 첫 방문 여부 확인 (localStorage에 방문 여부 저장)
         const hasVisited = localStorage.getItem('hasVisited');
+
 
         if (!hasVisited) {
             // 첫 방문인 경우, 스플래시 화면 보여주기
             setTimeout(() => {
                 splashScreen.classList.add('hidden'); // 스플래시 숨기기
+                openModalButton.style.display = "flex";
             }, 2000); // 2초 후 스플래시 사라짐
             localStorage.setItem('hasVisited', 'true'); // 방문 여부 저장
+
         } else {
             // 이미 방문한 경우, 스플래시 즉시 숨김
             splashScreen.classList.add('hidden');
+            openModalButton.style.display = "flex";
         }
+
+        openModalButton.addEventListener("click", () => {
+            modal.style.display = "flex"; // 모달 표시
+        });
+
+        // 모달 닫기
+        closeModalButton.addEventListener("click", () => {
+            modal.style.display = "none"; // 모달 숨김
+        });
+        // 모달 닫기: 오버레이 클릭
+        modal.addEventListener("click", (event) => {
+            if (event.target === modal) {
+                modal.style.display = "none"; // 모달 숨김
+            }
+        });
+
+        form.addEventListener("submit", (event) => {
+            event.preventDefault(); // 기본 폼 동작 방지
+
+            const originUrl = document.getElementById("originUrl").value;
+            const title = document.getElementById("title").value;
+            const body = {
+                uuId: localStorage.getItem("userUUID"),
+                title: title,
+                originUrl: originUrl
+            }
+            saveLink(body);
+            modal.style.display = "none"; // 모달 숨김
+            initInfiniteScroll(localStorage.getItem("userUUID"), container);
+        });
+        manageUserUUID();
+        // 초기 데이터 렌더링
+        initInfiniteScroll(localStorage.getItem("userUUID"), container);
     });
 
     const ctx = document.getElementById('stats-chart').getContext('2d');
@@ -111,20 +167,21 @@
         data: {
             labels: ['12/01', '12/02', '12/03', '12/04', '12/05'], // x축 레이블
             datasets: [
-                {
-                    type: 'line', // 선 그래프
-                    label: '조회수',
-                    data: [123, 98, 76, 150, 130], // 조회수 데이터
-                    borderColor: 'rgba(255, 99, 132, 1)', // 선 색상
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)', // 채우기 색상
-                    tension: 0.3, // 선 곡률
-                    fill: true, // 선 아래 채우기
-                },
+                // {
+                //     type: 'line', // 선 그래프
+                //     label: '조회수',
+                //     data: [123, 98, 76, 150, 130], // 조회수 데이터
+                //     borderColor: 'rgba(255, 99, 132, 1)', // 선 색상
+                //     backgroundColor: 'rgba(255, 99, 132, 0.2)', // 채우기 색상
+                //     tension: 0.3, // 선 곡률
+                //     fill: true, // 선 아래 채우기
+                // },
                 {
                     type: 'bar', // 막대 그래프
                     label: '방문자',
                     data: [90, 70, 60, 120, 100], // 방문자 데이터
-                    backgroundColor: 'rgba(54, 162, 235, 0.7)', // 막대 색상
+                    backgroundColor: '#c6c6c6', // 막대 색상
+                    color: '#cdcccc',
                     borderRadius: 8, // 막대 모서리 둥글게
                 },
             ],
@@ -137,6 +194,7 @@
                     labels: {
                         font: {
                             size: 14, // 글씨 크기
+                            color: '#cdcccc'
                         },
                     },
                 },
@@ -154,6 +212,9 @@
                     grid: {
                         display: false, // x축 그리드 숨김
                     },
+                    ticks: {
+                        color: '#cdcccc', // x축 눈금 폰트 색상
+                    },
                 },
                 y: {
                     beginAtZero: true, // y축 0부터 시작
@@ -162,10 +223,16 @@
                     },
                     ticks: {
                         stepSize: 50, // y축 눈금 간격
+                        color: '#cdcccc', // y축 눈금 폰트 색상
                     },
                 },
             },
         },
     });
+
+    function initPullToRefresh() {
+
+    }
+
 </script>
 </html>

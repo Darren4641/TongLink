@@ -6,9 +6,15 @@ plugins {
     val kotlinVersion = "1.9.24"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion
+    kotlin("plugin.jpa") version kotlinVersion
     kotlin("kapt") version kotlinVersion
     idea
 
+}
+allOpen {
+    annotation("jakarta.persistence.Entity")
+    annotation("jakarta.persistence.Embeddable")
+    annotation("jakarta.persistence.MappedSuperclass")
 }
 
 group = "io.tonglink"
@@ -27,7 +33,7 @@ repositories {
 dependencies {
     // Spring Boot
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-cache")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-validation")
 
     // Kotlin
@@ -40,7 +46,22 @@ dependencies {
     implementation("org.thymeleaf:thymeleaf-spring5:3.1.0.RELEASE")
     implementation("nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.1.0")
 
+    // QueryDSL (최신 버전으로 설정)
+    implementation("com.querydsl:querydsl-jpa:5.0.0:jakarta")
+    kapt("com.querydsl:querydsl-apt:5.0.0:jakarta")
+    implementation("com.querydsl:querydsl-apt:5.0.0:jpa")
+    kapt("org.springframework.boot:spring-boot-configuration-processor")
 
+    // JDBC 사용을 위한 라이브러리
+    implementation("org.springframework.boot:spring-boot-starter-jdbc")
+
+    // MySQL Connector
+    runtimeOnly("com.mysql:mysql-connector-j")
+
+    // ULID
+    implementation("de.huxhorn.sulky:de.huxhorn.sulky.ulid:8.3.0")
+
+    implementation("org.jsoup:jsoup:1.15.4")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
