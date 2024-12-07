@@ -14,6 +14,8 @@ class UserService (
     @Transactional
     fun saveUserIfNot(userDto: UserDto, isPwa: Boolean) : String {
         userRepository.findByUUID(userDto.uuId)?.let {
+            it.updateIsPwa(isPwa)
+            userRepository.save(it)
             return it.uuid // 존재하면 UUID 반환
         }
         val newUser = userRepository.save(User(uuid = userDto.uuId, isPwa = isPwa))

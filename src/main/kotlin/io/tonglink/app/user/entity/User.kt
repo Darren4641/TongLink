@@ -2,9 +2,11 @@ package io.tonglink.app.user.entity
 
 import io.tonglink.app.common.entity.BaseEntity
 import jakarta.persistence.*
+import org.hibernate.annotations.DynamicUpdate
 
 @Entity
 @Table(name = "user")
+@DynamicUpdate
 class User (
 
     @Column(nullable = true, unique = true, length = 255)
@@ -17,7 +19,7 @@ class User (
     val uuid: String,
 
     @Column(nullable = true)
-    val isPwa: Boolean
+    var isPwa: Boolean
 
 ) : BaseEntity() {
 
@@ -25,4 +27,7 @@ class User (
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null
 
+    fun updateIsPwa(isPwa: Boolean) {
+        this.isPwa = isPwa
+    }
 }
