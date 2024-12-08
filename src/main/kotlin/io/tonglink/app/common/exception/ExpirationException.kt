@@ -1,7 +1,7 @@
-package com.dopaminedefense.dodiserver.common.exception
+package io.tonglink.app.common.exception
 
 import com.example.kopring.common.status.ResultCode
 
-open class PaymentException(
+open class ExpirationException(
     val resultCode: ResultCode
 ) : RuntimeException(resultCode.message)

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>TongLink</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="android-touch-icon" sizes="72x72" th:href="@{/images/android-icon-72x72.png}">
+    <link rel="apple-touch-icon" sizes="72x72" th:href="@{/images/icons/icon-128x128-v2.png}">
+    <link rel="icon" type="image/png" sizes="32x32" th:href="@{/images/favicon-32x32.png}">
+    <link rel="stylesheet" th:href="@{/css/common.css}" />
+    <link rel="manifest" th:href="@{/manifest.json}">
+    <script th:src="@{/js/user.js}" defer></script>
+    <script th:src="@{/js/index-modal.js}" defer></script>
+    <script th:src="@{/js/tonglink-list.js}" defer></script>
+    <script th:src="@{/js/service-worker.js}" defer></script>
+    <meta name="theme-color" content="#262626">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<div class="app-container">
+    <div class="expired-message">
+        <h1>만료된 링크입니다.</h1>
+        <p>링크가 만료되었거나 더 이상 사용할 수 없습니다.</p>
+        <a href="/" class="back-home">홈으로 돌아가기</a>
+    </div>
+</div>
+</body>
+<script>
+
+
+</script>
+</html>

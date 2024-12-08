@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>TongLink</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="android-touch-icon" sizes="72x72" th:href="@{/images/android-icon-72x72.png}">
+    <link rel="apple-touch-icon" sizes="72x72" th:href="@{/images/icons/icon-128x128-v2.png}">
+    <link rel="icon" type="image/png" sizes="32x32" th:href="@{/images/favicon-32x32.png}">
+    <link rel="stylesheet" th:href="@{/css/common.css}" />
+    <link rel="manifest" th:href="@{/manifest.json}">
+    <script th:src="@{/js/user.js}" defer></script>
+    <script th:src="@{/js/index-modal.js}" defer></script>
+    <script th:src="@{/js/tonglink-list.js}" defer></script>
+    <script th:src="@{/js/service-worker.js}" defer></script>
+    <meta name="theme-color" content="#262626">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<div id="splash-screen" class="splash-screen">
+    <div class="splash-content">
+        <img src="/images/tonglink-splash-white.png" alt="서비스 로고" class="splash-logo">
+    </div>
+</div>
+<div class="app-container">
+    <h2 style="color: #fff">my page</h2>
+    <!-- Fixed Button -->
+    <div class="footer-top"></div>
+    <div th:replace="fragments/footer :: footer"></div>
+</div>
+</body>
+<script>
+
+    document.addEventListener('DOMContentLoaded', () => {
+        /* Splash 관련 */
+        const splashScreen = document.getElementById('splash-screen');
+
+        // 첫 방문 여부 확인 (localStorage에 방문 여부 저장)
+        const hasVisited = localStorage.getItem('hasVisited');
+
+
+        if (!hasVisited) {
+            // 첫 방문인 경우, 스플래시 화면 보여주기
+            setTimeout(() => {
+                splashScreen.classList.add('hidden'); // 스플래시 숨기기
+            }, 2000); // 2초 후 스플래시 사라짐
+            localStorage.setItem('hasVisited', 'true'); // 방문 여부 저장
+
+        } else {
+            // 이미 방문한 경우, 스플래시 즉시 숨김
+            splashScreen.classList.add('hidden');
+        }
+    });
+
+
+</script>
+</html>

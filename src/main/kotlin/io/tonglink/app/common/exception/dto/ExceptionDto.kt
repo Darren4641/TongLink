@@ -1,4 +1,4 @@
-package com.dopaminedefense.dodiserver.common.exception.dto
+package io.tonglink.app.common.exception.dto
 
 import java.io.Serializable
 

@@ -7,25 +7,25 @@
 <footer id="footer" class="footer">
     <div class="footer--cnt">
         <div class="footer--item">
-            <a href="#">
+            <a href="/">
                 <div class="footer--content">
-                    <img src="/images/home.png" alt="Home">
+                    <img src="/images/home.png" alt="Home" th:classappend="${nav == 'home'} ? 'selected'">
                 </div>
                 <p>Home</p>
             </a>
         </div>
         <div class="footer--item">
-            <a href="#">
+            <a href="/rank">
                 <div class="footer--content">
-                    <img src="/images/star.png" alt="Tab1">
+                    <img src="/images/star.png" alt="Rank" th:classappend="${nav == 'rank'} ? 'selected'">
                 </div>
                 <p>Rank</p>
             </a>
         </div>
         <div class="footer--item">
-            <a href="#">
+            <a href="/mypage">
                 <div class="footer--content">
-                    <img src="/images/user.png" alt="Tab2">
+                    <img src="/images/user.png" alt="My Page" th:classappend="${nav == 'mypage'} ? 'selected'">
                 </div>
                 <p>My page</p>
             </a>

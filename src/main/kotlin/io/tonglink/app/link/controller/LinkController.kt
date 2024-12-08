@@ -1,8 +1,7 @@
 package io.tonglink.app.link.controller
 
 import com.example.kopring.common.response.BaseResponse
-import io.tonglink.app.link.dto.CreateLinkDto
-import io.tonglink.app.link.dto.LinkDto
+import io.tonglink.app.link.dto.*
 import io.tonglink.app.link.service.LinkService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
@@ -35,4 +34,17 @@ class LinkController (
         return BaseResponse(data = linkService.getMyTongLink(uuId, pageable))
     }
 
+    @PostMapping("/{uuId}/update-order")
+    fun updateOrderTongLink(@PathVariable(name = "uuId") uuId: String,
+                            @RequestBody updateOrderLinkRequestDto: List<UpdateOrderLinkRequestDto>) : BaseResponse<String> {
+
+        val orderList = updateOrderLinkRequestDto.map { UpdateOrderLinkDto(id = it.id.toLong(), order = it.order) }
+
+        return BaseResponse(data = linkService.updateOrderTongLink(uuId, orderList))
+    }
+
+    @GetMapping("/{uuId}/statistics")
+    fun tongLinkStatistics(@PathVariable(name = "uuId") uuId: String) : BaseResponse<List<StatisticsLinkDto>> {
+        return BaseResponse(data = linkService.statistics(uuId))
+    }
 }

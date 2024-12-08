@@ -3,7 +3,7 @@
 
 function saveLink(body) {
     // 서버로 데이터 전송
-    fetch("/api/link", {
+    return fetch("/api/link", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -11,11 +11,10 @@ function saveLink(body) {
         body: JSON.stringify(body),
     })
         .then((response) => {
-            if (response.ok) {
-                console.log("링크 저장 성공");
-            } else {
-                console.error("링크 저장 실패");
+            if (!response.ok) {
+                throw new Error("링크 저장 실패");
             }
+            return response.json(); // 서버에서 반환된 링크 데이터
         })
         .catch((error) => {
             console.error("서버 오류:", error);

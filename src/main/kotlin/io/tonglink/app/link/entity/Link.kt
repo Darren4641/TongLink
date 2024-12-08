@@ -25,12 +25,18 @@ class Link (
     @Column(nullable = false)
     val proxyUrl: String,
 
+    @Column(nullable = false)
+    val color: String,
+
     @Column(nullable = true) // 썸네일 URL 필드 추가
     val thumbnailUrl: String? = null,
 
     @Column(nullable = false)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     var endDate : String = calculateEndDate(),
+
+    @Column(name = "`order`", nullable = true)
+    var order: Int? = null
 
 ) : BaseEntity() {
     @Id
@@ -46,5 +52,13 @@ class Link (
             val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
             return endDate.format(formatter)
         }
+
+    }
+
+    fun isEndDatePassed(): Boolean {
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+        val endDate = ZonedDateTime.parse(endDate, formatter.withZone(ZoneId.of("Asia/Seoul")))
+        val now = ZonedDateTime.now(ZoneId.of("Asia/Seoul"))
+        return now.isAfter(endDate)
     }
 }

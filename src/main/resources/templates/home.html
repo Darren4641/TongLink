@@ -4,11 +4,12 @@
     <title>TongLink</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <link rel="android-touch-icon" sizes="72x72" th:href="@{/images/android-icon-72x72.png}">
-    <link rel="apple-touch-icon" sizes="72x72" th:href="@{/images/apple-icon-72x72.png}">
+    <link rel="apple-touch-icon" sizes="72x72" th:href="@{/images/icons/icon-128x128-v2.png}">
     <link rel="icon" type="image/png" sizes="32x32" th:href="@{/images/favicon-32x32.png}">
     <link rel="stylesheet" th:href="@{/css/common.css}" />
     <link rel="manifest" th:href="@{/manifest.json}">
     <script th:src="@{/js/user.js}" defer></script>
+    <script th:src="@{/js/chart.js}" defer></script>
     <script th:src="@{/js/index-modal.js}" defer></script>
     <script th:src="@{/js/tonglink-list.js}" defer></script>
     <script th:src="@{/js/service-worker.js}" defer></script>
@@ -28,8 +29,8 @@
                 <img src="/images/tonglink-logo-white.png" alt="서비스명 로고" class="header&#45;&#45;logo-img">
                 <img src="/images/tonglink-textlogo-white.png" alt="서비스명 로고" class="header&#45;&#45;logo-img">
             </div>
-            <p class="profile-subtitle">전체 조회수 : <strong>123</strong></p>
-            <p class="profile-description">조회 통계를 내고 싶은 링크를 입력하면, 오늘부터 바로 통계를 확인하실 수 있어요! 😁</p>
+            <p class="profile-subtitle">조회 통계를 내고 싶은 링크를 입력하면, &nbsp;오늘부터 바로 통계를 확인하실 수 있어요! 😁</p>
+            <p class="profile-description"></p>
         </section>
         <section class="stats-section">
             <div class="stats-card">
@@ -41,7 +42,7 @@
         </div>
         <section class="popular-section" style="margin-top: 30px;">
             <div class="popular-header">
-                <h2>My 통링</h2>
+                <h2>나의 통링</h2>
                 <button class="floating-button" id="open-modal">+</button>
 
                 <!-- Modal -->
@@ -54,6 +55,10 @@
 
                             <label for="originUrl">원본 URL</label>
                             <input type="text" id="originUrl" name="originUrl" placeholder="https://example.com" required>
+
+                            <!-- New color picker -->
+                            <label for="color">그래프 색상</label>
+                            <input type="color" id="color" name="color" value="#ff0000">
 
                             <p class="modal-warning">생성일로부터 14일간만 유지됩니다.</p>
                             <div class="modal-buttons">
@@ -95,6 +100,21 @@
             // 서버로 UUID 전송
             sendUUIDToServerPWA(userUUID);
         });
+        if (isPWA()) {
+            console.log("앱이 PWA 환경에서 실행되었습니다.");
+            let userUUID = localStorage.getItem("userUUID");
+            if (!userUUID) {
+                // UUID가 없으면 새로 생성
+                userUUID = crypto.randomUUID();
+                localStorage.setItem("userUUID", userUUID);
+            }
+
+            // 서버로 UUID 전송
+            sendUUIDToServerPWA(userUUID);
+        } else {
+            console.log("앱이 브라우저에서 실행되었습니다.");
+            manageUserUUID();
+        }
 
         /* 모달 관련 */
         const modal = document.getElementById("modal");
@@ -146,93 +166,134 @@
 
             const originUrl = document.getElementById("originUrl").value;
             const title = document.getElementById("title").value;
+            const color = document.getElementById("color").value;
+
+            // URL 유효성 검사
+            if (!/^https?:\/\//i.test(originUrl)) {
+                alert("URL은 https:// 또는 http://로 시작해야 합니다.");
+                return; // 유효하지 않은 경우 폼 제출 중단
+            }
+
             const body = {
                 uuId: localStorage.getItem("userUUID"),
                 title: title,
-                originUrl: originUrl
+                originUrl: originUrl,
+                color: color
             }
-            saveLink(body);
-            modal.style.display = "none"; // 모달 숨김
-            initInfiniteScroll(localStorage.getItem("userUUID"), container);
+            saveLink(body)
+                .then((newLink) => {
+                    modal.style.display = "none"; // 모달 숨김
+
+                    // 새 링크 DOM에 추가
+                    // const newLinkPreview = createLinkPreview(newLink);
+                    // const container = document.getElementById("tonglink-list");
+                    // const sentinel = container.querySelector(".scroll-sentinel");
+                    //
+                    // if (sentinel) {
+                    //     // Sentinel 앞에 새 링크 추가
+                    //     container.insertBefore(newLinkPreview, sentinel);
+                    // } else {
+                    //     // Sentinel이 없으면 맨 끝에 추가
+                    //     container.appendChild(newLinkPreview);
+                    // }
+                    //
+                    // // "아직 링크가 없습니다" 메시지가 있다면 제거
+                    // const emptyMessage = container.querySelector(".empty-message");
+                    // if (emptyMessage) {
+                    //     emptyMessage.remove();
+                    // }
+                    location.reload(true);
+
+                    console.log("새 링크가 성공적으로 추가되었습니다.");
+                })
+                .catch((error) => {
+                    console.error("새 링크 추가 실패:", error);
+                });
+
         });
-        manageUserUUID();
         // 초기 데이터 렌더링
         initInfiniteScroll(localStorage.getItem("userUUID"), container);
+
+        enableDragAndDrop(container);
+        const ctx = document.getElementById('stats-chart').getContext('2d');
+        initializeStatisticsChart(uuId, ctx);
     });
 
-    const ctx = document.getElementById('stats-chart').getContext('2d');
 
-    const statsChart = new Chart(ctx, {
-        type: 'bar', // 막대 그래프를 기본으로 설정
-        data: {
-            labels: ['12/01', '12/02', '12/03', '12/04', '12/05'], // x축 레이블
-            datasets: [
-                // {
-                //     type: 'line', // 선 그래프
-                //     label: '조회수',
-                //     data: [123, 98, 76, 150, 130], // 조회수 데이터
-                //     borderColor: 'rgba(255, 99, 132, 1)', // 선 색상
-                //     backgroundColor: 'rgba(255, 99, 132, 0.2)', // 채우기 색상
-                //     tension: 0.3, // 선 곡률
-                //     fill: true, // 선 아래 채우기
-                // },
-                {
-                    type: 'bar', // 막대 그래프
-                    label: '방문자',
-                    data: [90, 70, 60, 120, 100], // 방문자 데이터
-                    backgroundColor: '#c6c6c6', // 막대 색상
-                    color: '#cdcccc',
-                    borderRadius: 8, // 막대 모서리 둥글게
-                },
-            ],
-        },
-        options: {
-            responsive: true, // 반응형 지원
-            plugins: {
-                legend: {
-                    position: 'top', // 범례 위치
-                    labels: {
-                        font: {
-                            size: 14, // 글씨 크기
-                            color: '#cdcccc'
-                        },
-                    },
-                },
-                tooltip: {
-                    enabled: true, // 툴팁 활성화
-                    callbacks: {
-                        label: function (context) {
-                            return `${context.dataset.label}: ${context.raw}회`;
-                        },
-                    },
-                },
-            },
-            scales: {
-                x: {
-                    grid: {
-                        display: false, // x축 그리드 숨김
-                    },
-                    ticks: {
-                        color: '#cdcccc', // x축 눈금 폰트 색상
-                    },
-                },
-                y: {
-                    beginAtZero: true, // y축 0부터 시작
-                    grid: {
-                        color: '#e0e0e0', // y축 그리드 색상
-                    },
-                    ticks: {
-                        stepSize: 50, // y축 눈금 간격
-                        color: '#cdcccc', // y축 눈금 폰트 색상
-                    },
-                },
-            },
-        },
-    });
+    // const statsChart = new Chart(ctx, {
+    //     type: 'bar', // 막대 그래프를 기본으로 설정
+    //     data: {
+    //         labels: ['12/01', '12/02', '12/03', '12/04', '12/05'], // x축 레이블
+    //         datasets: [
+    //             // {
+    //             //     type: 'line', // 선 그래프
+    //             //     label: '조회수',
+    //             //     data: [123, 98, 76, 150, 130], // 조회수 데이터
+    //             //     borderColor: 'rgba(255, 99, 132, 1)', // 선 색상
+    //             //     backgroundColor: 'rgba(255, 99, 132, 0.2)', // 채우기 색상
+    //             //     tension: 0.3, // 선 곡률
+    //             //     fill: true, // 선 아래 채우기
+    //             // },
+    //             {
+    //                 type: 'bar', // 막대 그래프
+    //                 label: '방문자',
+    //                 data: [90, 70, 60, 120, 100], // 방문자 데이터
+    //                 backgroundColor: '#ff8787', // 막대 색상
+    //                 color: '#cdcccc',
+    //                 borderRadius: 8, // 막대 모서리 둥글게
+    //             },
+    //         ],
+    //     },
+    //     options: {
+    //         responsive: true, // 반응형 지원
+    //         plugins: {
+    //             legend: {
+    //                 position: 'top', // 범례 위치
+    //                 labels: {
+    //                     font: {
+    //                         size: 14, // 글씨 크기
+    //                         color: '#cdcccc'
+    //                     },
+    //                 },
+    //             },
+    //             tooltip: {
+    //                 enabled: true, // 툴팁 활성화
+    //                 callbacks: {
+    //                     label: function (context) {
+    //                         return `${context.dataset.label}: ${context.raw}회`;
+    //                     },
+    //                 },
+    //             },
+    //         },
+    //         scales: {
+    //             x: {
+    //                 grid: {
+    //                     display: false, // x축 그리드 숨김
+    //                 },
+    //                 ticks: {
+    //                     color: '#cdcccc', // x축 눈금 폰트 색상
+    //                 },
+    //             },
+    //             y: {
+    //                 beginAtZero: true, // y축 0부터 시작
+    //                 grid: {
+    //                     color: '#cdcccc', // y축 그리드 색상
+    //                 },
+    //                 ticks: {
+    //                     stepSize: 50, // y축 눈금 간격
+    //                     color: '#cdcccc', // y축 눈금 폰트 색상
+    //                 },
+    //             },
+    //         },
+    //     },
+    // });
 
     function initPullToRefresh() {
 
     }
 
+    function isPWA() {
+        return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+    }
 </script>
 </html>

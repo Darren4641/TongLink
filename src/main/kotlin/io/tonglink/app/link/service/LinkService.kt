@@ -1,8 +1,9 @@
 package io.tonglink.app.link.service
 
-import io.tonglink.app.common.dto.SimplePageImpl
 import io.tonglink.app.link.dto.CreateLinkDto
 import io.tonglink.app.link.dto.LinkDto
+import io.tonglink.app.link.dto.StatisticsLinkDto
+import io.tonglink.app.link.dto.UpdateOrderLinkDto
 import io.tonglink.app.link.entity.Link
 import io.tonglink.app.link.repository.LinkRepository
 import org.jsoup.Jsoup
@@ -10,6 +11,11 @@ import org.jsoup.nodes.Document
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 @Service
 class LinkService (
@@ -21,7 +27,8 @@ class LinkService (
             userKey = createLinkDto.uuId,
             title = createLinkDto.title,
             originUrl = createLinkDto.originUrl,
-            proxyUrl = "https://app.tonglink.site/" + createLinkDto.uuId,
+            proxyUrl = "https://app.tonglink.site/proxy/" + createLinkDto.uuId,
+            color = createLinkDto.color,
             thumbnailUrl = getThumbnail(createLinkDto.originUrl)
         ))
         return savedLink.proxyUrl
@@ -31,12 +38,23 @@ class LinkService (
         return linkRepository.getMyTongLink(uuId, pageable)
     }
 
+    @Transactional
+    fun updateOrderTongLink(uuId: String, updateOrderLinkDto: List<UpdateOrderLinkDto>) : String {
+        linkRepository.updateOrderTongLink(uuId, updateOrderLinkDto)
+        return "OK"
+    }
+
+    fun statistics(uuId: String) : List<StatisticsLinkDto> {
+        return linkRepository.getStatistics(uuId)
+    }
+
+
     /**
      * 주어진 URL에서 Open Graph 데이터를 추출
      * @param url 대상 URL
      * @return 썸네일 URL (og:image) 또는 기본 이미지
      */
-    fun getThumbnail(url: String): String {
+    private fun getThumbnail(url: String): String {
         return try {
             // URL로부터 HTML 문서 로드
             val document: Document = Jsoup.connect(url)
@@ -57,5 +75,12 @@ class LinkService (
             // 실패 시 기본 이미지 반환
             "https://app.tonglink.site/images/app_logo.png"
         }
+    }
+
+    private fun getFiveDaysAgo(): String {
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+        val now = ZonedDateTime.now(ZoneId.of("Asia/Seoul")) // 현재 날짜/시간
+        val fiveDaysAgo = now.minusDays(5) // 5일 전
+        return fiveDaysAgo.format(formatter)
     }
 }
