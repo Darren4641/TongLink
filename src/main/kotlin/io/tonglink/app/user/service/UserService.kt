@@ -1,5 +1,6 @@
 package io.tonglink.app.user.service
 
+import io.tonglink.app.user.dto.UserDataDto
 import io.tonglink.app.user.dto.UserDto
 import io.tonglink.app.user.entity.User
 import io.tonglink.app.user.repository.UserRepository
@@ -23,4 +24,12 @@ class UserService (
         return newUser.uuid
     }
 
+    fun getUserInfo(uuId: String) : UserDataDto {
+        val loginUser = userRepository.findByUUID(uuId)!!
+
+        return UserDataDto(
+            email = loginUser.email,
+            uuId = loginUser.uuid
+        )
+    }
 }

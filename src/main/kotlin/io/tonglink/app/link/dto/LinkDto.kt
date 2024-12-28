@@ -1,7 +1,5 @@
 package io.tonglink.app.link.dto
 
-import java.time.LocalDate
-import java.util.Date
 
 class LinkDto (
     val id: Long,
@@ -17,7 +15,21 @@ class CreateLinkDto (
     val uuId: String,
     val title: String,
     val originUrl: String,
-    val color: String
+    val color: String,
+    val isExposure: Boolean
+)
+
+class UpdateLinkDto (
+    val id: Long,
+    val uuId: String,
+    val title: String,
+    val color: String,
+    val isExposure: Boolean
+)
+
+class DeleteLinkDto (
+    val id: Long,
+    val uuId: String
 )
 
 class UpdateOrderLinkRequestDto (

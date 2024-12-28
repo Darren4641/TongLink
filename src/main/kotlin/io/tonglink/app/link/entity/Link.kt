@@ -2,6 +2,7 @@ package io.tonglink.app.link.entity
 
 import com.fasterxml.jackson.annotation.JsonFormat
 import io.tonglink.app.common.entity.BaseEntity
+import io.tonglink.app.link.dto.UpdateLinkDto
 import jakarta.persistence.*
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -15,7 +16,7 @@ class Link (
     val userKey: String,
 
     @Column(length = 60)
-    val title: String,
+    var title: String,
 
     @Lob
     @Column(nullable = false)
@@ -26,10 +27,13 @@ class Link (
     val proxyUrl: String,
 
     @Column(nullable = false)
-    val color: String,
+    var color: String,
 
     @Column(nullable = true) // 썸네일 URL 필드 추가
     val thumbnailUrl: String? = null,
+
+    @Column(nullable = false)
+    var isExposure: Boolean,
 
     @Column(nullable = false)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
@@ -48,7 +52,7 @@ class Link (
     companion object {
         fun calculateEndDate(): String {
             val now = ZonedDateTime.now(ZoneId.of("Asia/Seoul"))
-            val endDate = now.plusDays(14)
+            val endDate = now.plusDays(7)
             val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
             return endDate.format(formatter)
         }
@@ -60,5 +64,11 @@ class Link (
         val endDate = ZonedDateTime.parse(endDate, formatter.withZone(ZoneId.of("Asia/Seoul")))
         val now = ZonedDateTime.now(ZoneId.of("Asia/Seoul"))
         return now.isAfter(endDate)
+    }
+
+    fun updateLink(updateLinkDto: UpdateLinkDto) {
+        this.title = updateLinkDto.title
+        this.color = updateLinkDto.color
+        this.isExposure = updateLinkDto.isExposure
     }
 }

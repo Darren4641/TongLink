@@ -23,7 +23,7 @@
             </a>
         </div>
         <div class="footer--item">
-            <a href="/mypage">
+            <a href="#" id="mypageLink">
                 <div class="footer--content">
                     <img src="/images/user.png" alt="My Page" th:classappend="${nav == 'mypage'} ? 'selected'">
                 </div>
@@ -34,3 +34,12 @@
 </footer>
 </body>
 </html>
+
+<script type="text/javascript" th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+        const userUUID = localStorage.getItem("userUUID");
+        if (userUUID) {
+            document.getElementById('mypageLink').href = '/mypage?uuId=' + userUUID;
+        }
+    })
+</script>

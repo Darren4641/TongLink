@@ -148,7 +148,7 @@ function renderChart(ctx, labels, datasets) {
         data: link.data,
         borderWidth: 1,
         fill: false,
-        tension: 0.3,
+        tension: 0.5,
         pointRadius: 3,
         pointHoverRadius: 7
     }));

@@ -40,6 +40,25 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
+    //spring security
+    implementation("org.springframework.boot:spring-boot-starter-security")
+
+    //spring security oauth2
+    implementation ("org.springframework.boot:spring-boot-starter-oauth2-client")
+
+    //JWT
+    implementation("io.jsonwebtoken:jjwt-api:0.11.2")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.2")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.2")
+
+    // apple jwt
+    implementation ("com.nimbusds:nimbus-jose-jwt:3.10")
+    implementation("org.bouncycastle:bcprov-jdk15on:1.70")    // BouncyCastle
+    implementation("org.bouncycastle:bcpkix-jdk15on:1.70")    // BouncyCastle PEMParser
+
+    //Gson
+    implementation("com.google.code.gson:gson:2.8.9")
+
     //thymeleaf
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("org.thymeleaf:thymeleaf:3.1.0.RELEASE")

@@ -165,28 +165,40 @@ function createLinkPreview(link) {
 
     wrapper.innerHTML = `
         <!-- 왼쪽 이미지 -->
+        <div class="link-preview-content">
+        <button class="drag-handle">
+            <img src="/images/drag.png" alt="드래그 아이콘">
+        </button>
+            <div class="title-container">
+                
+                <span class="d-day"></span>
+                <h3 class="link-title">${link.title}</h3>
+                <button class="update-button">
+                        <img src="/images/update.png" alt="복사 아이콘">
+                </button>
+            </div>
+            <button class="copy-button" style="padding: 0">
+                <span class="link-url">${link.proxyUrl}</span>
+            </button>
+            <p class="link-description">만료일 - ${link.endDate}</p>
+        </div>
+        <!-- 오른쪽 컨텐츠 -->
         <div class="link-preview-thumbnail">
             <a href="${link.proxyUrl}/${link.id}" target="_blank" rel="noopener noreferrer">
                 <img src="${link.thumbnailUrl}">
             </a>
         </div>
-        <!-- 오른쪽 컨텐츠 -->
-        <div class="link-preview-content">
-            <div class="title-container">
-                <h3 class="link-title">${link.title}</h3>
-                <button class="copy-button">
-                    <img src="/images/copy.png" alt="복사 아이콘">
-                </button>
-                <button class="drag-handle">
-                    <img src="/images/drag.png" alt="드래그 아이콘">
-                </button>
-            </div>
-            <a href="${link.originUrl}" target="_blank" class="link-url">${link.originUrl}</a>
-            <p class="link-description">만료일 - ${link.endDate}</p>
-        </div>
+        
         <!-- 복사 완료 메시지 -->
         <div id="copy-toast" class="copy-toast">복사되었습니다!</div> 
     `;
+
+    updateDday(wrapper, link.endDate);
+
+    const updateButton = wrapper.querySelector(".update-button");
+    updateButton.addEventListener("click", () => {
+        openModal(link); // 모달 열기
+    });
 
     // 복사 버튼 클릭 이벤트 추가
     const copyButton = wrapper.querySelector(".copy-button");
@@ -381,3 +393,189 @@ function updateOrder(container) {
 
     // fetch("/api/link/update-order", { ... }) 로 서버에 전송 가능
 }
+
+/**
+ * Calculate and update D-day
+ * @param {HTMLElement} container - The container element for the link preview
+ * @param {string} endDate - The expiration date string (e.g., "2024-12-22 01:13:12")
+ */
+function updateDday(container, endDate) {
+    const dDayElement = container.querySelector(".d-day");
+
+    // Parse the expiration date
+    const expiryDate = new Date(`${endDate} GMT+0900`); // Ensure Korea Standard Time (KST)
+    const today = new Date(); // Today's date in local time
+
+    // Calculate the difference in days
+    const diffTime = expiryDate - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // Convert ms to days
+
+    // Update the D-day element
+    if (diffDays > 0) {
+        dDayElement.textContent = `D-${diffDays}`;
+        dDayElement.style.color = "#ea8080";
+    } else if (diffDays === 0) {
+        dDayElement.textContent = "D-Day";
+        dDayElement.style.color = "#ea8080";
+    } else {
+        dDayElement.textContent = `Expired`;
+        dDayElement.style.color = "red";
+        container.style.opacity = "0.5";
+    }
+
+    dDayElement.style.marginRight = "10px";
+
+}
+
+function initModal() {
+    const modal = document.getElementById("update-modal");
+    const deleteButton = document.getElementById("delete-modal");
+    const form = modal.querySelector("#link-update-form");
+    // 삭제 버튼 클릭 이벤트
+    deleteButton.addEventListener("click", () => {
+        const linkId = modal.getAttribute("data-id"); // 모달에서 저장된 ID 가져오기
+
+        if (linkId) {
+            // 삭제 요청 보내기
+            if(confirm("정말 삭제하시겠습니까?")) {
+                const body = {
+                    id: linkId,
+                    uuId: localStorage.getItem("userUUID")
+                }
+
+                console.log(body);
+                showLoadingOverlay();
+
+                const container = document.getElementById("tonglink-list");
+
+                // 서버로 업데이트 요청 보내기
+                deleteLink(body)
+                    .then((updateLink) => {
+                        modal.style.display = "none";
+                        initInfiniteScroll(localStorage.getItem("userUUID"), container);
+                    })
+                    .catch((error) => {
+                        console.error("링크 삭제 실패:", error);
+                    })
+                    .finally(() => {
+                        hideLoadingOverlay();
+                        form.reset();
+                    });
+                // 모달 닫기
+                closeModal(form);
+            }
+            //deleteLink(linkId);
+        } else {
+            console.error("삭제할 ID를 찾을 수 없습니다.");
+        }
+    });
+
+
+    // 모달 외부 클릭 시 닫기 이벤트 등록 (한 번만 실행)
+    modal.addEventListener("click", (event) => {
+        if (event.target === modal) {
+            closeModal(); // 모달 닫기
+        }
+    });
+}
+
+function openModal(link) {
+    const modal = document.getElementById("update-modal");
+    const closeModalButton = document.getElementById("update-close-modal");
+    const form = modal.querySelector("#link-update-form");
+
+    // 모달을 보여줌
+    modal.style.display = "flex";
+
+    // 기존 값을 폼에 채워넣음
+    form.title.value = link.title || ""; // 제목
+    form.originUrl.value = link.originUrl || ""; // 원본 URL
+    form.color.value = link.color || "#ff0000"; // 그래프 색상 기본값
+
+    modal.setAttribute("data-id", link.id);
+
+    // 저장 버튼에 대한 이벤트 리스너 추가
+    form.onsubmit = (e) => {
+        e.preventDefault();
+
+        // 업데이트된 값 가져오기
+        const updatedTitle = form.title.value;
+        const updatedColor = form.color.value;
+        const updateIsExposure = document.getElementById("toggle").checked;
+
+        const body = {
+            id: link.id,
+            uuId: localStorage.getItem("userUUID"),
+            title: updatedTitle,
+            color: updatedColor,
+            isExposure: updateIsExposure
+        }
+
+        console.log(body);
+        showLoadingOverlay();
+
+        const container = document.getElementById("tonglink-list");
+
+        // 서버로 업데이트 요청 보내기
+        updateLink(body)
+            .then((updateLink) => {
+                modal.style.display = "none";
+                initInfiniteScroll(localStorage.getItem("userUUID"), container);
+            })
+            .catch((error) => {
+                console.error("새 링크 추가 실패:", error);
+            })
+            .finally(() => {
+                hideLoadingOverlay();
+                form.reset();
+            });
+        // 모달 닫기
+        closeModal(form);
+    };
+
+}
+
+function closeModal() {
+    const modal = document.getElementById("update-modal");
+    modal.style.display = "none"; // 모달 숨김
+}
+
+function updateLink(body) {
+    return fetch("/api/link", {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+    })
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error("링크 저장 실패");
+            }
+            return response.json(); // 서버에서 반환된 링크 데이터
+        })
+        .catch((error) => {
+            console.error("서버 오류:", error);
+        });
+}
+
+function deleteLink(body) {
+    return fetch("/api/link", {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+    })
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error("링크 저장 실패");
+            }
+            return response.json(); // 서버에서 반환된 링크 데이터
+        })
+        .catch((error) => {
+            console.error("서버 오류:", error);
+        });
+}
+
+initModal();

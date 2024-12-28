@@ -1,9 +1,8 @@
 package io.tonglink.app.link.service
 
-import io.tonglink.app.link.dto.CreateLinkDto
-import io.tonglink.app.link.dto.LinkDto
-import io.tonglink.app.link.dto.StatisticsLinkDto
-import io.tonglink.app.link.dto.UpdateOrderLinkDto
+import com.example.kopring.common.status.ResultCode
+import io.tonglink.app.common.exception.TongLinkException
+import io.tonglink.app.link.dto.*
 import io.tonglink.app.link.entity.Link
 import io.tonglink.app.link.repository.LinkRepository
 import org.jsoup.Jsoup
@@ -29,9 +28,27 @@ class LinkService (
             originUrl = createLinkDto.originUrl,
             proxyUrl = "https://app.tonglink.site/proxy/" + createLinkDto.uuId,
             color = createLinkDto.color,
-            thumbnailUrl = getThumbnail(createLinkDto.originUrl)
+            thumbnailUrl = getThumbnail(createLinkDto.originUrl),
+            isExposure = createLinkDto.isExposure
         ))
         return savedLink.proxyUrl
+    }
+
+    @Transactional
+    fun updateLink(updateLinkDto: UpdateLinkDto) : String {
+        val targetLink = linkRepository.findByIdAndUserKey(updateLinkDto.id, updateLinkDto.uuId) ?: throw TongLinkException(ResultCode.ERROR)
+        targetLink.updateLink(updateLinkDto)
+        linkRepository.save(targetLink)
+
+        return targetLink.proxyUrl
+    }
+
+    @Transactional
+    fun deleteLink(deleteLinkDto: DeleteLinkDto) : String {
+        val targetLink = linkRepository.findByIdAndUserKey(deleteLinkDto.id, deleteLinkDto.uuId) ?: throw TongLinkException(ResultCode.ERROR)
+        linkRepository.delete(targetLink)
+
+        return targetLink.proxyUrl
     }
 
     fun getMyTongLink(uuId: String, pageable: Pageable) : Page<LinkDto> {
@@ -58,7 +75,7 @@ class LinkService (
         return try {
             // URL로부터 HTML 문서 로드
             val document: Document = Jsoup.connect(url)
-                .timeout(5000) // 5초 타임아웃
+                .timeout(2000) // 5초 타임아웃
                 .get()
 
             // Open Graph 태그에서 og:image 속성 추출

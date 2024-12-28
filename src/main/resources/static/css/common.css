@@ -412,13 +412,14 @@ img, span {
 /* 왼쪽 컨텐츠 스타일 */
 .link-preview-content {
     flex: 1; /* 남은 공간 차지 */
-    margin-left: 16px;
+    margin-top: -7px;
+    margin-left: 20px;
 }
 
 .link-title {
     font-size: 18px;
     font-weight: bold;
-    margin: 0 0 8px;
+    /*margin: 0 0 8px;*/
     color: #cdcccc;
 }
 
@@ -433,6 +434,11 @@ img, span {
     color: #007bff;
     text-decoration: none;
     word-break: break-word; /* 긴 링크 줄바꿈 */
+    max-width: 220px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    margin: 5px 0 5px 0;
 }
 
 .link-url:hover {
@@ -465,7 +471,7 @@ img, span {
 
 
 /* 복사 버튼 스타일 */
-.copy-button, .drag-handle {
+.copy-button, .drag-handle, .update-button {
     background-color: transparent; /* 배경 투명 */
     border: none; /* 테두리 없음 */
     cursor: pointer; /* 마우스 포인터 설정 */
@@ -479,7 +485,10 @@ img, span {
 
 .drag-handle {
     position: absolute;
-    right: 0;
+    left: 3px;
+    top: 5px;
+    /*position: absolute;*/
+    /*right: 0;*/
 }
 
 .link-preview .drag-handle {
@@ -496,7 +505,7 @@ img, span {
 
 
 .drag-handle {
-    margin-left: auto;
+    /*margin-left: auto;*/
     cursor: grab;
 }
 
@@ -518,7 +527,7 @@ img, span {
     transform: scale(1.1); /* 살짝 확대 */
 }
 
-.copy-button img, .drag-handle img {
+.copy-button img, .drag-handle img, .update-button img {
     width: 16px; /* 아이콘 크기 */
     height: 16px;
     filter: invert(1);
@@ -681,7 +690,7 @@ img, span {
 }
 
 .footer--content img.selected {
-    filter: invert(89%) sepia(89%) saturate(582%) hue-rotate(303deg) brightness(98%) contrast(101%);
+    filter: invert(93%) sepia(8%) saturate(135%) hue-rotate(180deg) brightness(70%) contrast(100%);
 }
 
 .scroll-sentinel {
@@ -816,6 +825,12 @@ form input {
     color: white;
 }
 
+.btn-delete {
+    flex: 1;
+    background-color: #c82333;
+    color: white;
+}
+
 .btn-cancel:hover {
     background-color: #c82333;
 }
@@ -910,7 +925,7 @@ form input {
     }
 
     .footer--cnt {
-        gap: 50px; /* 푸터 아이템 간 간격 */
+        gap: 40px; /* 푸터 아이템 간 간격 */
     }
 
     .footer--item span {
@@ -982,4 +997,263 @@ form input {
 .splash-text {
     font-size: 18px;
     font-weight: bold;
+}
+
+.label-description {
+    font-size: 12px; /* 글씨 크기 */
+    color: gray; /* 글씨 색상 */
+}
+
+.toggle-div {
+    display: flex;
+}
+.toggleSwitch {
+    width: 50px;
+    height: 25px;
+    display: block;
+    position: relative;
+    border-radius: 30px;
+    background-color: #fff;
+    box-shadow: 0 0 16px 3px rgba(0 0 0 / 15%);
+    cursor: pointer;
+    border: 1px solid #a3a1a1;
+}
+
+.toggleSwitch .toggleButton {
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    top: 50%;
+    left: 4px;
+    transform: translateY(-50%);
+    border-radius: 50%;
+    background: #262626;
+}
+
+#toggle:checked ~ .toggleSwitch, #update-toggle:checked ~ .toggleSwitch {
+    border: 1px solid #a3a1a1;
+    background: #12bb15;
+}
+
+#toggle:checked ~ .toggleSwitch .toggleButton, #update-toggle:checked ~ .toggleSwitch .toggleButton {
+    left: calc(100% - 22px);
+    background: #fff;
+}
+
+.toggleSwitch, .toggleButton {
+    transition: all 0.2s ease-in;
+}
+
+
+/* 로딩 오버레이 */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* 반투명 검정색 배경 */
+    z-index: 9999; /* 최상위로 표시 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 숨김 클래스 */
+.hidden {
+    display: none;
+}
+
+/* 로딩 스피너 */
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(255, 255, 255, 0.3); /* 반투명 흰색 테두리 */
+    border-top: 5px solid #fff; /* 흰색 상단 테두리 */
+    border-radius: 50%; /* 원형 */
+    animation: spin 1s linear infinite; /* 회전 애니메이션 */
+}
+
+/* 스피너 애니메이션 */
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Google */
+
+.google-login {
+    margin-top: 30px;
+    margin-bottom: 17px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.google-login-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 300px; /* 버튼 가로 크기 */
+    height: 40px; /* 버튼 높이 */
+    background-color: #FFFFFF; /* 흰색 배경 */
+    border: 1px solid #DADCE0; /* 테두리 */
+    border-radius: 4px; /* 라운드 테두리 */
+    font-family: 'Roboto', sans-serif; /* 폰트 */
+    font-size: 14px; /* 텍스트 크기 */
+    color: #757575; /* 텍스트 색상 */
+    cursor: pointer;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.google-login-button:hover {
+    background-color: #F8F9FA; /* Hover 시 배경 색 */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Hover 시 살짝 그림자 */
+}
+
+.google-login-button:active {
+    background-color: #E8E8E8; /* 클릭 시 배경 색 */
+}
+
+.google-login-button .google-icon {
+    width: 18px; /* 구글 아이콘 크기 */
+    height: 18px;
+}
+
+.google-login-button .google-login-text {
+    font-weight: 500; /* 텍스트 두께 */
+}
+
+
+/* 마이페이지 컨테이너 */
+.mypage-container {
+    padding: 20px;
+    background-color: #f9f9f9;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+.myprofile-section {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    position: relative;
+}
+
+/* 헤더 */
+.mypage-header {
+    text-align: center;
+    padding: 20px;
+}
+.readonly {
+    background: #ececec;
+}
+
+/* 프로필 섹션 */
+
+.profile-img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #262626;
+}
+
+.profile-info {
+    text-align: left;
+}
+
+
+.profile-email {
+    font-size: 14px;
+    color: #dddddd;
+}
+
+.signup-date {
+    font-size: 10px;
+    color: gray;
+}
+
+.logout {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 10px;
+    cursor: pointer;
+    color: gray;
+    text-decoration: underline;
+}
+
+.summary-section {
+    padding: 0 20px 20px 20px;
+}
+
+.summary-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #535454;
+    padding: 20px;
+    border-radius: 8px; /* 모서리 둥글게 */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* 가벼운 그림자 */
+}
+
+.summary-item {
+    text-align: center; /* 텍스트 중앙 정렬 */
+    flex: 1; /* 아이템을 균등하게 배치 */
+    border-right: 1px solid #e6e6e6; /* 우측 구분선 */
+}
+
+.summary-item:last-child {
+    border-right: none; /* 마지막 아이템 구분선 제거 */
+}
+
+.summary-label {
+    font-size: 14px; /* 라벨 폰트 크기 */
+    color: #efefef; /* 연한 글씨 색 */
+    margin-bottom: 8px; /* 라벨과 값 간격 */
+}
+
+.summary-value {
+    font-size: 20px; /* 값 폰트 크기 */
+    font-weight: bold; /* 굵은 글씨 */
+    color: #000; /* 검정색 */
+}
+
+/* 옵션 섹션 */
+.mypage-options, .mypage-help {
+    margin-bottom: 20px;
+}
+
+.mypage-options h2,
+.mypage-help h2 {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #444;
+    margin-left: 20px;
+}
+
+.option-item,
+.help-item {
+    padding: 10px;
+    background-color: #262626;
+    margin: 0 20px 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #b6b6b6;
+    display: flex;
+    justify-content: space-between; /* 좌우 끝으로 배치 */
+    align-items: center; /* 세로 중앙 정렬 */
+    cursor: pointer;
+}
+
+.option-label {
+    font-size: 16px; /* 라벨 폰트 크기 */
+    color: #000; /* 기본 검정색 */
+    margin: 0; /* 기본 여백 제거 */
 }

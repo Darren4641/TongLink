@@ -20,6 +20,16 @@ class LinkController (
         return BaseResponse(data = linkService.createLink(createLinkDto))
     }
 
+    @PatchMapping
+    fun updateLink(@RequestBody updateLinkDto: UpdateLinkDto) : BaseResponse<String> {
+        return BaseResponse(data = linkService.updateLink(updateLinkDto))
+    }
+
+    @DeleteMapping
+    fun deleteLink(@RequestBody updateLinkDto: DeleteLinkDto) : BaseResponse<String> {
+        return BaseResponse(data = linkService.deleteLink(updateLinkDto))
+    }
+
     @GetMapping("/{uuId}")
     fun myTongLink(@PathVariable(name = "uuId") uuId: String,
                    @RequestParam(value = "limit", required = false, defaultValue = "5") limitParam: Int,
