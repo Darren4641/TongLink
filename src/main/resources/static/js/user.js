@@ -5,7 +5,7 @@ function manageUserUUID() {
 
     if (!userUUID) {
         // UUID가 없으면 새로 생성
-        userUUID = crypto.randomUUID();
+        userUUID = generateUUID();
         localStorage.setItem("userUUID", userUUID);
         console.log("새 UUID 생성:", userUUID);
     } else {
@@ -14,6 +14,12 @@ function manageUserUUID() {
 
     // 서버에 UUID 전달
     sendUUIDToServer(userUUID);
+}
+
+function generateUUID() {
+    return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+        (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+    );
 }
 
 /**
