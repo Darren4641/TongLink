@@ -700,17 +700,14 @@ img, span {
 
 .floating-button {
     aspect-ratio: 1 / 1;
-    max-width: 30px;
-    max-height: 30px;
     width: 30px;
-    height: 30px;
     background-color: #c6c6c6; /* 버튼 배경색 */
     color: black;
     border: none;
     border-radius: 30%; /* 동그란 버튼 */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 그림자 */
     font-size: 24px; /* 텍스트 크기 */
-    display: block;
+    display: flex;
     justify-content: center;
     align-items: center;
     cursor: pointer;
@@ -959,17 +956,14 @@ form input {
     }*/
     .floating-button {
         aspect-ratio: 1 / 1;
-        max-width: 30px;
-        max-height: 30px;
         width: 30px;
-        height: 30px;
         background-color: #c6c6c6; /* 버튼 배경색 */
         color: black;
         border: none;
         border-radius: 30%; /* 동그란 버튼 */
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 그림자 */
         font-size: 24px; /* 텍스트 크기 */
-        display: block;
+        display: flex;
         justify-content: center;
         align-items: center;
         cursor: pointer;
