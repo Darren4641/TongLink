@@ -628,12 +628,12 @@ img, span {
 /* Footer */
 .footer {
     width: 100%;
-    max-width: 393px;
+    max-width: 450px;
     background: #262626;
     padding: 16px 16px;
     box-shadow: 0 -4px 4px rgba(0, 0, 0, 0.1);
     position: fixed;
-    bottom: 8px;
+    bottom: 0px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 10;
