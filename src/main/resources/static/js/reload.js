@@ -60,7 +60,7 @@ function initializePullToRefresh({ onRefresh, refreshIcon, refreshThreshold = 80
     });
 
     // 스크롤 감지 (트랙패드 포함)
-    document.addEventListener('scroll', () => {
+    /*document.addEventListener('scroll', () => {
         if (window.scrollY === 0 && !isPulling) {
             isPulling = true;
             accumulatedScroll = 0; // 누적 스크롤 초기화
@@ -80,5 +80,5 @@ function initializePullToRefresh({ onRefresh, refreshIcon, refreshThreshold = 80
                 onRefresh();
             }
         }
-    });
+    });*/
 }
