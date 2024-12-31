@@ -140,6 +140,7 @@
     document.addEventListener('DOMContentLoaded', () => {
 
         const refreshIcon = document.getElementById('refresh-icon');
+        const targetElement = document.querySelector('.app-container');
 
         initializePullToRefresh({
             onRefresh: () => {
@@ -154,6 +155,7 @@
             },
             refreshIcon: refreshIcon,
             refreshThreshold: 100, // 트리거 임계값
+            targetElement
         });
 
         // PWA 설치 후 실행될 로직

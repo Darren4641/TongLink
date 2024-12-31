@@ -5,7 +5,7 @@
  * @param {HTMLElement} options.refreshIcon - 새로고침 아이콘 요소
  * @param {number} options.refreshThreshold - 새로고침 트리거 임계값 (기본값: 800)
  */
-function initializePullToRefresh({ onRefresh, refreshIcon, refreshThreshold = 800 }) {
+function initializePullToRefresh({ onRefresh, refreshIcon, refreshThreshold = 800, targetElement }) {
     let isPulling = false; // Pull-to-Refresh 상태 확인
     let startY = 0; // 터치/스크롤 시작 위치
     let currentY = 0; // 터치/스크롤 중 현재 위치
@@ -23,15 +23,15 @@ function initializePullToRefresh({ onRefresh, refreshIcon, refreshThreshold = 80
     }
 
     // 터치 시작
-    document.addEventListener('touchstart', (e) => {
-        if (window.scrollY === 0) {
+    targetElement.addEventListener('touchstart', (e) => {
+        if (targetElement.scrollTop === 0) { // 대상 요소가 최상단에 있는지 확인
             isPulling = true;
             startY = e.touches[0].clientY;
         }
     });
 
     // 터치 이동
-    document.addEventListener('touchmove', (e) => {
+    targetElement.addEventListener('touchmove', (e) => {
         if (!isPulling) return;
 
         currentY = e.touches[0].clientY;
@@ -43,7 +43,7 @@ function initializePullToRefresh({ onRefresh, refreshIcon, refreshThreshold = 80
     });
 
     // 터치 종료
-    document.addEventListener('touchend', () => {
+    targetElement.addEventListener('touchend', () => {
         if (!isPulling) return;
 
         const diffY = currentY - startY;
@@ -58,6 +58,7 @@ function initializePullToRefresh({ onRefresh, refreshIcon, refreshThreshold = 80
 
         resetPullState();
     });
+
 
     // 스크롤 감지 (트랙패드 포함)
     /*document.addEventListener('scroll', () => {
