@@ -2,12 +2,21 @@
 /**
  * 메인 초기화 함수: 통계 데이터를 가져와 차트를 초기화
  */
+let chartInstance = null; // Chart 인스턴스를 저장할 변수
+
 async function initializeStatisticsChart(uuId, ctx) {
     try {
         const labels = getLastFiveDays(); // 오늘부터 5일 전까지의 날짜 계산
         const statisticsData = await fetchStatistics(uuId); // 서버에서 통계 데이터 가져오기
         const processedData = processStatisticsData(statisticsData, labels); // 데이터 처리
-        renderChart(ctx, labels, processedData); // Chart.js 차트 렌더링
+
+        // 기존 차트가 있으면 삭제
+        if (chartInstance) {
+            chartInstance.destroy(); // 기존 차트 파괴
+        }
+
+        // 새로운 차트 생성 및 저장
+        chartInstance = renderChart(ctx, labels, processedData);
     } catch (error) {
         console.error("Error initializing statistics chart:", error);
     }
@@ -140,24 +149,24 @@ function processStatisticsData(data, labels) {
  * @param {Object[]} datasets Chart.js에 사용할 데이터셋
  */
 function renderChart(ctx, labels, datasets) {
-
-    const chartData = datasets.map((link, i) => ({
+    const chartData = datasets.map((link) => ({
         label: link.title,
         borderColor: link.color,
-        backgroundColor: link.color + "33",
+        backgroundColor: link.color + "33", // 투명도 추가
         data: link.data,
         borderWidth: 1,
         fill: false,
         tension: 0.5,
         pointRadius: 3,
-        pointHoverRadius: 7
+        pointHoverRadius: 7,
     }));
 
-    new Chart(ctx, {
+    // 새로운 차트 생성 및 반환
+    return new Chart(ctx, {
         type: "line",
         data: {
             labels: labels,
-            datasets: chartData
+            datasets: chartData,
         },
         options: {
             responsive: true,
@@ -186,45 +195,44 @@ function renderChart(ctx, labels, datasets) {
                                     rotation: dataset.rotation,
                                     fontColor: "#cdcccc",
                                     font: {
-                                        size: 14
+                                        size: 14,
                                     },
-                                    // 가장 중요한 부분: datasetIndex 추가
-                                    datasetIndex: i
+                                    datasetIndex: i, // 데이터셋 인덱스 추가
                                 };
                             });
                         },
                         usePointStyle: true,
                         boxWidth: 10,
-                        boxHeight: 10
-                    }
+                        boxHeight: 10,
+                    },
                 },
                 tooltip: {
                     callbacks: {
                         label: function (context) {
                             return `${context.dataset.label}: ${context.raw}`;
-                        }
-                    }
-                }
+                        },
+                    },
+                },
             },
             scales: {
                 x: {
                     grid: { display: false },
-                    ticks: { color: "#cdcccc" }
+                    ticks: { color: "#cdcccc" },
                 },
                 y: {
                     beginAtZero: true,
                     grid: { color: "#cdcccc" },
                     ticks: {
                         stepSize: 1,
-                        color: "#cdcccc"
-                    }
-                }
+                        color: "#cdcccc",
+                    },
+                },
             },
             elements: {
                 point: {
-                    pointStyle: "circle"
-                }
-            }
-        }
+                    pointStyle: "circle",
+                },
+            },
+        },
     });
 }

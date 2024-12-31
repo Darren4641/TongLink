@@ -117,6 +117,10 @@
         </section>
     </main>
 
+    <div id="refresh-icon" class="hidden">
+        <div class="spinner"></div>
+    </div>
+
     <!-- Fixed Button -->
     <div class="footer-top"></div>
     <div th:replace="fragments/footer :: footer"></div>
@@ -133,6 +137,57 @@
             .catch((error) => console.error("Service Worker 등록 실패:", error));
     }
     document.addEventListener('DOMContentLoaded', () => {
+
+        const refreshIcon = document.getElementById('refresh-icon');
+
+        let isPulling = false; // Pull-to-Refresh 상태 확인
+        let startY = 0; // 터치 시작 위치
+        let currentY = 0; // 터치 중 현재 위치
+        const refreshThreshold = 800; // 새로고침 트리거 임계값 (70px)
+        // 터치 시작
+        document.addEventListener('touchstart', (e) => {
+            if (window.scrollY === 0) {
+                isPulling = true;
+                startY = e.touches[0].clientY;
+            }
+        });
+
+        // 터치 이동
+        document.addEventListener('touchmove', (e) => {
+            if (!isPulling) return;
+
+            currentY = e.touches[0].clientY;
+            const diffY = currentY - startY;
+
+            if (diffY > refreshThreshold) { // 적당히 당기면 아이콘 보이기
+                refreshIcon.style.display = 'block';
+            }
+        });
+
+        // 터치 종료
+        document.addEventListener('touchend', () => {
+            if (!isPulling) return;
+
+            const diffY = currentY - startY;
+
+            if (diffY > refreshThreshold) {
+                // 새로고침 로직 실행
+                initInfiniteScroll(localStorage.getItem("userUUID"), container);
+
+                enableDragAndDrop(container);
+                const ctx = document.getElementById('stats-chart').getContext('2d');
+                initializeStatisticsChart(uuId, ctx);
+            } else {
+                // 새로고침 조건을 충족하지 않으면 아이콘 숨김
+                refreshIcon.style.display = 'none';
+            }
+
+            // 초기화
+            refreshIcon.style.display = 'none';
+            isPulling = false;
+            startY = 0;
+            currentY = 0;
+        });
 
         // PWA 설치 후 실행될 로직
         window.addEventListener("appinstalled", () => {

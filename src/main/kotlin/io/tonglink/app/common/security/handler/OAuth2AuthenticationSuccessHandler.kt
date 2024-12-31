@@ -52,6 +52,7 @@ class OAuth2AuthenticationSuccessHandler (
 
         return UriComponentsBuilder.fromUriString("/mypage")
             .queryParam("uuId", user.uuId)
+            .queryParam("firstLogin", true)
             .build().toUriString()
 
     }
