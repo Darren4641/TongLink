@@ -19,76 +19,76 @@
 <body>
 <div class="app-container">
 
-
-    <!-- OAuth가 true일 때만 Google 로그인 버튼 표시 -->
-    <div th:if="${!isOauth}">
-        <div class="google-login">
-            <div class="google-login-button" onclick="startGoogleLogin()">
-                <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google Logo" class="google-icon">
-                <span class="google-login-text">Sign in with Google</span>
+    <main class="main-content">
+        <!-- OAuth가 true일 때만 Google 로그인 버튼 표시 -->
+        <div th:if="${!isOauth}">
+            <div class="google-login">
+                <div class="google-login-button" onclick="startGoogleLogin()">
+                    <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google Logo" class="google-icon">
+                    <span class="google-login-text">Sign in with Google</span>
+                </div>
             </div>
+            <p style="text-align: center; color: #b6b6b6; font-size: 14px;">내 통링을 다른 기기에서도 사용해보세요!</p>
         </div>
-        <p style="text-align: center; color: #b6b6b6; font-size: 14px;">내 통링을 다른 기기에서도 사용해보세요!</p>
-    </div>
 
-    <!-- OAuth가 false일 때만 마이페이지 내용 표시 -->
-    <div th:if="${isOauth}">
-        <header class="mypage-header">
-            <div class="myprofile-section">
-                <img src="/images/icon_profile.png" alt="프로필 이미지" class="profile-img">
-                <div class="profile-info">
-                    <p class="profile-email" th:text="${email}"></p>
-                    <p class="signup-date">가입 날짜 : 2024-12-25</p>
+        <!-- OAuth가 false일 때만 마이페이지 내용 표시 -->
+        <div th:if="${isOauth}">
+            <header class="mypage-header">
+                <div class="myprofile-section">
+                    <img src="/images/icon_profile.png" alt="프로필 이미지" class="profile-img">
+                    <div class="profile-info">
+                        <p class="profile-email" th:text="${email}"></p>
+                        <p class="signup-date">가입 날짜 : 2024-12-25</p>
+                    </div>
+                    <div>
+                        <p onclick="logout()" class="logout">로그아웃</p>
+                    </div>
                 </div>
-                <div>
-                    <p onclick="logout()" class="logout">로그아웃</p>
-                </div>
-            </div>
-        </header>
+            </header>
 
-        <section class="summary-section">
-            <div class="summary-container">
-                <div class="summary-item">
-                    <p class="summary-label">통링 수</p>
-                    <p class="summary-value">1,000,000</p>
+            <section class="summary-section">
+                <div class="summary-container">
+                    <div class="summary-item">
+                        <p class="summary-label">통링 수</p>
+                        <p class="summary-value">1,000,000</p>
+                    </div>
+                    <div class="summary-item">
+                        <p class="summary-label">조회 설정</p>
+                        <p class="summary-value">550,000</p>
+                    </div>
                 </div>
-                <div class="summary-item">
-                    <p class="summary-label">조회 설정</p>
-                    <p class="summary-value">550,000</p>
+            </section>
+        </div>
+
+
+        <div class="gray-bar-wrapper">
+            <div class="gray-bar"></div>
+        </div>
+
+        <section class="mypage-options">
+            <h2>설정</h2>
+            <div class="option-item">
+                <label class="option-label" style="font-size: 14px; color: #b6b6b6;">푸시 알림</label>
+                <div class="toggle-div">
+                    <div>
+                        <input type="checkbox" id="toggle" hidden>
+                        <label for="toggle" class="toggleSwitch" style="margin: 0">
+                            <span class="toggleButton"></span>
+                        </label>
+                    </div>
                 </div>
             </div>
         </section>
-    </div>
+
+        <section class="mypage-help">
+            <h2>고객센터</h2>
+            <div class="help-item">앱 설치 (PWA)</div>
+            <div class="help-item">이메일 문의</div>
+            <div class="help-item">광고 문의</div>
+        </section>
 
 
-    <div class="gray-bar-wrapper">
-        <div class="gray-bar"></div>
-    </div>
-
-    <section class="mypage-options">
-        <h2>설정</h2>
-        <div class="option-item">
-            <label class="option-label" style="font-size: 14px; color: #b6b6b6;">푸시 알림</label>
-            <div class="toggle-div">
-                <div>
-                    <input type="checkbox" id="toggle" hidden>
-                    <label for="toggle" class="toggleSwitch" style="margin: 0">
-                        <span class="toggleButton"></span>
-                    </label>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="mypage-help">
-        <h2>고객센터</h2>
-        <div class="help-item">앱 설치 (PWA)</div>
-        <div class="help-item">이메일 문의</div>
-        <div class="help-item">광고 문의</div>
-    </section>
-
-
-
+    </main>
 
     <div id="refresh-icon" class="hidden">
         <div class="spinner"></div>
