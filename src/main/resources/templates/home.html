@@ -10,6 +10,7 @@
     <link rel="manifest" th:href="@{/manifest.json}">
     <script th:src="@{/js/user.js}" defer></script>
     <script th:src="@{/js/chart.js}" defer></script>
+    <script th:src="@{/js/reload.js}" defer></script>
     <script th:src="@{/js/index-modal.js}" defer></script>
     <script th:src="@{/js/tonglink-list.js}" defer></script>
     <script th:src="@{/js/service-worker.js}" defer></script>
@@ -140,56 +141,19 @@
 
         const refreshIcon = document.getElementById('refresh-icon');
 
-        let isPulling = false; // Pull-to-Refresh 상태 확인
-        let startY = 0; // 터치 시작 위치
-        let currentY = 0; // 터치 중 현재 위치
-        const refreshThreshold = 800; // 새로고침 트리거 임계값 (70px)
-        // 터치 시작
-        document.addEventListener('touchstart', (e) => {
-            if (window.scrollY === 0) {
-                isPulling = true;
-                startY = e.touches[0].clientY;
-            }
-        });
-
-        // 터치 이동
-        document.addEventListener('touchmove', (e) => {
-            if (!isPulling) return;
-
-            currentY = e.touches[0].clientY;
-            const diffY = currentY - startY;
-
-            if (diffY > refreshThreshold) { // 적당히 당기면 아이콘 보이기
-                refreshIcon.style.display = 'block';
-            }
-        });
-
-        // 터치 종료
-        document.addEventListener('touchend', () => {
-            if (!isPulling) return;
-
-            const diffY = currentY - startY;
-
-            if (diffY > refreshThreshold) {
-                // 새로고침 로직 실행
-                initInfiniteScroll(localStorage.getItem("userUUID"), container);
-
-                enableDragAndDrop(container);
-                const ctx = document.getElementById('stats-chart').getContext('2d');
-                initializeStatisticsChart(uuId, ctx);
-            } else {
-                // 새로고침 조건을 충족하지 않으면 아이콘 숨김
-                refreshIcon.style.display = 'none';
-            }
-
-            // 초기화
-            // 1초 뒤에 아이콘 숨김
-            setTimeout(() => {
-                refreshIcon.style.display = 'none';
-            }, 800);
-            isPulling = false;
-            startY = 0;
-            currentY = 0;
+        initializePullToRefresh({
+            onRefresh: () => {
+                console.log('새로고침 로직 실행');
+                // 서비스 워커 캐시 삭제 및 데이터 재로드
+                caches.keys().then((keys) =>
+                    Promise.all(keys.map((key) => caches.delete(key)))
+                ).then(() => {
+                    // 캐시 삭제 후 페이지 새로고침
+                    window.location.reload();
+                });
+            },
+            refreshIcon: refreshIcon,
+            refreshThreshold: 100, // 트리거 임계값
         });
 
         // PWA 설치 후 실행될 로직

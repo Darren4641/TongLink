@@ -9,6 +9,7 @@
     <link rel="stylesheet" th:href="@{/css/common.css}" />
     <link rel="manifest" th:href="@{/manifest.json}">
     <script th:src="@{/js/user.js}" defer></script>
+    <script th:src="@{/js/reload.js}" defer></script>
     <script th:src="@{/js/index-modal.js}" defer></script>
     <script th:src="@{/js/tonglink-list.js}" defer></script>
     <script th:src="@{/js/service-worker.js}" defer></script>
@@ -33,49 +34,12 @@
 
         const refreshIcon = document.getElementById('refresh-icon');
 
-        let isPulling = false; // Pull-to-Refresh 상태 확인
-        let startY = 0; // 터치 시작 위치
-        let currentY = 0; // 터치 중 현재 위치
-        const refreshThreshold = 800; // 새로고침 트리거 임계값 (70px)
-        // 터치 시작
-        document.addEventListener('touchstart', (e) => {
-            if (window.scrollY === 0) {
-                isPulling = true;
-                startY = e.touches[0].clientY;
-            }
-        });
-
-        // 터치 이동
-        document.addEventListener('touchmove', (e) => {
-            if (!isPulling) return;
-
-            currentY = e.touches[0].clientY;
-            const diffY = currentY - startY;
-
-            if (diffY > refreshThreshold) { // 적당히 당기면 아이콘 보이기
-                refreshIcon.style.display = 'block';
-            }
-        });
-
-        // 터치 종료
-        document.addEventListener('touchend', () => {
-            if (!isPulling) return;
-
-            const diffY = currentY - startY;
-
-            if (diffY > refreshThreshold) {
-                // 새로고침 로직 실행
-
-            } else {
-                // 새로고침 조건을 충족하지 않으면 아이콘 숨김
-                refreshIcon.style.display = 'none';
-            }
-
-            // 초기화
-            refreshIcon.style.display = 'none';
-            isPulling = false;
-            startY = 0;
-            currentY = 0;
+        initializePullToRefresh({
+            onRefresh: () => {
+                alert('새로고침 실행');
+            },
+            refreshIcon: refreshIcon, // 새로고침 아이콘
+            refreshThreshold: 800,   // 트리거 임계값 (기본값: 800)
         });
 
 
