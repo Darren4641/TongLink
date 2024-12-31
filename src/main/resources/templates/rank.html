@@ -16,11 +16,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-<div id="splash-screen" class="splash-screen">
-    <div class="splash-content">
-        <img src="/images/tonglink-splash-white.png" alt="서비스 로고" class="splash-logo">
-    </div>
-</div>
 <div class="app-container">
     <h2 style="color: #fff">rank</h2>
 
@@ -83,23 +78,6 @@
             currentY = 0;
         });
 
-        /* Splash 관련 */
-        const splashScreen = document.getElementById('splash-screen');
-
-        // 첫 방문 여부 확인 (localStorage에 방문 여부 저장)
-        const hasVisited = localStorage.getItem('hasVisited');
-
-
-        if (!hasVisited) {
-            // 첫 방문인 경우, 스플래시 화면 보여주기
-            setTimeout(() => {
-                splashScreen.classList.add('hidden'); // 스플래시 숨기기
-            }, 2000); // 2초 후 스플래시 사라짐
-            localStorage.setItem('hasVisited', 'true'); // 방문 여부 저장
-        } else {
-            // 이미 방문한 경우, 스플래시 즉시 숨김
-            splashScreen.classList.add('hidden');
-        }
 
         const userUUID = localStorage.getItem("userUUID");
         if (userUUID) {
