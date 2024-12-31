@@ -1,5 +1,5 @@
 // 캐시 이름에 버전 추가
-const CACHE_NAME = 'tonglink-v0.0.23'; // 매 배포 시 버전을 변경
+const CACHE_NAME = 'tonglink-v0.1.0'; // 매 배포 시 버전을 변경
 
 const FILES_TO_CACHE = [
 
@@ -33,11 +33,23 @@ self.addEventListener('activate', (event) => {
     self.clients.claim(); // 활성화 후 클라이언트에 즉시 반영
 });
 
+
 // fetch 이벤트 - 네트워크 우선 로직
 self.addEventListener('fetch', (event) => {
     event.respondWith(
-        caches.match(event.request).then((response) => {
-            return response || fetch(event.request);
+        caches.match(event.request).then((cachedResponse) => {
+            const fetchPromise = fetch(event.request).then((networkResponse) => {
+                if (networkResponse.ok) {
+                    // 새 요청 결과를 캐시에 업데이트
+                    caches.open(CACHE_NAME).then((cache) => {
+                        cache.put(event.request, networkResponse.clone());
+                    });
+                }
+                return networkResponse;
+            });
+
+            // 캐시된 응답 또는 네트워크 요청 결과 반환
+            return cachedResponse || fetchPromise;
         })
     );
 });
