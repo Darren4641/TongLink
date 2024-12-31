@@ -1,5 +1,5 @@
 // 캐시 이름에 버전 추가
-const CACHE_NAME = 'tonglink-v0.1.1'; // 매 배포 시 버전을 변경
+const CACHE_NAME = 'tonglink-v0.1.2'; // 매 배포 시 버전을 변경
 
 const FILES_TO_CACHE = [
 
@@ -22,10 +22,7 @@ self.addEventListener('activate', (event) => {
         caches.keys().then((keyList) => {
             return Promise.all(
                 keyList.map((key) => {
-                    if (key !== CACHE_NAME) {
-                        console.log('Removing old cache:', key);
-                        return caches.delete(key);
-                    }
+                    return caches.delete(key);
                 })
             );
         })
