@@ -402,15 +402,25 @@ function updateOrder(container) {
 function updateDday(container, endDate) {
     const dDayElement = container.querySelector(".d-day");
 
-    // Parse the expiration date
-    const expiryDate = new Date(`${endDate} GMT+0900`); // Ensure Korea Standard Time (KST)
-    const today = new Date(); // Today's date in local time
+    // ISO 8601 형식으로 변환
+    const parsedDate = endDate.replace(" ", "T"); // 공백을 'T'로 교체
+    const expiryDate = new Date(`${parsedDate}+09:00`); // KST 타임존 추가
+    const today = new Date(); // 현재 시간
 
-    // Calculate the difference in days
+    // 날짜가 유효하지 않은 경우 처리
+    if (isNaN(expiryDate.getTime())) {
+        console.error("Invalid date format:", endDate);
+        dDayElement.textContent = "Invalid Date";
+        dDayElement.style.color = "red";
+        return;
+    }
+
+    // D-Day 계산
     const diffTime = expiryDate - today;
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // Convert ms to days
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // 밀리초를 일 단위로 변환
+    console.log("@: " + diffDays);
 
-    // Update the D-day element
+    // D-Day 업데이트
     if (diffDays > 0) {
         dDayElement.textContent = `D-${diffDays}`;
         dDayElement.style.color = "#ea8080";
@@ -418,13 +428,12 @@ function updateDday(container, endDate) {
         dDayElement.textContent = "D-Day";
         dDayElement.style.color = "#ea8080";
     } else {
-        dDayElement.textContent = `Expired`;
+        dDayElement.textContent = "Expired";
         dDayElement.style.color = "red";
         container.style.opacity = "0.5";
     }
 
     dDayElement.style.marginRight = "10px";
-
 }
 
 function initModal() {

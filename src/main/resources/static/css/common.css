@@ -628,7 +628,7 @@ img, span {
     padding: 16px 16px;
     box-shadow: 0 -4px 4px rgba(0, 0, 0, 0.1);
     position: fixed;
-    bottom: 0;
+    bottom: 8px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 10;
@@ -638,7 +638,7 @@ img, span {
     display: flex;
     justify-content: space-around;
     align-items: center;
-    gap: 100px; /* 푸터 아이템 간 간격 */
+    gap: 80px; /* 푸터 아이템 간 간격 */
 }
 
 .footer--item a {
@@ -1256,4 +1256,15 @@ form input {
     font-size: 16px; /* 라벨 폰트 크기 */
     color: #000; /* 기본 검정색 */
     margin: 0; /* 기본 여백 제거 */
+}
+
+footer a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    /* 링크 터치 영역 확대 */
+    width: 250%;
+    height: 100%;
+    text-decoration: none; /* 기본 스타일 제거 */
 }
