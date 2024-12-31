@@ -34,6 +34,7 @@
     document.addEventListener('DOMContentLoaded', () => {
 
         const refreshIcon = document.getElementById('refresh-icon');
+        const targetElement = document.querySelector('.app-container');
 
         initializePullToRefresh({
             onRefresh: () => {
@@ -41,6 +42,7 @@
             },
             refreshIcon: refreshIcon, // 새로고침 아이콘
             refreshThreshold: 800,   // 트리거 임계값 (기본값: 800)
+            targetElement
         });
 
 
