@@ -213,14 +213,14 @@
             // 첫 방문인 경우, 스플래시 화면 보여주기
             setTimeout(() => {
                 splashScreen.classList.add('hidden'); // 스플래시 숨기기
-                openModalButton.style.display = "flex";
+                openModalButton.style.display = "block";
             }, 2000); // 2초 후 스플래시 사라짐
             localStorage.setItem('hasVisited', 'true'); // 방문 여부 저장
 
         } else {
             // 이미 방문한 경우, 스플래시 즉시 숨김
             splashScreen.classList.add('hidden');
-            openModalButton.style.display = "flex";
+            openModalButton.style.display = "block";
         }
 
         openModalButton.addEventListener("click", () => {

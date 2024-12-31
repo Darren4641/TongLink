@@ -710,7 +710,7 @@ img, span {
     border-radius: 30%; /* 동그란 버튼 */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 그림자 */
     font-size: 24px; /* 텍스트 크기 */
-    display: flex;
+    display: block;
     justify-content: center;
     align-items: center;
     cursor: pointer;
@@ -969,7 +969,7 @@ form input {
         border-radius: 30%; /* 동그란 버튼 */
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 그림자 */
         font-size: 24px; /* 텍스트 크기 */
-        display: flex;
+        display: block;
         justify-content: center;
         align-items: center;
         cursor: pointer;
