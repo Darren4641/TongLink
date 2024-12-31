@@ -183,7 +183,10 @@
             }
 
             // 초기화
-            refreshIcon.style.display = 'none';
+            // 1초 뒤에 아이콘 숨김
+            setTimeout(() => {
+                refreshIcon.style.display = 'none';
+            }, 800);
             isPulling = false;
             startY = 0;
             currentY = 0;
