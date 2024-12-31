@@ -38,7 +38,9 @@ class LinkRepositoryDslImpl (
                 proxyUrl = it.proxyUrl,
                 endDate = it.endDate,
                 thumbnailUrl = it.thumbnailUrl ?: "https://app.tonglink.site/images/app_logo.png",
-                order = it.order
+                color = it.color,
+                order = it.order,
+                isExposure = it.isExposure
             )
         }
         return PageImpl(content, pageable, results.total)

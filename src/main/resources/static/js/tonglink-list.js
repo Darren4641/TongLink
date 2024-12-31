@@ -492,14 +492,18 @@ function openModal(link) {
     const modal = document.getElementById("update-modal");
     const closeModalButton = document.getElementById("update-close-modal");
     const form = modal.querySelector("#link-update-form");
-
+    const toggle = document.getElementById("update-toggle");
     // 모달을 보여줌
     modal.style.display = "flex";
-
+    console.log("link.isExposure = " + link.isExposure);
     // 기존 값을 폼에 채워넣음
     form.title.value = link.title || ""; // 제목
     form.originUrl.value = link.originUrl || ""; // 원본 URL
     form.color.value = link.color || "#ff0000"; // 그래프 색상 기본값
+    if(link.isExposure) {
+        toggle.checked = true;
+    }
+
 
     modal.setAttribute("data-id", link.id);
 
@@ -510,14 +514,13 @@ function openModal(link) {
         // 업데이트된 값 가져오기
         const updatedTitle = form.title.value;
         const updatedColor = form.color.value;
-        const updateIsExposure = document.getElementById("toggle").checked;
 
         const body = {
             id: link.id,
             uuId: localStorage.getItem("userUUID"),
             title: updatedTitle,
             color: updatedColor,
-            isExposure: updateIsExposure
+            isExposure: toggle.checked
         }
 
         console.log(body);

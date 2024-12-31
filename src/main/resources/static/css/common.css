@@ -707,7 +707,7 @@ img, span {
     border-radius: 30%; /* 동그란 버튼 */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 그림자 */
     font-size: 24px; /* 텍스트 크기 */
-    display: flex;
+    display: none;
     justify-content: center;
     align-items: center;
     cursor: pointer;
@@ -848,7 +848,7 @@ form input {
 }
 
 
-#color {
+#color, #update-color {
     height: 50px;
 }
 
@@ -935,19 +935,35 @@ form input {
     .footer--item p {
         font-size: 10px; /* 푸터 텍스트 크기 */
     }
-    .floating-button {
+    /*.floating-button {
         display: none;
         position: fixed;
-        bottom: 90px; /* 푸터 위의 위치 */
-        right: 20px; /* 오른쪽 여백 */
+        bottom: 90px; !* 푸터 위의 위치 *!
+        right: 20px; !* 오른쪽 여백 *!
         width: 50px;
         height: 50px;
-        background-color: #c6c6c6; /* 버튼 배경색 */
+        background-color: #c6c6c6; !* 버튼 배경색 *!
         color: black;
         border: 1px solid #262626;
-        border-radius: 50%; /* 동그란 버튼 */
+        border-radius: 50%; !* 동그란 버튼 *!
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); !* 그림자 *!
+        font-size: 24px; !* 텍스트 크기 *!
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        z-index: 1000; !* 다른 요소보다 위에 표시 *!
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }*/
+    .floating-button {
+        width: 30px;
+        height: 30px;
+        background-color: #c6c6c6; /* 버튼 배경색 */
+        color: black;
+        border: none;
+        border-radius: 30%; /* 동그란 버튼 */
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 그림자 */
         font-size: 24px; /* 텍스트 크기 */
+        display: none;
         justify-content: center;
         align-items: center;
         cursor: pointer;

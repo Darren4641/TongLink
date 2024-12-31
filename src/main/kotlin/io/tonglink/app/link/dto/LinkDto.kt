@@ -8,7 +8,9 @@ class LinkDto (
     val proxyUrl: String,
     val endDate: String,
     val thumbnailUrl: String,
-    val order: Int?
+    val color: String,
+    val order: Int?,
+    val isExposure: Boolean
 )
 
 class CreateLinkDto (
