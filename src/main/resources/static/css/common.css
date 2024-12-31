@@ -978,9 +978,9 @@ form input {
     }
 }
 
-@media screen and (max-width: 393px) {
+@media screen and (max-width: 390px) {
     .floating-button {
-        width: 20px; /* iPhone 15에 맞춘 크기 */
+        width: 15px; /* iPhone 15에 맞춘 크기 */
         font-size: 20px;
     }
 }
