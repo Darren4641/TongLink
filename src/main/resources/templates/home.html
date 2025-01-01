@@ -336,7 +336,7 @@
 
                         registration.pushManager.subscribe({
                             userVisibleOnly: true,
-                            applicationServerKey: urlBase64ToUint8Array(vapidPublicKey),
+                            applicationServerKey: vapidPublicKey,
                         })
                             .then((subscription) => {
                                 console.log("푸시 구독 성공:", subscription);
