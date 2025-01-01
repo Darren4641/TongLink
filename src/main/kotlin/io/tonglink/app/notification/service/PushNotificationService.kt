@@ -1,14 +1,14 @@
 package io.tonglink.app.notification.service
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.tonglink.app.notification.dto.NotificationDto
 import io.tonglink.app.user.repository.UserRepository
-import nl.martijndwars.webpush.Encoding
 import nl.martijndwars.webpush.Notification
 import nl.martijndwars.webpush.PushService
 import nl.martijndwars.webpush.Subscription
 import org.apache.http.HttpResponse
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 
 @Service
 class PushNotificationService (
@@ -23,11 +23,21 @@ class PushNotificationService (
         }
     }
 
-    fun sendPushNotification(subscription: Subscription, payload: String) {
+    fun sendPushNotification(subscription: Subscription, title: String) {
+        val serverBaseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString()
+
+        val payloadData = mapOf(
+            "title" to "새로운 알림",
+            "body" to "누군가 ${title} 링크에 방문했습니디!",
+            "icon" to "$serverBaseUrl/images/app_logo.png"
+        )
+
         try {
+            val payloadJson = jacksonObjectMapper().writeValueAsString(payloadData)
+
             val notification = Notification(
                 subscription,
-                payload
+                payloadJson
             )
             val response: HttpResponse = pushService.send(notification)
             val statusCode = response.statusLine.statusCode;
