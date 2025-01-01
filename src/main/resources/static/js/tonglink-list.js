@@ -236,6 +236,14 @@ function showToast(message) {
 
 
 function enableDragAndDrop(container) {
+    // 기존 이벤트 핸들러 제거
+    container.removeEventListener("mousedown", handleMouseDown);
+    container.removeEventListener("touchstart", handleTouchStart);
+
+    // 새로운 이벤트 핸들러 추가
+    container.addEventListener("mousedown", handleMouseDown);
+    container.addEventListener("touchstart", handleTouchStart, { passive: false });
+
     let draggedElement = null;
     let placeholder = null;
     let offsetX = 0;
@@ -251,10 +259,13 @@ function enableDragAndDrop(container) {
     }
 
     function startDrag(pageX, pageY, target) {
+        if (isDragging) return; // 이미 드래그 중이라면 무시
+
         draggedElement = target;
         const rect = draggedElement.getBoundingClientRect();
         offsetX = pageX - rect.left;
         offsetY = pageY - rect.top;
+        isDragging = true; // 드래그 상태 활성화
 
         originalParent = draggedElement.parentNode;
         originalNextSibling = draggedElement.nextSibling;
@@ -297,7 +308,7 @@ function enableDragAndDrop(container) {
     }
 
     function endDrag() {
-        if (!draggedElement || !placeholder) return;
+        if (!isDragging || !draggedElement || !placeholder) return;
 
         placeholder.parentNode.insertBefore(draggedElement, placeholder);
         placeholder.remove();
@@ -310,12 +321,14 @@ function enableDragAndDrop(container) {
         draggedElement.style.height = "";
         draggedElement.style.left = "";
         draggedElement.style.top = "";
+
         draggedElement = null;
+        isDragging = false; // 드래그 상태 해제
 
         updateOrder(container);
     }
 
-    // 마우스 이벤트
+/*    // 마우스 이벤트
     container.addEventListener("mousedown", (e) => {
         const handle = e.target.closest(".drag-handle");
         if (!handle) return;
@@ -339,9 +352,57 @@ function enableDragAndDrop(container) {
             document.addEventListener("mousemove", onMouseMove);
             document.addEventListener("mouseup", onMouseUp);
         }
-    });
+    });*/
+    function handleMouseDown(e) {
+        const handle = e.target.closest(".drag-handle");
+        if (!handle) return;
 
-    // 터치 이벤트
+        const target = e.target.closest(".link-preview");
+        if (target) {
+            startDrag(e.pageX, e.pageY, target);
+
+            function onMouseMove(e) {
+                e.preventDefault();
+                onDragMove(e.pageX, e.pageY);
+            }
+
+            function onMouseUp() {
+                document.removeEventListener("mousemove", onMouseMove);
+                document.removeEventListener("mouseup", onMouseUp);
+                endDrag();
+            }
+
+            document.addEventListener("mousemove", onMouseMove);
+            document.addEventListener("mouseup", onMouseUp);
+        }
+    }
+    function handleTouchStart(e) {
+        const handle = e.target.closest(".drag-handle");
+        if (!handle) return;
+
+        const target = e.target.closest(".link-preview");
+        if (target && e.touches.length === 1) {
+            const touch = e.touches[0];
+            startDrag(touch.pageX, touch.pageY, target);
+
+            function onTouchMove(e) {
+                e.preventDefault();
+                const touch = e.touches[0];
+                onDragMove(touch.pageX, touch.pageY);
+            }
+
+            function onTouchEnd() {
+                document.removeEventListener("touchmove", onTouchMove, { passive: false });
+                document.removeEventListener("touchend", onTouchEnd);
+                endDrag();
+            }
+
+            document.addEventListener("touchmove", onTouchMove, { passive: false });
+            document.addEventListener("touchend", onTouchEnd);
+        }
+    }
+
+/*    // 터치 이벤트
     container.addEventListener("touchstart", (e) => {
         const handle = e.target.closest(".drag-handle");
         if (!handle) return;
@@ -367,7 +428,7 @@ function enableDragAndDrop(container) {
             document.addEventListener("touchmove", onTouchMove, { passive: false });
             document.addEventListener("touchend", onTouchEnd);
         }
-    }, { passive: false }); // touchstart도 passive: false 추천
+    }, { passive: false }); // touchstart도 passive: false 추천*/
 }
 
 function updateOrder(container) {
