@@ -335,33 +335,39 @@
         if ("serviceWorker" in navigator) {
             try {
                 console.log("서비스 워커 등록 상태 확인 중...");
+
                 navigator.serviceWorker.ready
-                    .then(function(registration) {
-                        const subscription = registration.pushManager.subscribe({
+                    .then((registration) => {
+                        console.log("서비스 워커 등록 성공:", registration);
+
+                        registration.pushManager.subscribe({
                             userVisibleOnly: true,
                             applicationServerKey: urlBase64ToUint8Array(vapidPublicKey),
-                        });
-
-                        console.log("푸시 구독 성공:", subscription);
-
-                        // 서버로 구독 정보 전송
-                        fetch('/api/push/subscribe', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                uuId: userUUID,
-                                endpoint: subscription.endpoint,
-                                keys: {
-                                    p256dh: btoa(String.fromCharCode(...new Uint8Array(subscription.getKey('p256dh')))),
-                                    auth: btoa(String.fromCharCode(...new Uint8Array(subscription.getKey('auth')))),
-                                },
-                            }),
-                        });
-
+                        })
+                            .then((subscription) => {
+                                console.log("푸시 구독 성공:", subscription);
+                                // 서버로 구독 정보 전송
+                                fetch('/api/push/subscribe', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                        uuId: userUUID,
+                                        endpoint: subscription.endpoint,
+                                        keys: {
+                                            p256dh: btoa(String.fromCharCode(...new Uint8Array(subscription.getKey('p256dh')))),
+                                            auth: btoa(String.fromCharCode(...new Uint8Array(subscription.getKey('auth')))),
+                                        },
+                                    }),
+                                });
+                                console.log("구독 정보가 서버로 전송되었습니다.");
+                            })
+                            .catch((error) => {
+                                console.error("푸시 구독 실패:", error);
+                            });
+                    })
+                    .catch((error) => {
+                        console.error("서비스 워커 준비 상태 대기 중 오류 발생:", error);
                     });
-
-
-                console.log("구독 정보가 서버로 전송되었습니다.");
             } catch (error) {
                 console.error("푸시 구독 실패:", error);
             }
