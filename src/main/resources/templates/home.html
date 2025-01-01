@@ -381,11 +381,11 @@
         loadingOverlay.classList.add("hidden"); // 오버레이 숨김
     }
 
-    async function subscribeToPushNotifications(userUUID) {
+    function subscribeToPushNotifications(userUUID) {
         if ("serviceWorker" in navigator) {
             try {
-                const registration = await navigator.serviceWorker.ready;
-                const subscription = await registration.pushManager.subscribe({
+                const registration = navigator.serviceWorker.ready;
+                const subscription = registration.pushManager.subscribe({
                     userVisibleOnly: true,
                     applicationServerKey: 'MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgeT1WY7pWIc7fqJZQgv71CROtIAIuQm2xe5U8UltsM5CgCgYIKoZIzj0DAQehRANCAASoDVkzpqbY/2F/eimznyjEBJYJx33hUCTRZgsUE1+Xy9r+5p/So46rU0dyTGtTJ30yKyiuZA0MYsvG+5SaQ+ux', // VAPID 공개 키
                 });
@@ -393,7 +393,7 @@
                 console.log("푸시 구독 성공:", subscription);
 
                 // 서버로 구독 정보 전송
-                await fetch('/api/push/subscribe', {
+                fetch('/api/push/subscribe', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
