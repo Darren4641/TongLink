@@ -310,6 +310,7 @@
     }
 
     async function subscribeToPushNotifications(userUUID) {
+        console.log("subscribeToPushNotifications 함수 호출됨"); // 디버깅용 로그 추가
         const vapidPublicKey = 'BKgNWTOmptj/YX96KbOfKMQElgnHfeFQJNFmCxQTX5fL2v7mn9KjjqtTR3JMa1MnfTIrKK5kDQxiy8b7lJpD67E=';
 
         if (Notification.permission !== 'granted') {
