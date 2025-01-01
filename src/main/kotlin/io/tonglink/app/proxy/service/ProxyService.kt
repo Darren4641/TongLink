@@ -12,8 +12,8 @@ class ProxyService (
     val visitRepository: VisitRepository
 ) {
 
-    fun getRedirectLink(uuId: String, linkId: Long) : Link {
-        val link = linkRepository.findRedirectLink(uuId, linkId)
+    fun getRedirectLink(linkId: Long) : Link {
+        val link = linkRepository.findRedirectLink(linkId)
 
         return link
     }

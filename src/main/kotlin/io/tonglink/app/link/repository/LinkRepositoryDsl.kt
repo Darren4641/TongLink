@@ -14,7 +14,7 @@ interface LinkRepositoryDsl {
 
     fun updateOrderTongLink(uuId: String, updateOrderLinkDto: List<UpdateOrderLinkDto>)
 
-    fun findRedirectLink(uuId: String, linkId: Long) : Link
+    fun findRedirectLink(linkId: Long) : Link
 
     fun getStatistics(uuId: String) : List<StatisticsLinkDto>
 

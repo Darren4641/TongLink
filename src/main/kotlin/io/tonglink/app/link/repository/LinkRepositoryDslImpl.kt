@@ -67,12 +67,11 @@ class LinkRepositoryDslImpl (
             .execute()
     }
 
-    override fun findRedirectLink(uuId: String, linkId: Long) : Link {
+    override fun findRedirectLink(linkId: Long) : Link {
         return queryFactory
             .select(link)
             .from(link)
-            .where(link.userKey.eq(uuId)
-                .and(link.id.eq(linkId)))
+            .where(link.id.eq(linkId))
             .fetchFirst()!!
     }
 

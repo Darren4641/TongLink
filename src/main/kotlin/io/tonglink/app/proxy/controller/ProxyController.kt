@@ -19,7 +19,9 @@ class ProxyController (
     fun proxyLink(request: HttpServletRequest,
                   @PathVariable(name = "uuId") uuId: String,
                   @PathVariable(name = "linkId") linkId: Long) : String {
-        val link = proxyService.getRedirectLink(uuId, linkId)
+        println("uuId = " + uuId);
+        println("linkId = " + linkId);
+        val link = proxyService.getRedirectLink(linkId)
 
         // 기간이 만료되었는지 확인
         if(link.isEndDatePassed()) {
@@ -30,7 +32,7 @@ class ProxyController (
         val userIp = request.remoteAddr
         val userAgent = request.getHeader("User-Agent")
         val referrer = request.getHeader("Referer")
-        proxyService.saveVisit(link.id!!, uuId, userIp, userAgent, referrer)
+        proxyService.saveVisit(link.id!!, link.userKey, userIp, userAgent, referrer)
 
         return "redirect:${link.originUrl}"
     }
