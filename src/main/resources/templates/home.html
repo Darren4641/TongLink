@@ -137,7 +137,7 @@
             .then(() => console.log("Service Worker 등록 성공"))
             .catch((error) => console.error("Service Worker 등록 실패:", error));
     }
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
 
         const refreshIcon = document.getElementById('refresh-icon');
         const targetElement = document.querySelector('.app-container');
@@ -172,8 +172,6 @@
             // 서버로 UUID 전송
             sendUUIDToServerPWA(userUUID);
 
-            // 푸시 구독 요청
-            await subscribeToPushNotifications(userUUID);
         });
         if (isPWA()) {
             console.log("앱이 PWA 환경에서 실행되었습니다.");
@@ -186,6 +184,9 @@
 
             // 서버로 UUID 전송
             sendUUIDToServerPWA(userUUID);
+
+            // 푸시 구독 요청
+            await subscribeToPushNotifications(userUUID);
         } else {
             console.log("앱이 브라우저에서 실행되었습니다.");
             manageUserUUID();
@@ -293,79 +294,6 @@
         const ctx = document.getElementById('stats-chart').getContext('2d');
         initializeStatisticsChart(uuId, ctx);
     });
-
-
-    // const statsChart = new Chart(ctx, {
-    //     type: 'bar', // 막대 그래프를 기본으로 설정
-    //     data: {
-    //         labels: ['12/01', '12/02', '12/03', '12/04', '12/05'], // x축 레이블
-    //         datasets: [
-    //             // {
-    //             //     type: 'line', // 선 그래프
-    //             //     label: '조회수',
-    //             //     data: [123, 98, 76, 150, 130], // 조회수 데이터
-    //             //     borderColor: 'rgba(255, 99, 132, 1)', // 선 색상
-    //             //     backgroundColor: 'rgba(255, 99, 132, 0.2)', // 채우기 색상
-    //             //     tension: 0.3, // 선 곡률
-    //             //     fill: true, // 선 아래 채우기
-    //             // },
-    //             {
-    //                 type: 'bar', // 막대 그래프
-    //                 label: '방문자',
-    //                 data: [90, 70, 60, 120, 100], // 방문자 데이터
-    //                 backgroundColor: '#ff8787', // 막대 색상
-    //                 color: '#cdcccc',
-    //                 borderRadius: 8, // 막대 모서리 둥글게
-    //             },
-    //         ],
-    //     },
-    //     options: {
-    //         responsive: true, // 반응형 지원
-    //         plugins: {
-    //             legend: {
-    //                 position: 'top', // 범례 위치
-    //                 labels: {
-    //                     font: {
-    //                         size: 14, // 글씨 크기
-    //                         color: '#cdcccc'
-    //                     },
-    //                 },
-    //             },
-    //             tooltip: {
-    //                 enabled: true, // 툴팁 활성화
-    //                 callbacks: {
-    //                     label: function (context) {
-    //                         return `${context.dataset.label}: ${context.raw}회`;
-    //                     },
-    //                 },
-    //             },
-    //         },
-    //         scales: {
-    //             x: {
-    //                 grid: {
-    //                     display: false, // x축 그리드 숨김
-    //                 },
-    //                 ticks: {
-    //                     color: '#cdcccc', // x축 눈금 폰트 색상
-    //                 },
-    //             },
-    //             y: {
-    //                 beginAtZero: true, // y축 0부터 시작
-    //                 grid: {
-    //                     color: '#cdcccc', // y축 그리드 색상
-    //                 },
-    //                 ticks: {
-    //                     stepSize: 50, // y축 눈금 간격
-    //                     color: '#cdcccc', // y축 눈금 폰트 색상
-    //                 },
-    //             },
-    //         },
-    //     },
-    // });
-
-    function initPullToRefresh() {
-
-    }
 
     function isPWA() {
         return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
