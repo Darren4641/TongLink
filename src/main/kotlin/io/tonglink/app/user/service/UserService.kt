@@ -29,7 +29,10 @@ class UserService (
 
         return UserDataDto(
             email = loginUser.email,
-            uuId = loginUser.uuid
+            uuId = loginUser.uuid,
+            endPoint = loginUser.endPoint!!,
+            p256dh = loginUser.p256dh!!,
+            auth = loginUser.auth!!
         )
     }
 }
