@@ -23,12 +23,18 @@ class VapidUtil {
             val keyPair: KeyPair = keyPairGenerator.generateKeyPair()
 
             // 공개 키를 압축되지 않은 포인트 형식으로 변환
-            val publicKey = keyPair.public as ECPublicKey
+            val publicKey = keyPair.public as org.bouncycastle.jce.interfaces.ECPublicKey
             val uncompressedPublicKey = publicKey.q.getEncoded(false)
 
             // Base64 URL-safe 인코딩
             val publicKeyBase64 = Base64.toBase64String(uncompressedPublicKey)
+                .replace('+', '-')
+                .replace('/', '_')
+                .replace("=", "")
             val privateKeyBase64 = Base64.toBase64String(keyPair.private.encoded)
+                .replace('+', '-')
+                .replace('/', '_')
+                .replace("=", "")
 
             println("Public Key: $publicKeyBase64")
             println("Private Key: $privateKeyBase64")
