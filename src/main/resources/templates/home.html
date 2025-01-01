@@ -137,7 +137,7 @@
             .then(() => console.log("Service Worker 등록 성공"))
             .catch((error) => console.error("Service Worker 등록 실패:", error));
     }
-    document.addEventListener('DOMContentLoaded', async () => {
+    document.addEventListener('DOMContentLoaded', () => {
 
         const refreshIcon = document.getElementById('refresh-icon');
         const targetElement = document.querySelector('.app-container');
@@ -159,7 +159,7 @@
         });
 
         // PWA 설치 후 실행될 로직
-        window.addEventListener("appinstalled", async () => {
+        window.addEventListener("appinstalled", () => {
             console.log("PWA가 설치되었습니다!");
 
             let userUUID = localStorage.getItem("userUUID");
@@ -186,7 +186,7 @@
             sendUUIDToServerPWA(userUUID);
 
             // 푸시 구독 요청
-            await subscribeToPushNotifications(userUUID);
+            subscribeToPushNotifications(userUUID);
         } else {
             console.log("앱이 브라우저에서 실행되었습니다.");
             manageUserUUID();
@@ -310,6 +310,7 @@
     }
 
     async function subscribeToPushNotifications(userUUID) {
+        const vapidPublicKey = 'BKgNWTOmptj/YX96KbOfKMQElgnHfeFQJNFmCxQTX5fL2v7mn9KjjqtTR3JMa1MnfTIrKK5kDQxiy8b7lJpD67E=';
 
         if (Notification.permission !== 'granted') {
             const permission = await Notification.requestPermission();
@@ -324,8 +325,8 @@
                 const registration = await navigator.serviceWorker.ready; // 등록 준비 완료 대기
 
                 const subscription = await registration.pushManager.subscribe({
-                    userVisibleOnly: true, // 사용자에게 보이는 푸시만 허용
-                    applicationServerKey: 'BKgNWTOmptj/YX96KbOfKMQElgnHfeFQJNFmCxQTX5fL2v7mn9KjjqtTR3JMa1MnfTIrKK5kDQxiy8b7lJpD67E=' // VAPID 공개 키를 Uint8Array로 변환
+                    userVisibleOnly: true,
+                    applicationServerKey: urlBase64ToUint8Array(vapidPublicKey),
                 });
 
                 console.log("푸시 구독 성공:", subscription);
@@ -338,8 +339,8 @@
                         uuId: userUUID,
                         endpoint: subscription.endpoint,
                         keys: {
-                            p256dh: subscription.getKey('p256dh'),
-                            auth: subscription.getKey('auth'),
+                            p256dh: btoa(String.fromCharCode(...new Uint8Array(subscription.getKey('p256dh')))),
+                            auth: btoa(String.fromCharCode(...new Uint8Array(subscription.getKey('auth')))),
                         },
                     }),
                 });
@@ -351,6 +352,19 @@
         } else {
             console.error("서비스 워커가 지원되지 않는 환경입니다.");
         }
+    }
+
+    function urlBase64ToUint8Array(base64String) {
+        const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+        const base64 = (base64String + padding)
+            .replace(/-/g, '+')
+            .replace(/_/g, '/');
+        const rawData = atob(base64);
+        const outputArray = new Uint8Array(rawData.length);
+        for (let i = 0; i < rawData.length; i++) {
+            outputArray[i] = rawData.charCodeAt(i);
+        }
+        return outputArray;
     }
 </script>
 </html>
