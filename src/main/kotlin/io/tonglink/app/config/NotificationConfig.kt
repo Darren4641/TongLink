@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import java.security.Security
+import java.util.*
 
 @Configuration
 class NotificationConfig (
@@ -20,6 +21,6 @@ class NotificationConfig (
     @Bean
     fun PushService() : PushService {
         Security.addProvider(BouncyCastleProvider());
-        return PushService(publicKey, privateKey, subject);
+        return PushService(Base64.getUrlEncoder().withoutPadding().encodeToString(publicKey.toByteArray()), privateKey, subject);
     }
 }

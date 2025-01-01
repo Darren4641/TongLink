@@ -138,7 +138,7 @@
                     if (permission === "granted") {
                         console.log("알림 권한이 허용되었습니다.");
                         // 푸시 구독 로직 실행 (필요 시 추가)
-                        await subscribeToPushNotifications();
+                        subscribeToPushNotifications();
                     } else if (permission === "denied") {
                         console.error("알림 권한이 거부되었습니다.");
                     } else {
@@ -161,6 +161,78 @@
         userUUID = generateUUID();
         localStorage.setItem("userUUID", userUUID);
         window.location.href = `/logout`;
+    }
+
+    async function subscribeToPushNotifications(userUUID) {
+        console.log("subscribeToPushNotifications 함수 호출됨"); // 디버깅용 로그 추가
+        const vapidPublicKey = 'BARrQjq3jZihZOhyBfF2qTR_8d30VTEzLRpG7PiNbadH8MI6fHq_P2XyMIZtpoj9EO7oPbeRL8KHn7GxjZr0_Jg';
+
+        if (Notification.permission !== 'granted') {
+            console.log("알림 권한 요청 시작");
+            const permission = await Notification.requestPermission();
+            console.log("알림 권한 요청 결과:", permission);
+            if (permission !== 'granted') {
+                console.error("알림 권한이 거부되었습니다.");
+                return;
+            }
+        }
+
+        if ("serviceWorker" in navigator) {
+            try {
+                console.log("서비스 워커 등록 상태 확인 중...");
+
+                navigator.serviceWorker.register("/js/service-worker.js").then((registration) => {
+                    console.log("서비스 워커 등록 성공:", registration);
+                    registration.update();
+
+                    registration.pushManager.subscribe({
+                        userVisibleOnly: true,
+                        applicationServerKey: urlBase64ToUint8Array(vapidPublicKey),
+                    })
+                        .then((subscription) => {
+                            console.log("푸시 구독 성공:", subscription);
+                            // 서버로 구독 정보 전송
+                            fetch('/api/push/subscribe', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    uuId: userUUID,
+                                    endpoint: subscription.endpoint,
+                                    keys: {
+                                        p256dh: btoa(String.fromCharCode(...new Uint8Array(subscription.getKey('p256dh')))),
+                                        auth: btoa(String.fromCharCode(...new Uint8Array(subscription.getKey('auth')))),
+                                    },
+                                }),
+                            });
+                            console.log("구독 정보가 서버로 전송되었습니다.");
+                        })
+                        .catch((error) => {
+                            console.error("푸시 구독 실패:", error);
+                        });
+                })
+                    .catch((error) => {
+                        console.error("서비스 워커 준비 상태 대기 중 오류 발생:", error);
+                    });
+            } catch (error) {
+                console.error("푸시 구독 실패:", error);
+            }
+        } else {
+            console.error("서비스 워커가 지원되지 않는 환경입니다.");
+        }
+    }
+
+
+    function urlBase64ToUint8Array(base64String) {
+        const padding = '='.repeat((4 - base64String.length % 4) % 4);
+        const base64 = (base64String + padding)
+            .replace(/\-/g, '+')
+            .replace(/_/g, '/');
+        const rawData = window.atob(base64);
+        const outputArray = new Uint8Array(rawData.length);
+        for (let i = 0; i < rawData.length; ++i) {
+            outputArray[i] = rawData.charCodeAt(i);
+        }
+        return outputArray;
     }
 </script>
 </html>
