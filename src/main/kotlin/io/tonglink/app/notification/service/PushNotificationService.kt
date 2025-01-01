@@ -27,8 +27,8 @@ class PushNotificationService (
         val serverBaseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString()
 
         val payloadData = mapOf(
-            "title" to "새로운 알림",
-            "body" to "누군가 ${title} 링크에 방문했습니디!",
+            "title" to "통통🎉",
+            "body" to "누군가 ${title} 에 방문했습니디!",
             "icon" to "$serverBaseUrl/images/app_logo.png"
         )
 
