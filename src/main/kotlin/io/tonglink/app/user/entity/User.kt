@@ -2,6 +2,7 @@ package io.tonglink.app.user.entity
 
 import io.tonglink.app.common.entity.BaseEntity
 import io.tonglink.app.common.security.RoleType
+import io.tonglink.app.notification.dto.NotificationDto
 import jakarta.persistence.*
 import org.hibernate.annotations.DynamicUpdate
 
@@ -25,6 +26,15 @@ class User (
     @Column(name = "role", nullable = false, length = 255)
     var roles : String = RoleType.USER.role,
 
+    @Column(name = "end_point", columnDefinition = "text")
+    var endPoint: String? = null,
+
+    @Column(name = "p256dh", columnDefinition = "text")
+    var p256dh: String? = null,
+
+    @Column(name = "auth", columnDefinition = "text")
+    var auth: String? = null
+
     ) : BaseEntity() {
 
     @Id
@@ -38,5 +48,11 @@ class User (
 
     fun updateIsPwa(isPwa: Boolean) {
         this.isPwa = isPwa
+    }
+
+    fun subscribe(notificationDto: NotificationDto) {
+        this.endPoint = notificationDto.endpoint
+        this.p256dh = notificationDto.keys.p256dh
+        this.auth = notificationDto.keys.auth
     }
 }

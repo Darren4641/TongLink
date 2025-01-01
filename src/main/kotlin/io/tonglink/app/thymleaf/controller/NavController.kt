@@ -2,6 +2,7 @@ package io.tonglink.app.thymleaf.controller
 
 import io.tonglink.app.common.security.UserPrincipal
 import io.tonglink.app.common.security.service.OAuth2UserService
+import io.tonglink.app.common.util.VapidUtil
 import io.tonglink.app.user.service.UserService
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.core.context.SecurityContextHolder

@@ -54,3 +54,40 @@ self.addEventListener('fetch', (event) => {
         })
     );
 });
+
+// 푸시 이벤트 처리
+self.addEventListener('push', (event) => {
+    let data = { title: '새로운 알림', body: '알림 내용입니다.', icon: '/icon.png' };
+
+    if (event.data) {
+        data = event.data.json();
+    }
+
+    const options = {
+        body: data.body,
+        icon: data.icon,
+        data: data.data || {}, // 추가 데이터 (예: URL)
+    };
+
+    event.waitUntil(
+        self.registration.showNotification(data.title, options)
+    );
+});
+
+// 알림 클릭 이벤트 처리
+self.addEventListener('notificationclick', (event) => {
+    event.notification.close();
+
+    const targetUrl = event.notification.data.url || '/';
+
+    event.waitUntil(
+        clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientsArr) => {
+            const client = clientsArr.find((c) => c.url === targetUrl);
+            if (client) {
+                return client.focus();
+            } else {
+                return clients.openWindow(targetUrl);
+            }
+        })
+    );
+});

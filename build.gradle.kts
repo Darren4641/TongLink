@@ -82,6 +82,11 @@ dependencies {
 
     implementation("org.jsoup:jsoup:1.15.4")
 
+
+    //implementation("org.bouncycastle:bcprov-jdk15on:1.70") // BouncyCastle
+    implementation("org.bouncycastle:bcprov-jdk15on:1.70")
+    implementation("nl.martijndwars:web-push:5.1.0")
+
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
     }

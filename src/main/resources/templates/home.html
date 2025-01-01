@@ -171,6 +171,9 @@
 
             // 서버로 UUID 전송
             sendUUIDToServerPWA(userUUID);
+
+            // 푸시 구독 요청
+            subscribeToPushNotifications(userUUID);
         });
         if (isPWA()) {
             console.log("앱이 PWA 환경에서 실행되었습니다.");
@@ -376,6 +379,37 @@
     function hideLoadingOverlay() {
         const loadingOverlay = document.getElementById("loading-overlay");
         loadingOverlay.classList.add("hidden"); // 오버레이 숨김
+    }
+
+    async function subscribeToPushNotifications(userUUID) {
+        if ("serviceWorker" in navigator) {
+            try {
+                const registration = await navigator.serviceWorker.ready;
+                const subscription = await registration.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: 'MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgeT1WY7pWIc7fqJZQgv71CROtIAIuQm2xe5U8UltsM5CgCgYIKoZIzj0DAQehRANCAASoDVkzpqbY/2F/eimznyjEBJYJx33hUCTRZgsUE1+Xy9r+5p/So46rU0dyTGtTJ30yKyiuZA0MYsvG+5SaQ+ux', // VAPID 공개 키
+                });
+
+                console.log("푸시 구독 성공:", subscription);
+
+                // 서버로 구독 정보 전송
+                await fetch('/api/push/subscribe', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        uuId: userUUID,
+                        endpoint: subscription.endpoint,
+                        keys: subscription.keys
+                    })
+                });
+
+                console.log("구독 정보가 서버로 전송되었습니다.");
+            } catch (error) {
+                console.error("푸시 구독 실패:", error);
+            }
+        } else {
+            console.error("서비스 워커가 지원되지 않는 환경입니다.");
+        }
     }
 </script>
 </html>
