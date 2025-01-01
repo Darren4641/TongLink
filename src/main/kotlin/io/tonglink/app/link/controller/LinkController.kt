@@ -44,6 +44,18 @@ class LinkController (
         return BaseResponse(data = linkService.getMyTongLink(uuId, pageable))
     }
 
+    @GetMapping("/popular")
+    fun popularTongLink(@RequestParam(value = "limit", required = false, defaultValue = "5") limitParam: Int,
+                   @RequestParam(value = "page", required = false, defaultValue = "0") pageParam: Int) : BaseResponse<Page<LinkDto>> {
+        var limit = limitParam
+        var page = pageParam
+        if (limit <= 0) limit = 5
+        if (page <= 0) page = 0
+        val pageable: Pageable = PageRequest.of(page, limit)
+
+        return BaseResponse(data = linkService.getPopularTongLink(pageable))
+    }
+
     @PostMapping("/{uuId}/update-order")
     fun updateOrderTongLink(@PathVariable(name = "uuId") uuId: String,
                             @RequestBody updateOrderLinkRequestDto: List<UpdateOrderLinkRequestDto>) : BaseResponse<String> {

@@ -13,8 +13,10 @@ import io.tonglink.app.link.entity.QVisit.visit
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
+import java.time.LocalDate
 import java.time.ZoneId
 import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 
 class LinkRepositoryDslImpl (
@@ -40,7 +42,53 @@ class LinkRepositoryDslImpl (
                 thumbnailUrl = it.thumbnailUrl ?: "https://app.tonglink.site/images/app_logo.png",
                 color = it.color,
                 order = it.order,
-                isExposure = it.isExposure
+                isExposure = it.isExposure,
+                count = 0
+            )
+        }
+        return PageImpl(content, pageable, results.total)
+    }
+
+    override fun getPopularTongLink(pageable: Pageable): Page<LinkDto> {
+        val todayStart = LocalDate.now(ZoneId.of("Asia/Seoul")).atStartOfDay()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+        val todayStartString = todayStart.format(formatter)
+
+        val results = queryFactory
+            .select(
+                link.id,
+                link.title,
+                link.originUrl,
+                link.proxyUrl,
+                link.endDate,
+                link.thumbnailUrl,
+                link.color,
+                link.order,
+                link.isExposure,
+                visit.id.count()
+            )
+            .from(link)
+            .leftJoin(visit).on(visit.linkId.eq(link.id))
+            .where(link.isExposure.eq(true)
+                .and(link.endDate.gt(todayStartString)))
+            .offset(pageable.offset)
+            .limit(pageable.pageSize.toLong())
+            .orderBy(visit.id.count().desc())
+            .groupBy(link.id)
+            .fetchResults()
+
+        val content = results.results.map {
+            LinkDto(
+                id = it.get(link.id)!!,
+                title = if (it.get(link.title)!!.length > 8) "${it.get(link.title)!!.take(8)}..." else it.get(link.title)!!,
+                originUrl = it.get(link.originUrl)!!,
+                proxyUrl = it.get(link.proxyUrl)!!,
+                endDate = it.get(link.endDate)!!,
+                thumbnailUrl = it.get(link.thumbnailUrl) ?: "https://app.tonglink.site/images/app_logo.png",
+                color = it.get(link.color)!!,
+                order = it.get(link.order),
+                isExposure = it.get(link.isExposure)!!,
+                count = it.get(visit.id.count())!!
             )
         }
         return PageImpl(content, pageable, results.total)

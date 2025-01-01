@@ -55,6 +55,10 @@ class LinkService (
         return linkRepository.getMyTongLink(uuId, pageable)
     }
 
+    fun getPopularTongLink(pageable: Pageable) : Page<LinkDto> {
+        return linkRepository.getPopularTongLink(pageable)
+    }
+
     @Transactional
     fun updateOrderTongLink(uuId: String, updateOrderLinkDto: List<UpdateOrderLinkDto>) : String {
         linkRepository.updateOrderTongLink(uuId, updateOrderLinkDto)

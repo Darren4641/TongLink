@@ -157,7 +157,7 @@ function renderChart(ctx, labels, datasets) {
         borderWidth: 1,
         fill: false,
         tension: 0.5,
-        pointRadius: 3,
+        pointRadius: 4,
         pointHoverRadius: 7,
     }));
 

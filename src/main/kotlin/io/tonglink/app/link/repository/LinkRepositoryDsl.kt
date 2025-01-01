@@ -12,6 +12,8 @@ interface LinkRepositoryDsl {
 
     fun getMyTongLink(uuId: String, pageable: Pageable) : Page<LinkDto>
 
+    fun getPopularTongLink(pageable: Pageable) : Page<LinkDto>
+
     fun updateOrderTongLink(uuId: String, updateOrderLinkDto: List<UpdateOrderLinkDto>)
 
     fun findRedirectLink(linkId: Long) : Link

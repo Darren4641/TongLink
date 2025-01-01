@@ -274,13 +274,17 @@ img, span {
 /* Main Content */
 .main-content {
     padding: 16px;
-    margin-top: 15px;
+    /*margin-top: 15px;*/
 }
 
 .header-logo {
     display: flex;
     gap: 5px;
     margin-bottom: 15px;
+}
+
+.header-logo h2 {
+    color: #fff;
 }
 
 /* Profile Section */
@@ -676,7 +680,7 @@ img, span {
     height: 24px;
     margin-bottom: 4px; /* 이미지와 텍스트 간격 */
     object-fit: contain; /* 이미지 비율 유지 */
-    filter: invert(1); /* 흰색 이미지로 변환 (검은색 배경에 적합) */
+    filter: invert(93%) sepia(8%) saturate(135%) hue-rotate(180deg) brightness(70%) contrast(100%);
 }
 
 .footer-top {
@@ -695,7 +699,7 @@ img, span {
 }
 
 .footer--content img.selected {
-    filter: invert(93%) sepia(8%) saturate(135%) hue-rotate(180deg) brightness(70%) contrast(100%);
+    filter: invert(1); /* 흰색 이미지로 변환 (검은색 배경에 적합) */
 }
 
 .scroll-sentinel {

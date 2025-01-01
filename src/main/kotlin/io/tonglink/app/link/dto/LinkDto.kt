@@ -10,7 +10,8 @@ class LinkDto (
     val thumbnailUrl: String,
     val color: String,
     val order: Int?,
-    val isExposure: Boolean
+    val isExposure: Boolean,
+    val count : Long
 )
 
 class CreateLinkDto (

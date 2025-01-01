@@ -11,7 +11,7 @@
     <script th:src="@{/js/user.js}" defer></script>
     <script th:src="@{/js/reload.js}" defer></script>
     <script th:src="@{/js/index-modal.js}" defer></script>
-    <script th:src="@{/js/tonglink-list.js}" defer></script>
+    <script th:src="@{/js/popular-tonglink-list.js}" defer></script>
     <script th:src="@{/js/service-worker.js}" defer></script>
     <meta name="theme-color" content="#262626">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -19,7 +19,23 @@
 </head>
 <body>
 <div class="app-container">
-    <h2 style="color: #fff">rank</h2>
+    <main class="main-content">
+        <section class="profile-section">
+            <div class="header-logo">
+                <h2>통링 랭킹</h2>
+            </div>
+            <p class="profile-subtitle">인기있는 링크들을 모아봤어요! 🥳</p>
+            <p class="profile-description"></p>
+        </section>
+        <section class="popular-section" style="margin-top: 30px;">
+            <div id="tonglink-list"></div>
+
+        </section>
+    </main>
+
+
+
+
 
     <div id="refresh-icon" class="hidden">
         <div class="spinner"></div>
@@ -32,13 +48,22 @@
 <script>
 
     document.addEventListener('DOMContentLoaded', () => {
+        /* My 통링 관련 */
+        const container = document.getElementById("tonglink-list");
 
         const refreshIcon = document.getElementById('refresh-icon');
         const targetElement = document.querySelector('.app-container');
 
         initializePullToRefresh({
             onRefresh: () => {
-                alert('새로고침 실행');
+                console.log('새로고침 로직 실행');
+                // 서비스 워커 캐시 삭제 및 데이터 재로드
+                caches.keys().then((keys) =>
+                    Promise.all(keys.map((key) => caches.delete(key)))
+                ).then(() => {
+                    // 캐시 삭제 후 페이지 새로고침
+                    window.location.reload();
+                });
             },
             refreshIcon: refreshIcon, // 새로고침 아이콘
             refreshThreshold: 300,   // 트리거 임계값 (기본값: 800)
@@ -50,8 +75,11 @@
         if (userUUID) {
             document.getElementById('mypageLink').href = '/mypage?uuId=' + userUUID;
         }
-    });
 
+
+        initPopularInfiniteScroll(localStorage.getItem("userUUID"), container);
+
+    });
 
 </script>
 </html>
