@@ -326,19 +326,13 @@
             }
         }
 
-        navigator.serviceWorker.register("/js/service-worker.js").then((registration) => {
-            console.log("서비스 워커 등록 성공:", registration);
-
-            // 기존 서비스 워커 강제 업데이트
-            registration.update();
-        });
         if ("serviceWorker" in navigator) {
             try {
                 console.log("서비스 워커 등록 상태 확인 중...");
 
-                navigator.serviceWorker.ready
-                    .then((registration) => {
+                navigator.serviceWorker.register("/js/service-worker.js").then((registration) => {
                         console.log("서비스 워커 등록 성공:", registration);
+                        registration.update();
 
                         registration.pushManager.subscribe({
                             userVisibleOnly: true,
