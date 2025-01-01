@@ -314,7 +314,7 @@
 
     async function subscribeToPushNotifications(userUUID) {
         console.log("subscribeToPushNotifications 함수 호출됨"); // 디버깅용 로그 추가
-        const vapidPublicKey = 'BE7zV9bI4P6_54QVv8rIosPPABjE3gt7TizRy8oqrLG5HxwTFrc_6I3rH3Z2AdguGOzOaLgtzgpb1BjsDLpYoMw';
+        const vapidPublicKey = 'BARrQjq3jZihZOhyBfF2qTR_8d30VTEzLRpG7PiNbadH8MI6fHq_P2XyMIZtpoj9EO7oPbeRL8KHn7GxjZr0_Jg';
 
         if (Notification.permission !== 'granted') {
             console.log("알림 권한 요청 시작");
@@ -373,9 +373,15 @@
 
     function urlBase64ToUint8Array(base64String) {
         const padding = '='.repeat((4 - base64String.length % 4) % 4);
-        const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
-        const rawData = atob(base64);
-        return Uint8Array.from([...rawData].map(char => char.charCodeAt(0)));
+        const base64 = (base64String + padding)
+            .replace(/\-/g, '+')
+            .replace(/_/g, '/');
+        const rawData = window.atob(base64);
+        const outputArray = new Uint8Array(rawData.length);
+        for (let i = 0; i < rawData.length; ++i) {
+            outputArray[i] = rawData.charCodeAt(i);
+        }
+        return outputArray;
     }
 </script>
 </html>
