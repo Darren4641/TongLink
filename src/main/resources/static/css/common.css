@@ -637,6 +637,7 @@ img, span {
 /* Footer */
 .footer {
     width: 100%;
+    height: 80px;
     max-width: 450px;
     background: #262626;
     padding: 16px 16px;
