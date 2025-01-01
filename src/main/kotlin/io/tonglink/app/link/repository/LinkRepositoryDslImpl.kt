@@ -70,7 +70,7 @@ class LinkRepositoryDslImpl (
             .offset(pageable.offset)
             .limit(pageable.pageSize.toLong())
             .orderBy(visit.id.count().desc())
-            .groupBy(link.id)
+            .groupBy(link.id).having(visit.id.count().gt(0))
             .fetchResults()
 
         val content = results.results.map {
