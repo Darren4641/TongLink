@@ -137,7 +137,7 @@
             .then(() => console.log("Service Worker 등록 성공"))
             .catch((error) => console.error("Service Worker 등록 실패:", error));
     }
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
 
         const refreshIcon = document.getElementById('refresh-icon');
         const targetElement = document.querySelector('.app-container');
@@ -186,7 +186,7 @@
             sendUUIDToServerPWA(userUUID);
 
             // 푸시 구독 요청
-            subscribeToPushNotifications(userUUID);
+            await subscribeToPushNotifications(userUUID);
         } else {
             console.log("앱이 브라우저에서 실행되었습니다.");
             manageUserUUID();
