@@ -29,7 +29,7 @@ class PushNotificationService (
                 subscription,
                 payload
             )
-            val response: HttpResponse = pushService.send(notification, Encoding.AES128GCM)
+            val response: HttpResponse = pushService.send(notification)
             val statusCode = response.statusLine.statusCode;
             if (statusCode != 201) {
                 println("PWA 알림 전송 실패")
