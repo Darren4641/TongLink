@@ -1,4 +1,10 @@
 
+
+let draggedElement = null; // 드래그 중인 요소
+let placeholder = null; // 자리 표시자
+let isDragging = false; // 드래그 상태 플래그
+
+
 /**
  * 무한 스크롤 초기화
  * @param {string} uuId - 사용자 UUID
@@ -244,8 +250,6 @@ function enableDragAndDrop(container) {
     container.addEventListener("mousedown", handleMouseDown);
     container.addEventListener("touchstart", handleTouchStart, { passive: false });
 
-    let draggedElement = null;
-    let placeholder = null;
     let offsetX = 0;
     let offsetY = 0;
     let originalParent = null;
@@ -322,37 +326,13 @@ function enableDragAndDrop(container) {
         draggedElement.style.left = "";
         draggedElement.style.top = "";
 
+        placeholder = null;
         draggedElement = null;
         isDragging = false; // 드래그 상태 해제
 
         updateOrder(container);
     }
 
-/*    // 마우스 이벤트
-    container.addEventListener("mousedown", (e) => {
-        const handle = e.target.closest(".drag-handle");
-        if (!handle) return;
-        e.preventDefault(); // PC 스크롤 방지
-
-        const target = e.target.closest(".link-preview");
-        if (target) {
-            startDrag(e.pageX, e.pageY, target);
-
-            function onMouseMove(e) {
-                e.preventDefault();
-                onDragMove(e.pageX, e.pageY);
-            }
-
-            function onMouseUp(e) {
-                document.removeEventListener("mousemove", onMouseMove);
-                document.removeEventListener("mouseup", onMouseUp);
-                endDrag();
-            }
-
-            document.addEventListener("mousemove", onMouseMove);
-            document.addEventListener("mouseup", onMouseUp);
-        }
-    });*/
     function handleMouseDown(e) {
         const handle = e.target.closest(".drag-handle");
         if (!handle) return;
@@ -402,33 +382,6 @@ function enableDragAndDrop(container) {
         }
     }
 
-/*    // 터치 이벤트
-    container.addEventListener("touchstart", (e) => {
-        const handle = e.target.closest(".drag-handle");
-        if (!handle) return;
-        e.preventDefault(); // 모바일 브라우저 기본 스크롤 방지
-
-        const target = e.target.closest(".link-preview");
-        if (target && e.touches.length === 1) {
-            const touch = e.touches[0];
-            startDrag(touch.pageX, touch.pageY, target);
-
-            function onTouchMove(e) {
-                e.preventDefault(); // 스크롤 방지
-                const touch = e.touches[0];
-                onDragMove(touch.pageX, touch.pageY);
-            }
-
-            function onTouchEnd(e) {
-                document.removeEventListener("touchmove", onTouchMove, { passive: false });
-                document.removeEventListener("touchend", onTouchEnd);
-                endDrag();
-            }
-
-            document.addEventListener("touchmove", onTouchMove, { passive: false });
-            document.addEventListener("touchend", onTouchEnd);
-        }
-    }, { passive: false }); // touchstart도 passive: false 추천*/
 }
 
 function updateOrder(container) {
