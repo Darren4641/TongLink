@@ -43,6 +43,7 @@ class PushNotificationService (
             val statusCode = response.statusLine.statusCode;
             if (statusCode != 201) {
                 println("PWA 알림 전송 실패")
+                println("응답 메시지: ${response.entity.content.reader().readText()}")
             }
 
         } catch (e: Exception) {
