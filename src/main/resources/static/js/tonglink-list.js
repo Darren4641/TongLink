@@ -107,6 +107,10 @@ function getTongLinkList(uuId, container, limit = 5, page = 0, callback) {
                 container.insertBefore(linkPreview, container.querySelector(".scroll-sentinel")); // Sentinel 앞에 추가
             });
 
+
+            // **드래그 앤 드롭 활성화** - 기존 및 새 요소 모두
+            enableDragAndDrop(container);
+
             console.log(`Current page loaded: ${page}`); // 현재 페이지 출력
 
             // 다음 페이지가 있는 경우, 콜백 함수 실행
