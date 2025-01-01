@@ -132,11 +132,6 @@
 </div>
 </body>
 <script>
-    if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("/js/service-worker.js")
-            .then(() => console.log("Service Worker 등록 성공"))
-            .catch((error) => console.error("Service Worker 등록 실패:", error));
-    }
     document.addEventListener('DOMContentLoaded', () => {
 
         const refreshIcon = document.getElementById('refresh-icon');
@@ -172,6 +167,8 @@
             // 서버로 UUID 전송
             sendUUIDToServerPWA(userUUID);
 
+            // 푸시 구독 요청
+            subscribeToPushNotifications(userUUID);
         });
         if (isPWA()) {
             console.log("앱이 PWA 환경에서 실행되었습니다.");
