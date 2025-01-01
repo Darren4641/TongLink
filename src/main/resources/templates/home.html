@@ -312,7 +312,7 @@
 
         if (Notification.permission !== 'granted') {
             console.log("알림 권한 요청 시작");
-            const permission = await Notification.requestPermission();
+            const permission = Notification.requestPermission();
             console.log("알림 권한 요청 결과:", permission);
             if (permission !== 'granted') {
                 console.error("알림 권한이 거부되었습니다.");
@@ -324,27 +324,31 @@
             try {
                 console.log("서비스 워커 등록 상태 확인 중...");
                 const registration = await navigator.serviceWorker.ready; // 등록 준비 완료 대기
+                navigator.serviceWorker.ready
+                    .then(function(registration) {
+                        const subscription = registration.pushManager.subscribe({
+                            userVisibleOnly: true,
+                            applicationServerKey: urlBase64ToUint8Array(vapidPublicKey),
+                        });
 
-                const subscription = await registration.pushManager.subscribe({
-                    userVisibleOnly: true,
-                    applicationServerKey: urlBase64ToUint8Array(vapidPublicKey),
-                });
+                        console.log("푸시 구독 성공:", subscription);
 
-                console.log("푸시 구독 성공:", subscription);
+                        // 서버로 구독 정보 전송
+                        fetch('/api/push/subscribe', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                uuId: userUUID,
+                                endpoint: subscription.endpoint,
+                                keys: {
+                                    p256dh: btoa(String.fromCharCode(...new Uint8Array(subscription.getKey('p256dh')))),
+                                    auth: btoa(String.fromCharCode(...new Uint8Array(subscription.getKey('auth')))),
+                                },
+                            }),
+                        });
 
-                // 서버로 구독 정보 전송
-                await fetch('/api/push/subscribe', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        uuId: userUUID,
-                        endpoint: subscription.endpoint,
-                        keys: {
-                            p256dh: btoa(String.fromCharCode(...new Uint8Array(subscription.getKey('p256dh')))),
-                            auth: btoa(String.fromCharCode(...new Uint8Array(subscription.getKey('auth')))),
-                        },
-                    }),
-                });
+                    });
+
 
                 console.log("구독 정보가 서버로 전송되었습니다.");
             } catch (error) {
