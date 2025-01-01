@@ -137,7 +137,7 @@
             .then(() => console.log("Service Worker 등록 성공"))
             .catch((error) => console.error("Service Worker 등록 실패:", error));
     }
-    document.addEventListener('DOMContentLoaded', async () => {
+    document.addEventListener('DOMContentLoaded', () => {
 
         const refreshIcon = document.getElementById('refresh-icon');
         const targetElement = document.querySelector('.app-container');
@@ -186,7 +186,7 @@
             sendUUIDToServerPWA(userUUID);
 
             // 푸시 구독 요청
-            await subscribeToPushNotifications(userUUID);
+            subscribeToPushNotifications(userUUID);
         } else {
             console.log("앱이 브라우저에서 실행되었습니다.");
             manageUserUUID();
@@ -314,7 +314,9 @@
         const vapidPublicKey = 'BKgNWTOmptj/YX96KbOfKMQElgnHfeFQJNFmCxQTX5fL2v7mn9KjjqtTR3JMa1MnfTIrKK5kDQxiy8b7lJpD67E=';
 
         if (Notification.permission !== 'granted') {
+            console.log("알림 권한 요청 시작");
             const permission = await Notification.requestPermission();
+            console.log("알림 권한 요청 결과:", permission);
             if (permission !== 'granted') {
                 console.error("알림 권한이 거부되었습니다.");
                 return;
@@ -323,6 +325,7 @@
 
         if ("serviceWorker" in navigator) {
             try {
+                console.log("서비스 워커 등록 상태 확인 중...");
                 const registration = await navigator.serviceWorker.ready; // 등록 준비 완료 대기
 
                 const subscription = await registration.pushManager.subscribe({
