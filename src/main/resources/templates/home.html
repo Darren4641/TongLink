@@ -309,12 +309,12 @@
         loadingOverlay.classList.add("hidden"); // 오버레이 숨김
     }
 
-    async function subscribeToPushNotifications(userUUID) {
+    function subscribeToPushNotifications(userUUID) {
         console.log("subscribeToPushNotifications 함수 호출됨"); // 디버깅용 로그 추가
         const vapidPublicKey = 'BKgNWTOmptj/YX96KbOfKMQElgnHfeFQJNFmCxQTX5fL2v7mn9KjjqtTR3JMa1MnfTIrKK5kDQxiy8b7lJpD67E=';
 
         if (Notification.permission !== 'granted') {
-            const permission = await Notification.requestPermission();
+            const permission = Notification.requestPermission();
             if (permission !== 'granted') {
                 console.error("알림 권한이 거부되었습니다.");
                 return;
@@ -323,9 +323,9 @@
 
         if ("serviceWorker" in navigator) {
             try {
-                const registration = await navigator.serviceWorker.ready; // 등록 준비 완료 대기
+                const registration = navigator.serviceWorker.ready; // 등록 준비 완료 대기
 
-                const subscription = await registration.pushManager.subscribe({
+                const subscription = registration.pushManager.subscribe({
                     userVisibleOnly: true,
                     applicationServerKey: urlBase64ToUint8Array(vapidPublicKey),
                 });
@@ -333,7 +333,7 @@
                 console.log("푸시 구독 성공:", subscription);
 
                 // 서버로 구독 정보 전송
-                await fetch('/api/push/subscribe', {
+                fetch('/api/push/subscribe', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
