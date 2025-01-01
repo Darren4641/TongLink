@@ -323,7 +323,6 @@
         if ("serviceWorker" in navigator) {
             try {
                 console.log("서비스 워커 등록 상태 확인 중...");
-                const registration = await navigator.serviceWorker.ready; // 등록 준비 완료 대기
                 navigator.serviceWorker.ready
                     .then(function(registration) {
                         const subscription = registration.pushManager.subscribe({
