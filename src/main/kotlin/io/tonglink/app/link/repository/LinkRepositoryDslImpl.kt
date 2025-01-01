@@ -5,6 +5,7 @@ import com.querydsl.core.types.dsl.CaseBuilder
 import com.querydsl.core.types.dsl.Expressions
 import com.querydsl.jpa.impl.JPAQueryFactory
 import io.tonglink.app.link.dto.LinkDto
+import io.tonglink.app.link.dto.PopularLinkDto
 import io.tonglink.app.link.dto.StatisticsLinkDto
 import io.tonglink.app.link.dto.UpdateOrderLinkDto
 import io.tonglink.app.link.entity.Link
@@ -35,7 +36,7 @@ class LinkRepositoryDslImpl (
         val content = results.results.map {
             LinkDto(
                 id = it.id!!,
-                title = if (it.title.length > 8) "${it.title.take(8)}..." else it.title,
+                title = it.title,
                 originUrl = it.originUrl,
                 proxyUrl = it.proxyUrl,
                 endDate = it.endDate,
@@ -49,7 +50,7 @@ class LinkRepositoryDslImpl (
         return PageImpl(content, pageable, results.total)
     }
 
-    override fun getPopularTongLink(pageable: Pageable): Page<LinkDto> {
+    override fun getPopularTongLink(pageable: Pageable): Page<PopularLinkDto> {
         val todayStart = LocalDate.now(ZoneId.of("Asia/Seoul")).atStartOfDay()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
         val todayStartString = todayStart.format(formatter)
@@ -58,13 +59,8 @@ class LinkRepositoryDslImpl (
             .select(
                 link.id,
                 link.title,
-                link.originUrl,
                 link.proxyUrl,
-                link.endDate,
                 link.thumbnailUrl,
-                link.color,
-                link.order,
-                link.isExposure,
                 visit.id.count()
             )
             .from(link)
@@ -78,16 +74,11 @@ class LinkRepositoryDslImpl (
             .fetchResults()
 
         val content = results.results.map {
-            LinkDto(
+            PopularLinkDto(
                 id = it.get(link.id)!!,
-                title = if (it.get(link.title)!!.length > 8) "${it.get(link.title)!!.take(8)}..." else it.get(link.title)!!,
-                originUrl = it.get(link.originUrl)!!,
+                title = it.get(link.title)!!,
                 proxyUrl = it.get(link.proxyUrl)!!,
-                endDate = it.get(link.endDate)!!,
                 thumbnailUrl = it.get(link.thumbnailUrl) ?: "https://app.tonglink.site/images/app_logo.png",
-                color = it.get(link.color)!!,
-                order = it.get(link.order),
-                isExposure = it.get(link.isExposure)!!,
                 count = it.get(visit.id.count())!!
             )
         }

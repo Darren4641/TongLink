@@ -14,6 +14,14 @@ class LinkDto (
     val count : Long
 )
 
+class PopularLinkDto (
+    val id: Long,
+    val title: String,
+    val proxyUrl: String,
+    val thumbnailUrl: String,
+    val count : Long
+)
+
 class CreateLinkDto (
     val uuId: String,
     val title: String,

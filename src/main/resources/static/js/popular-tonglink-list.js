@@ -10,7 +10,7 @@
 function initPopularInfiniteScroll(uuId, container) {
     let currentPage = 0; // 현재 페이지 번호
     let isLoading = false; // 데이터 로딩 중 상태
-    const limit = 5; // 페이지당 데이터 개수
+    const limit = 10; // 페이지당 데이터 개수
 
     // Sentinel 요소 생성 및 추가
     const sentinel = document.createElement("div");
@@ -79,7 +79,7 @@ function initPopularInfiniteScroll(uuId, container) {
  * @param {number} page - 현재 페이지 번호
  * @param {Function} callback - 다음 페이지를 업데이트할 콜백 함수
  */
-function getPopularTongLink(container, limit = 5, page = 0, callback) {
+function getPopularTongLink(container, limit = 10, page = 0, callback) {
     const queryParams = new URLSearchParams({
         limit: limit.toString(),
         page: page.toString(),
@@ -109,7 +109,10 @@ function getPopularTongLink(container, limit = 5, page = 0, callback) {
                 container.insertBefore(linkPreview, container.querySelector(".scroll-sentinel")); // Sentinel 앞에 추가
             });
 
-
+            // 페이지가 0일 때만 메달 추가
+            if (page === 0) {
+                addMedalsToList(container);
+            }
             console.log(`Current page loaded: ${page}`); // 현재 페이지 출력
 
             // 다음 페이지가 있는 경우, 콜백 함수 실행
@@ -156,18 +159,14 @@ function createLinkPreview(link) {
 
     wrapper.innerHTML = `
         <!-- 왼쪽 이미지 -->
-        <div class="link-preview-content" style="margin-left: 7px;">
-            <div class="title-container">
-                <span class="d-day"></span>
+        <div class="link-preview-content" style="margin-left: 7px; margin-top: 1px;">
+            <div class="title-container" style="align-items: center;">
                 <h3 class="link-title">${link.title}</h3>
-                <button class="update-button">
-                        <img src="/images/update.png" alt="복사 아이콘">
-                </button>
             </div>
             <button class="copy-button" style="padding: 0">
                 <span class="link-url">${link.proxyUrl}</span>
             </button>
-            <p class="link-description">만료일 - ${link.endDate}</p>
+            <p class="link-description">조회수  ${link.count.toLocaleString()}</p>
         </div>
         <!-- 오른쪽 컨텐츠 -->
         <div class="link-preview-thumbnail">
@@ -180,11 +179,6 @@ function createLinkPreview(link) {
         <div id="copy-toast" class="copy-toast">복사되었습니다!</div> 
     `;
 
-
-    const updateButton = wrapper.querySelector(".update-button");
-    updateButton.addEventListener("click", () => {
-        openModal(link); // 모달 열기
-    });
 
     // 복사 버튼 클릭 이벤트 추가
     const copyButton = wrapper.querySelector(".copy-button");
@@ -215,3 +209,35 @@ function showToast(message) {
         toast.classList.remove("show");
     }, 2000);
 }
+
+// 메달 표시를 위한 함수
+function addMedalsToList(container) {
+    const listItems = container.querySelectorAll('.link-preview'); // 리스트 항목 선택
+
+    listItems.forEach((item, index) => {
+        const medal = document.createElement('span');
+        medal.className = 'medal';
+
+        if (index === 0) {
+            medal.classList.add('gold'); // 금메달
+        } else if (index === 1) {
+            medal.classList.add('silver'); // 은메달
+        } else if (index === 2) {
+            medal.classList.add('bronze'); // 동메달
+        } else {
+            return; // 4위 이하에는 메달 추가하지 않음
+        }
+
+        // 제목 앞에 메달 추가
+        const titleContainer = item.querySelector('.title-container');
+        if (titleContainer) {
+            titleContainer.insertBefore(medal, titleContainer.firstChild);
+        }
+    });
+}
+
+// 리스트를 로드한 후 메달 추가
+document.addEventListener('DOMContentLoaded', () => {
+    const listContainer = document.getElementById('tonglink-list'); // 리스트 컨테이너 ID
+    addMedalsToList(listContainer);
+});

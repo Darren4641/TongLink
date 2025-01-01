@@ -55,7 +55,7 @@ class LinkService (
         return linkRepository.getMyTongLink(uuId, pageable)
     }
 
-    fun getPopularTongLink(pageable: Pageable) : Page<LinkDto> {
+    fun getPopularTongLink(pageable: Pageable) : Page<PopularLinkDto> {
         return linkRepository.getPopularTongLink(pageable)
     }
 

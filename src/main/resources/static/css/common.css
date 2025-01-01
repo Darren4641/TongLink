@@ -426,6 +426,11 @@ img, span {
 }
 
 .link-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    max-width: 150px;
     font-size: 18px;
     font-weight: bold;
     /*margin: 0 0 8px;*/
@@ -1339,4 +1344,26 @@ footer a {
     100% {
         transform: rotate(360deg);
     }
+}
+
+/* 메달 스타일 */
+.medal {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.medal.gold {
+    background-image: url('/images/gold-medal.png'); /* 금메달 이미지 경로 */
+}
+
+.medal.silver {
+    background-image: url('/images/silver-medal.png'); /* 은메달 이미지 경로 */
+}
+
+.medal.bronze {
+    background-image: url('/images/bronze-medal.png'); /* 동메달 이미지 경로 */
 }
