@@ -104,6 +104,7 @@
     document.addEventListener('DOMContentLoaded', () => {
         const refreshIcon = document.getElementById('refresh-icon');
         const targetElement = document.querySelector('.app-container');
+        const toggle = document.getElementById("toggle");
 
         initializePullToRefresh({
             onRefresh: () => {
@@ -126,6 +127,29 @@
         if (userUUID) {
             document.getElementById('mypageLink').href = '/mypage?uuId=' + userUUID;
         }
+
+        toggle.addEventListener("change", async () => {
+            if (toggle.checked) {
+                console.log("알림 권한 요청 중...");
+
+                // 알림 권한 요청
+                if ("Notification" in window) {
+                    const permission = await Notification.requestPermission();
+                    if (permission === "granted") {
+                        console.log("알림 권한이 허용되었습니다.");
+                        // 푸시 구독 로직 실행 (필요 시 추가)
+                        await subscribeToPushNotifications();
+                    } else if (permission === "denied") {
+                        console.error("알림 권한이 거부되었습니다.");
+                    } else {
+                    }
+                } else {
+                    console.error("브라우저가 알림을 지원하지 않습니다.");
+                }
+            } else {
+                console.log("알림 권한 요청을 취소했습니다.");
+            }
+        });
     });
 
     function startGoogleLogin() {

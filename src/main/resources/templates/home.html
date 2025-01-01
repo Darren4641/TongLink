@@ -318,7 +318,7 @@
 
         if (Notification.permission !== 'granted') {
             console.log("알림 권한 요청 시작");
-            const permission = Notification.requestPermission();
+            const permission = await Notification.requestPermission();
             console.log("알림 권한 요청 결과:", permission);
             if (permission !== 'granted') {
                 console.error("알림 권한이 거부되었습니다.");
