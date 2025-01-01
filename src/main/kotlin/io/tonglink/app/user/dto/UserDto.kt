@@ -7,7 +7,7 @@ class UserDto (
 class UserDataDto (
     val email: String?,
     val uuId: String,
-    val endPoint: String,
-    val p256dh: String,
-    val auth: String
+    val endPoint: String?,
+    val p256dh: String?,
+    val auth: String?
 )

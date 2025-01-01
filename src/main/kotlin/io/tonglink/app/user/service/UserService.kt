@@ -30,9 +30,9 @@ class UserService (
         return UserDataDto(
             email = loginUser.email,
             uuId = loginUser.uuid,
-            endPoint = loginUser.endPoint!!,
-            p256dh = loginUser.p256dh!!,
-            auth = loginUser.auth!!
+            endPoint = loginUser.endPoint,
+            p256dh = loginUser.p256dh,
+            auth = loginUser.auth
         )
     }
 }

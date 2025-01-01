@@ -35,7 +35,7 @@ class ProxyController (
 
 
         val user = userService.getUserInfo(link.userKey)
-        if(user.email != null) {
+        if(user.endPoint != null && user.p256dh != null && user.auth != null) {
             notificationService.sendPushNotification(Subscription(user.endPoint, Subscription.Keys(user.p256dh, user.auth)), "누군가 링크에 접속했습니다!")
         }
 
