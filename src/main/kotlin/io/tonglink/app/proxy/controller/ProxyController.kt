@@ -35,7 +35,7 @@ class ProxyController (
 
 
         val user = userService.getUserInfo(link.userKey)
-        if(user.endPoint != null && user.p256dh != null && user.auth != null) {
+        if(user.endPoint != null && user.p256dh != null && user.auth != null && user.isPushEnabled) {
             notificationService.sendPushNotification(Subscription(user.endPoint, Subscription.Keys(user.p256dh, user.auth)), link.title)
         }
 
