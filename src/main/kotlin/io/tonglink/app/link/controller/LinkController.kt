@@ -70,4 +70,9 @@ class LinkController (
     fun tongLinkStatistics(@PathVariable(name = "uuId") uuId: String) : BaseResponse<List<StatisticsLinkDto>> {
         return BaseResponse(data = linkService.statistics(uuId))
     }
+
+    @GetMapping("/{uuId}/total")
+    fun tongLinkTotalCount(@PathVariable(name = "uuId") uuId: String) : BaseResponse<LinkTotalCount> {
+        return BaseResponse(data = linkService.getMyTongLinkTotalCount(uuId))
+    }
 }

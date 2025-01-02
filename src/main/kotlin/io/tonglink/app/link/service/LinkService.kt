@@ -69,6 +69,10 @@ class LinkService (
         return linkRepository.getStatistics(uuId)
     }
 
+    fun getMyTongLinkTotalCount(uuId: String) : LinkTotalCount {
+        return linkRepository.getMyTongLinkTotalCount(uuId)
+    }
+
 
     /**
      * 주어진 URL에서 Open Graph 데이터를 추출

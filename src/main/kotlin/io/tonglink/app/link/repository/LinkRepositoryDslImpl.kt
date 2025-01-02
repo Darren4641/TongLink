@@ -4,10 +4,7 @@ import com.querydsl.core.types.Projections
 import com.querydsl.core.types.dsl.CaseBuilder
 import com.querydsl.core.types.dsl.Expressions
 import com.querydsl.jpa.impl.JPAQueryFactory
-import io.tonglink.app.link.dto.LinkDto
-import io.tonglink.app.link.dto.PopularLinkDto
-import io.tonglink.app.link.dto.StatisticsLinkDto
-import io.tonglink.app.link.dto.UpdateOrderLinkDto
+import io.tonglink.app.link.dto.*
 import io.tonglink.app.link.entity.Link
 import io.tonglink.app.link.entity.QLink.link
 import io.tonglink.app.link.entity.QVisit.visit
@@ -143,5 +140,25 @@ class LinkRepositoryDslImpl (
             .fetch()
     }
 
+    override fun getMyTongLinkTotalCount(uuId: String) : LinkTotalCount {
+
+        return queryFactory
+                .select(
+                        Projections.constructor(
+                                LinkTotalCount::class.java,
+                                Expressions.cases()
+                                        .`when`(link.id.count().isNull)
+                                        .then(0L)
+                                        .otherwise(link.id.count()),
+                                Expressions.cases()
+                                        .`when`(visit.id.count().isNull)
+                                        .then(0L)
+                                        .otherwise(visit.id.count())))
+                .from(link)
+                .leftJoin(visit).on(visit.linkId.eq(link.id))
+                .where(link.userKey.eq(uuId))
+                .groupBy(link.id)
+                .fetchFirst()!!
+    }
 
 }

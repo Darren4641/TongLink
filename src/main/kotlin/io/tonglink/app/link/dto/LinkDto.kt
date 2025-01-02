@@ -60,3 +60,8 @@ class StatisticsLinkDto(
     val visitDate: String,
     val visitCount: Long
 )
+
+class LinkTotalCount (
+    val linkCount: Long,
+    val visitCount: Long
+)
