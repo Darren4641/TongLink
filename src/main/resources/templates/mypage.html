@@ -123,6 +123,7 @@
 
         document.getElementById('toggle').checked = isPushEnabled
 
+        renderTotalCount();
         toggle.addEventListener("change", async () => {
             if (toggle.checked) {
                 console.log("알림 권한 요청 중...");
