@@ -1,8 +1,5 @@
 // 사용자를 식별하는 UUID 관리
 
-
-document.addEventListener('gesturestart', (e) => e.preventDefault());
-document.addEventListener('dblclick', (e) => e.preventDefault());
 document.querySelectorAll('input, textarea').forEach((element) => {
     element.addEventListener('focus', () => {
         document.body.style.zoom = '1'; // 확대 방지
