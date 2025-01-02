@@ -726,7 +726,7 @@ img, span {
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    z-index: 1000; /* 다른 요소보다 위에 표시 */
+    z-index: 999; /* 다른 요소보다 위에 표시 */
     transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
@@ -1369,34 +1369,121 @@ footer a {
     background-image: url('/images/bronze-medal.png'); /* 동메달 이미지 경로 */
 }
 
-#pwa-install-banner {
+/* 전체 화면 어두운 배경 */
+.pwa-overlay {
     position: fixed;
-    bottom: 0;
+    top: 0;
     left: 0;
-    right: 0;
-    background-color: white;
-    box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1);
-    padding: 16px;
-    text-align: center;
-    z-index: 1000;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* 반투명 어두운 배경 */
+    z-index: 999;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    animation: fade-in 0.3s ease-in-out;
 }
 
+/* 숨기기 */
 .hidden {
     display: none;
 }
 
-.android-only {
-    display: none;
+/* 배너 */
+.pwa-banner {
+    position: relative;
+    width: 100%;
+    max-width: 450px;
+    background-color: #fff;
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.15), 0 -1px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 16px 16px 0 0;
+    padding: 24px;
+    animation: slide-up 0.3s ease-in-out;
 }
 
-.ios-only {
-    display: none;
+/* 배너 슬라이드 애니메이션 */
+@keyframes slide-up {
+    from {
+        transform: translateY(100%);
+    }
+    to {
+        transform: translateY(0);
+    }
 }
 
-.android #install-button {
-    display: inline-block;
+/* 페이드 인 애니메이션 */
+@keyframes fade-in {
+    from {
+        background-color: rgba(0, 0, 0, 0);
+    }
+    to {
+        background-color: rgba(0, 0, 0, 0.5);
+    }
 }
 
-.ios #ios-guide-button {
-    display: inline-block;
+/* 닫기 버튼 */
+.close-button {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    font-weight: bold;
+    color: #555;
+    cursor: pointer;
+}
+
+.close-button:hover {
+    color: #000;
+}
+
+/* 타이틀 */
+.modal--default--tit h3 {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+.modal--default--tit p {
+    font-size: 14px;
+    color: #555;
+    text-align: center;
+}
+
+/* 버튼 */
+.modal--default--link {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.install-button {
+    background-color: #262626;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%;
+}
+
+.ios-install-guide {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.6;
+    text-align: left;
+}
+
+.ios-install-guide ol {
+    padding-left: 20px;
+    margin: 10px 0;
+}
+
+.ios-install-guide li {
+    margin-bottom: 8px;
 }

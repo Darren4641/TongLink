@@ -9,6 +9,7 @@
     <link rel="stylesheet" th:href="@{/css/common.css}" />
     <link rel="manifest" th:href="@{/manifest.json}">
     <script th:src="@{/js/user.js}" defer></script>
+    <script th:src="@{/js/pwa-banner.js}" defer></script>
     <script th:src="@{/js/reload.js}" defer></script>
     <script th:src="@{/js/index-modal.js}" defer></script>
     <script th:src="@{/js/service-worker.js}" defer></script>
@@ -74,7 +75,7 @@
 
         <section class="mypage-help">
             <h2>고객센터</h2>
-            <div class="help-item">앱 설치 (PWA)</div>
+            <div id="install-pwa" class="help-item">앱 설치 (PWA)</div>
             <div class="help-item">이메일 문의</div>
             <div class="help-item">광고 문의</div>
         </section>
@@ -89,12 +90,40 @@
     <div class="footer-top"></div>
     <div th:replace="fragments/footer :: footer"></div>
 </div>
+<div class="pwa-overlay hidden">
+    <div class="pwa-banner">
+        <div class="modal--default mt-5">
+            <button class="close-button" id="close-banner" aria-label="닫기">&times;</button>
+            <div class="modal--default--tit">
+                <h3>TongLink 설치하기</h3>
+                <div>
+                    <img style="width: 100%" src="/images/push_example.jpg" alt="서비스 로고" class="splash-logo">
+                </div>
+                <p>앱을 설치하시면 푸시알림을 받아보실 수 있습니다!</p>
+            </div>
+            <div class="modal--default--link mt-10" id="install-container">
+                <button type="button" id="install-button" class="install-button">
+                    <p>앱 설치하기</p>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 <script type="text/javascript" th:inline="javascript">
     var UUID = /*[[ ${UUID} ]]*/;
     var isPushEnabled = /*[[ ${isPushEnabled} ]]*/;
 
+
     document.addEventListener('DOMContentLoaded', () => {
+
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register("/js/service-worker.js")
+                .then(() => console.log("Service Worker 등록 성공"))
+                .catch((error) => console.error("Service Worker 등록 실패:", error));
+        }
+
+
         const refreshIcon = document.getElementById('refresh-icon');
         const targetElement = document.querySelector('.app-container');
         const toggle = document.getElementById("toggle");
@@ -122,7 +151,7 @@
         }
 
         document.getElementById('toggle').checked = isPushEnabled
-
+        const installPwa = document.getElementById('install-pwa');
         fetchTotalCount(userUUID);
         toggle.addEventListener("change", async () => {
             if (toggle.checked) {
@@ -144,9 +173,14 @@
                 }
             } else {
                 console.log("알림 권한 요청을 취소했습니다.");
-                switchNotificationSetting(false);
+                switchNotificationSetting(true);
+
             }
         });
+
+        installPwa.addEventListener("click", () => {
+            initPwaBanner(true);
+        })
     });
 
     function startGoogleLogin() {
@@ -202,7 +236,6 @@
                                 }),
                             });
                             console.log("구독 정보가 서버로 전송되었습니다.");
-                            switchNotificationSetting(true);
                         })
                         .catch((error) => {
                             console.error("푸시 구독 실패:", error);

@@ -119,13 +119,7 @@
         </section>
     </main>
 
-    <div id="pwa-install-banner" class="hidden">
-        <div class="banner-content">
-            <p>더 나은 경험을 위해 앱을 설치하세요!</p>
-            <button id="install-button" class="android-only">설치하기</button>
-            <button id="ios-guide-button" class="ios-only">홈 화면 추가 방법</button>
-        </div>
-    </div>
+
 
     <div id="refresh-icon" class="hidden">
         <div class="spinner"></div>
@@ -137,6 +131,26 @@
 
     <div class="loading-overlay hidden" id="loading-overlay">
         <div class="loading-spinner"></div>
+    </div>
+</div>
+
+<div class="pwa-overlay hidden">
+    <div class="pwa-banner">
+        <div class="modal--default mt-5">
+            <button class="close-button" id="close-banner" aria-label="닫기">&times;</button>
+            <div class="modal--default--tit">
+                <h3>TongLink 설치하기</h3>
+                <div>
+                    <img style="width: 100%" src="/images/push_example.jpg" alt="서비스 로고" class="splash-logo">
+                </div>
+                <p>앱을 설치하시면 푸시알림을 받아보실 수 있습니다!</p>
+            </div>
+            <div class="modal--default--link mt-10" id="install-container">
+                <button type="button" id="install-button" class="install-button">
+                    <p>앱 설치하기</p>
+                </button>
+            </div>
+        </div>
     </div>
 </div>
 </body>
@@ -202,6 +216,7 @@
         } else {
             console.log("앱이 브라우저에서 실행되었습니다.");
             manageUserUUID();
+            initPwaBanner(false);
         }
 
         const userUUID = localStorage.getItem("userUUID");
@@ -306,7 +321,6 @@
         const ctx = document.getElementById('stats-chart').getContext('2d');
         initializeStatisticsChart(uuId, ctx);
 
-        //initPwaBanner();
     });
 
     function isPWA() {
@@ -337,7 +351,7 @@
             }
         }
 
-        /*if ("serviceWorker" in navigator) {
+        if ("serviceWorker" in navigator) {
             try {
                 console.log("서비스 워커 등록 상태 확인 중...");
 
@@ -378,8 +392,8 @@
             }
         } else {
             console.error("서비스 워커가 지원되지 않는 환경입니다.");
-        }*/
-        if ("serviceWorker" in navigator) {
+        }
+        /*if ("serviceWorker" in navigator) {
             try {
                 console.log("서비스 워커 등록 상태 확인 중...");
 
@@ -434,7 +448,7 @@
             } catch (error) {
                 console.error("푸시 구독 실패:", error);
             }
-        }
+        }*/
 
     }
 
@@ -451,6 +465,7 @@
         }
         return outputArray;
     }
+
 
 
 </script>
