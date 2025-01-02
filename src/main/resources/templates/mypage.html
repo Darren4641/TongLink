@@ -130,7 +130,14 @@
 
         initializePullToRefresh({
             onRefresh: () => {
-                alert('새로고침 실행');
+                console.log('새로고침 로직 실행');
+                // 서비스 워커 캐시 삭제 및 데이터 재로드
+                caches.keys().then((keys) =>
+                    Promise.all(keys.map((key) => caches.delete(key)))
+                ).then(() => {
+                    // 캐시 삭제 후 페이지 새로고침
+                    window.location.reload();
+                });
             },
             refreshIcon: refreshIcon, // 새로고침 아이콘
             refreshThreshold: 300,   // 트리거 임계값 (기본값: 800)
