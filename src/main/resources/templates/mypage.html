@@ -48,14 +48,6 @@
 
             <section class="summary-section">
                 <div class="summary-container">
-                    <div class="summary-item">
-                        <p class="summary-label">통링 수</p>
-                        <p class="summary-value">1,000,000</p>
-                    </div>
-                    <div class="summary-item">
-                        <p class="summary-label">조회 설정</p>
-                        <p class="summary-value">550,000</p>
-                    </div>
                 </div>
             </section>
         </div>
@@ -249,6 +241,41 @@
                 isPushEnabled: isPushEnabled
             }),
         });
+    }
+
+    function renderTotalCount() {
+        const userUUID = localStorage.getItem("userUUID");
+        const container = document.getElementById("summary-container");
+
+        const linkTotalCount = fetchTotalCount(userUUID);
+
+        container.innerHTML = '';
+
+        const div = `
+                <div class="summary-item">
+                        <p class="summary-label">통링 수</p>
+                        <p class="summary-value">${linkTotalCount.linkCount.toLocaleString()}</p>
+                    </div>
+                    <div class="summary-item">
+                        <p class="summary-label">조회 수</p>
+                        <p class="summary-value">${linkTotalCount.visitCount.toLocaleString()}</p>
+                    </div>
+            `;
+        container.insertAdjacentHTML('beforeend', div);
+    }
+
+    function fetchTotalCount(userUUID) {
+        const response = fetch(`/api/link/${userUUID}/total`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+        if (!response.ok) {
+            throw new Error("Failed to fetch statistics data");
+        }
+        const result = response.json();
+        return result.data;
     }
 </script>
 </html>
