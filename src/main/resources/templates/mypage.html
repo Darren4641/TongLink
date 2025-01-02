@@ -100,6 +100,7 @@
 </body>
 <script type="text/javascript" th:inline="javascript">
     var UUID = /*[[ ${UUID} ]]*/;
+    var isPushEnabled = /*[[ ${isPushEnabled} ]]*/;
 
     document.addEventListener('DOMContentLoaded', () => {
         const refreshIcon = document.getElementById('refresh-icon');
@@ -128,6 +129,8 @@
             document.getElementById('mypageLink').href = '/mypage?uuId=' + userUUID;
         }
 
+        document.getElementById('toggle').checked = isPushEnabled
+
         toggle.addEventListener("change", async () => {
             if (toggle.checked) {
                 console.log("알림 권한 요청 중...");
@@ -148,6 +151,7 @@
                 }
             } else {
                 console.log("알림 권한 요청을 취소했습니다.");
+                switchNotificationSetting(false);
             }
         });
     });
@@ -205,6 +209,7 @@
                                 }),
                             });
                             console.log("구독 정보가 서버로 전송되었습니다.");
+                            switchNotificationSetting(true);
                         })
                         .catch((error) => {
                             console.error("푸시 구독 실패:", error);
@@ -233,6 +238,17 @@
             outputArray[i] = rawData.charCodeAt(i);
         }
         return outputArray;
+    }
+
+    function switchNotificationSetting(isPushEnabled) {
+        fetch('/api/user/switch/push', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                uuId: userUUID,
+                isPushEnabled: isPushEnabled
+            }),
+        });
     }
 </script>
 </html>

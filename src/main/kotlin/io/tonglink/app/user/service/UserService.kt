@@ -1,5 +1,6 @@
 package io.tonglink.app.user.service
 
+import io.tonglink.app.user.dto.PushNotificationSettingRequest
 import io.tonglink.app.user.dto.UserDataDto
 import io.tonglink.app.user.dto.UserDto
 import io.tonglink.app.user.entity.User
@@ -32,7 +33,15 @@ class UserService (
             uuId = loginUser.uuid,
             endPoint = loginUser.endPoint,
             p256dh = loginUser.p256dh,
-            auth = loginUser.auth
+            auth = loginUser.auth,
+            isPushEnabled = loginUser.isPushEnabled
         )
+    }
+
+    fun switchNotificationSetting(pushNotificationSettingRequest: PushNotificationSettingRequest) {
+        val loginUser = userRepository.findByUUID(pushNotificationSettingRequest.uuId)!!
+
+        loginUser.switchPushEnable(pushNotificationSettingRequest.isPushEnabled)
+        userRepository.save(loginUser)
     }
 }

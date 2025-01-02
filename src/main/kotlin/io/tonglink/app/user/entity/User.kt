@@ -4,11 +4,13 @@ import io.tonglink.app.common.entity.BaseEntity
 import io.tonglink.app.common.security.RoleType
 import io.tonglink.app.notification.dto.NotificationDto
 import jakarta.persistence.*
+import org.hibernate.annotations.DynamicInsert
 import org.hibernate.annotations.DynamicUpdate
 
 @Entity
 @Table(name = "user")
 @DynamicUpdate
+@DynamicInsert
 class User (
 
     @Column(nullable = true, unique = true, length = 255)
@@ -33,7 +35,10 @@ class User (
     var p256dh: String? = null,
 
     @Column(name = "auth", columnDefinition = "text")
-    var auth: String? = null
+    var auth: String? = null,
+
+    @Column(name = "is_push_enabled", nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
+    var isPushEnabled: Boolean = true
 
     ) : BaseEntity() {
 
@@ -54,5 +59,9 @@ class User (
         this.endPoint = notificationDto.endpoint
         this.p256dh = notificationDto.keys.p256dh
         this.auth = notificationDto.keys.auth
+    }
+
+    fun switchPushEnable(isPushEnabled: Boolean) {
+        this.isPushEnabled = isPushEnabled
     }
 }

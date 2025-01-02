@@ -41,12 +41,14 @@ class NavController (
             // 로그인한 사용자일 경우
             println("@@ LoggedIn UserUUID : ${loginUser.email}")
             model.addAttribute("UUID", loginUser.uuId)
+            model.addAttribute("isPushEnabled", loginUser.isPushEnabled)
             model.addAttribute("isOauth", true)
             model.addAttribute("email", loginUser.email)
         } else {
             // 비로그인 사용자 (anonymousUser)
             println("@@ Anonymous User")
             model.addAttribute("UUID", null)
+            model.addAttribute("isPushEnabled", false)
             model.addAttribute("isOauth", false)
         }
 
