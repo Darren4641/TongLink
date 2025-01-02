@@ -1,4 +1,17 @@
 // 사용자를 식별하는 UUID 관리
+
+
+document.addEventListener('gesturestart', (e) => e.preventDefault());
+document.addEventListener('dblclick', (e) => e.preventDefault());
+document.querySelectorAll('input, textarea').forEach((element) => {
+    element.addEventListener('focus', () => {
+        document.body.style.zoom = '1'; // 확대 방지
+    });
+    element.addEventListener('blur', () => {
+        document.body.style.zoom = ''; // 원래 상태로 복원
+    });
+});
+
 function manageUserUUID() {
     // localStorage에서 UUID 확인
     let userUUID = localStorage.getItem("userUUID");

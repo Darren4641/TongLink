@@ -16,7 +16,7 @@ class UserRepositoryDslImpl (
             .select(user)
             .from(user)
             .where(user.uuid.eq(uuid))
-            .fetchOne();
+            .fetchFirst();
     }
 
     override fun transferTongLink(originUuid: String, newUuid: String) {
