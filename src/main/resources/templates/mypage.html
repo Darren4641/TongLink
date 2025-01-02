@@ -47,7 +47,7 @@
             </header>
 
             <section class="summary-section">
-                <div class="summary-container">
+                <div class="summary-container" id="summary-container">
                 </div>
             </section>
         </div>
@@ -123,7 +123,7 @@
 
         document.getElementById('toggle').checked = isPushEnabled
 
-        renderTotalCount();
+        fetchTotalCount(userUUID);
         toggle.addEventListener("change", async () => {
             if (toggle.checked) {
                 console.log("알림 권한 요청 중...");
@@ -244,39 +244,46 @@
         });
     }
 
-    function renderTotalCount() {
-        const userUUID = localStorage.getItem("userUUID");
-        const container = document.getElementById("summary-container");
+    function fetchTotalCount(uuId) {
 
-        const linkTotalCount = fetchTotalCount(userUUID);
-
-        container.innerHTML = '';
-
-        const div = `
-                <div class="summary-item">
-                        <p class="summary-label">통링 수</p>
-                        <p class="summary-value">${linkTotalCount.linkCount.toLocaleString()}</p>
-                    </div>
-                    <div class="summary-item">
-                        <p class="summary-label">조회 수</p>
-                        <p class="summary-value">${linkTotalCount.visitCount.toLocaleString()}</p>
-                    </div>
-            `;
-        container.insertAdjacentHTML('beforeend', div);
-    }
-
-    function fetchTotalCount(userUUID) {
-        const response = fetch(`/api/link/${userUUID}/total`, {
+        fetch(`/api/link/${uuId}/total`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
             },
-        });
-        if (!response.ok) {
-            throw new Error("Failed to fetch statistics data");
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('네트워크 응답에 문제가 있습니다.');
+                }
+                return response.json();
+            })
+            .then(result => renderTotalCount(result.data))
+    }
+
+    function renderTotalCount(data) {
+        const container = document.getElementById("summary-container");
+
+        try {
+            // Clear the container
+            container.innerHTML = '';
+
+            // Create the summary HTML
+            const div = `
+            <div class="summary-item">
+                <p class="summary-label">통링 수</p>
+                <p class="summary-value">${data.linkCount.toLocaleString()}</p>
+            </div>
+            <div class="summary-item">
+                <p class="summary-label">조회 수</p>
+                <p class="summary-value">${data.visitCount.toLocaleString()}</p>
+            </div>
+        `;
+            container.insertAdjacentHTML('beforeend', div);
+        } catch (error) {
+            console.error("Failed to render total count:", error);
+            container.innerHTML = `<p>데이터를 불러오는 중 오류가 발생했습니다.</p>`;
         }
-        const result = response.json();
-        return result.data;
     }
 </script>
 </html>

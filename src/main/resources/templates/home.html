@@ -10,6 +10,7 @@
     <link rel="manifest" th:href="@{/manifest.json}">
     <script th:src="@{/js/user.js}" defer></script>
     <script th:src="@{/js/chart.js}" defer></script>
+    <script th:src="@{/js/pwa-banner.js}" defer></script>
     <script th:src="@{/js/reload.js}" defer></script>
     <script th:src="@{/js/index-modal.js}" defer></script>
     <script th:src="@{/js/tonglink-list.js}" defer></script>
@@ -117,6 +118,14 @@
 
         </section>
     </main>
+
+    <div id="pwa-install-banner" class="hidden">
+        <div class="banner-content">
+            <p>더 나은 경험을 위해 앱을 설치하세요!</p>
+            <button id="install-button" class="android-only">설치하기</button>
+            <button id="ios-guide-button" class="ios-only">홈 화면 추가 방법</button>
+        </div>
+    </div>
 
     <div id="refresh-icon" class="hidden">
         <div class="spinner"></div>
@@ -296,6 +305,8 @@
         enableDragAndDrop(container);
         const ctx = document.getElementById('stats-chart').getContext('2d');
         initializeStatisticsChart(uuId, ctx);
+
+        //initPwaBanner();
     });
 
     function isPWA() {
@@ -440,5 +451,7 @@
         }
         return outputArray;
     }
+
+
 </script>
 </html>
