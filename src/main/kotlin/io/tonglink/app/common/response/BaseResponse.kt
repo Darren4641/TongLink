@@ -1,4 +1,4 @@
-package com.example.kopring.common.response
+package io.tonglink.app.common.response
 
 import com.example.kopring.common.status.ResultCode
 

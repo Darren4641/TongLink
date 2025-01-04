@@ -127,16 +127,6 @@
         const refreshIcon = document.getElementById('refresh-icon');
         const targetElement = document.querySelector('.app-container');
         const toggle = document.getElementById("toggle");
-        let isInitializing = true; // 초기화 상태 플래그
-
-        // PWA 환경에서는 캐시를 삭제
-        if (isPwa()) {
-            if ("caches" in window) {
-                caches.keys().then((cacheNames) => {
-                    cacheNames.forEach((cacheName) => caches.delete(cacheName));
-                });
-            }
-        }
 
         initializePullToRefresh({
             onRefresh: () => {
@@ -167,14 +157,13 @@
             document.getElementById('mypageLink').href = '/mypage?uuId=' + userUUID;
         }
 
-        document.getElementById('toggle').checked = isPushEnabled
-
-        isInitializing = false; // 초기화 완료
+        const userDataDto = fetchUserInfo(userUUID);
+        console.log("userDataDto : " + userDataDto);
+        document.getElementById('toggle').checked = userDataDto.isPushEnabled;
 
         const installPwa = document.getElementById('install-pwa');
         fetchTotalCount(userUUID);
         toggle.addEventListener("change", async () => {
-            if(isInitializing) return;
 
             if (toggle.checked) {
                 console.log("알림 권한 요청 중...");

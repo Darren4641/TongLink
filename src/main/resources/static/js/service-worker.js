@@ -1,5 +1,5 @@
 // 캐시 이름에 버전 추가
-const CACHE_NAME = 'tonglink-v0.2.6'; // 매 배포 시 버전을 변경
+const CACHE_NAME = 'tonglink-v0.2.7'; // 매 배포 시 버전을 변경
 
 const FILES_TO_CACHE = [
 

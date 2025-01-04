@@ -85,3 +85,22 @@ function sendUUIDToServerPWA(uuId) {
         });
 
 }
+
+function fetchUserInfo(uuId) {
+
+    return fetch(`/api/user/info/${uuId}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('네트워크 응답에 문제가 있습니다.');
+            }
+            return response.json();
+        })
+        .then((result) => {
+            return result.data;
+        })
+}
