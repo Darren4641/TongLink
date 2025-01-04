@@ -21,7 +21,9 @@ function initPwaBanner(alwaysShow) {
 
     // iOS일 경우 버튼 숨기고 설치 가이드 표시
     if (isIosDevice()) {
-        installButton.style.display = 'none'; // 버튼 숨기기
+        if (installButton.style.display !== 'none') {
+            installButton.style.display = 'none'; // 버튼 숨기기
+        }
         showIosInstallationGuide(installContainer); // iOS 설치 가이드 표시
     }
 
@@ -29,6 +31,7 @@ function initPwaBanner(alwaysShow) {
     overlay.classList.remove('hidden');
 
     // 닫기 버튼 동작
+    closeButton.removeEventListener('click', () => dismissPwaBanner(overlay));
     closeButton.addEventListener('click', () => dismissPwaBanner(overlay));
 
     // 앱 설치 버튼 동작 (Android 전용)
