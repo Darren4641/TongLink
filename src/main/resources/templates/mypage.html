@@ -129,6 +129,15 @@
         const toggle = document.getElementById("toggle");
         let isInitializing = true; // 초기화 상태 플래그
 
+        // PWA 환경에서는 캐시를 삭제
+        if (isPwa()) {
+            if ("caches" in window) {
+                caches.keys().then((cacheNames) => {
+                    cacheNames.forEach((cacheName) => caches.delete(cacheName));
+                });
+            }
+        }
+
         initializePullToRefresh({
             onRefresh: () => {
                 console.log('새로고침 로직 실행');
@@ -330,6 +339,10 @@
             console.error("Failed to render total count:", error);
             container.innerHTML = `<p>데이터를 불러오는 중 오류가 발생했습니다.</p>`;
         }
+    }
+
+    function isPWA() {
+        return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
     }
 </script>
 </html>
