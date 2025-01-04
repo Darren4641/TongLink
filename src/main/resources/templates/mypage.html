@@ -174,7 +174,7 @@
                     if (permission === "granted") {
                         console.log("알림 권한이 허용되었습니다.");
                         // 푸시 구독 로직 실행 (필요 시 추가)
-                        subscribeToPushNotifications();
+                        subscribeToPushNotifications(userUUID);
                     } else if (permission === "denied") {
                         console.error("알림 권한이 거부되었습니다.");
                     } else {
@@ -223,37 +223,53 @@
             try {
                 console.log("서비스 워커 등록 상태 확인 중...");
 
-                navigator.serviceWorker.register("/js/service-worker.js").then((registration) => {
-                    console.log("서비스 워커 등록 성공:", registration);
-                    registration.update();
+                navigator.serviceWorker.register("/js/service-worker.js")
+                    .then((registration) => {
+                        console.log("서비스 워커 등록 성공:", registration);
 
-                    registration.pushManager.subscribe({
-                        userVisibleOnly: true,
-                        applicationServerKey: urlBase64ToUint8Array(vapidPublicKey),
+                        // 기존 구독 확인
+                        return registration.pushManager.getSubscription()
+                            .then((existingSubscription) => {
+                                if (existingSubscription) {
+                                    // 기존 구독 취소
+                                    console.log("기존 푸시 구독 삭제 중...");
+                                    return existingSubscription.unsubscribe().then(() => {
+                                        console.log("기존 푸시 구독 삭제 완료");
+                                    });
+                                }
+                            })
+                            .then(() => registration); // 기존 구독 삭제 후 새 등록을 위해 반환
                     })
-                        .then((subscription) => {
-                            console.log("푸시 구독 성공:", subscription);
-                            // 서버로 구독 정보 전송
-                            fetch('/api/push/subscribe', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({
-                                    uuId: userUUID,
-                                    endpoint: subscription.endpoint,
-                                    keys: {
-                                        p256dh: btoa(String.fromCharCode(...new Uint8Array(subscription.getKey('p256dh')))),
-                                        auth: btoa(String.fromCharCode(...new Uint8Array(subscription.getKey('auth')))),
-                                    },
-                                }),
-                            });
-                            console.log("구독 정보가 서버로 전송되었습니다.");
-                        })
-                        .catch((error) => {
-                            console.error("푸시 구독 실패:", error);
+                    .then((registration) => {
+                        // 새 구독 생성
+                        console.log("새 푸시 구독 생성 중...");
+                        return registration.pushManager.subscribe({
+                            userVisibleOnly: true,
+                            applicationServerKey: urlBase64ToUint8Array(vapidPublicKey),
                         });
-                })
+                    })
+                    .then((subscription) => {
+                        console.log("새 푸시 구독 성공:", subscription);
+
+                        // 서버로 구독 정보 전송
+                        return fetch('/api/push/subscribe', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                uuId: userUUID,
+                                endpoint: subscription.endpoint,
+                                keys: {
+                                    p256dh: btoa(String.fromCharCode(...new Uint8Array(subscription.getKey('p256dh')))),
+                                    auth: btoa(String.fromCharCode(...new Uint8Array(subscription.getKey('auth')))),
+                                },
+                            }),
+                        });
+                    })
+                    .then(() => {
+                        console.log("구독 정보가 서버로 전송되었습니다.");
+                    })
                     .catch((error) => {
-                        console.error("서비스 워커 준비 상태 대기 중 오류 발생:", error);
+                        console.error("푸시 구독 처리 중 오류 발생:", error);
                     });
             } catch (error) {
                 console.error("푸시 구독 실패:", error);
