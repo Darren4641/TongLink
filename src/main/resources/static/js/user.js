@@ -86,7 +86,7 @@ function sendUUIDToServerPWA(uuId) {
 
 }
 
-function fetchUserInfo(uuId) {
+async function fetchUserInfo(uuId) {
 
     return fetch(`/api/user/info/${uuId}`, {
         method: "GET",

@@ -115,7 +115,7 @@
     var isPushEnabled = /*[[ ${isPushEnabled} ]]*/;
 
 
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
 
         if ("serviceWorker" in navigator) {
             navigator.serviceWorker.register("/js/service-worker.js")
@@ -148,7 +148,7 @@
         const urlParams = new URLSearchParams(window.location.search);
         const firstLogin = urlParams.get('firstLogin');
 
-        if(UUID != null) {
+        if (UUID != null) {
             localStorage.setItem("userUUID", UUID);
         }
 
@@ -157,8 +157,8 @@
             document.getElementById('mypageLink').href = '/mypage?uuId=' + userUUID;
         }
 
-        const userDataDto = fetchUserInfo(userUUID);
-        console.log("userDataDto : " + userDataDto);
+        const userDataDto = await fetchUserInfo(userUUID);
+        console.log("userDataDto : " + userDataDto.isPushEnabled);
         document.getElementById('toggle').checked = userDataDto.isPushEnabled;
 
         const installPwa = document.getElementById('install-pwa');
