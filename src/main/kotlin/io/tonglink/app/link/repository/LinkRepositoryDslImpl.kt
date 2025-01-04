@@ -25,12 +25,18 @@ class LinkRepositoryDslImpl (
             .select(link)
             .from(link)
             .where(link.userKey.eq(uuId))
+            .orderBy(link.order.asc(), link.createdDate.desc())
             .offset(pageable.offset)
             .limit(pageable.pageSize.toLong())
-            .orderBy(link.order.asc(), link.createdDate.desc())
-            .fetchResults()
+            .fetch()
 
-        val content = results.results.map {
+        val total = queryFactory
+            .select(link.count())
+            .from(link)
+            .where(link.userKey.eq(uuId))
+            .fetchOne() ?: 0L
+
+        val content = results.map {
             LinkDto(
                 id = it.id!!,
                 title = it.title,
@@ -44,7 +50,9 @@ class LinkRepositoryDslImpl (
                 count = 0
             )
         }
-        return PageImpl(content, pageable, results.total)
+
+
+        return PageImpl(content, pageable, total)
     }
 
     override fun getPopularTongLink(pageable: Pageable): Page<PopularLinkDto> {
@@ -68,9 +76,17 @@ class LinkRepositoryDslImpl (
             .limit(pageable.pageSize.toLong())
             .orderBy(visit.id.count().desc())
             .groupBy(link.id).having(visit.id.count().gt(0))
-            .fetchResults()
+            .fetch()
 
-        val content = results.results.map {
+        val total = queryFactory
+            .select(link.id.count())
+            .from(link)
+            .leftJoin(visit).on(visit.linkId.eq(link.id))
+            .where(link.isExposure.eq(true)
+                .and(link.endDate.gt(todayStartString)))
+            .fetchOne() ?: 0L
+
+        val content = results.map {
             PopularLinkDto(
                 id = it.get(link.id)!!,
                 title = it.get(link.title)!!,
@@ -79,7 +95,8 @@ class LinkRepositoryDslImpl (
                 count = it.get(visit.id.count())!!
             )
         }
-        return PageImpl(content, pageable, results.total)
+
+        return PageImpl(content, pageable, total)
     }
 
     override fun updateOrderTongLink(uuId: String, updateOrderLinkDto: List<UpdateOrderLinkDto>) {
@@ -142,23 +159,43 @@ class LinkRepositoryDslImpl (
 
     override fun getMyTongLinkTotalCount(uuId: String) : LinkTotalCount {
 
-        return queryFactory
-                .select(
-                        Projections.constructor(
-                                LinkTotalCount::class.java,
-                                Expressions.cases()
-                                        .`when`(link.id.count().isNull)
-                                        .then(0L)
-                                        .otherwise(link.id.count()),
-                                Expressions.cases()
-                                        .`when`(visit.id.count().isNull)
-                                        .then(0L)
-                                        .otherwise(visit.id.count())))
-                .from(link)
-                .leftJoin(visit).on(visit.linkId.eq(link.id))
-                .where(link.userKey.eq(uuId))
-                .groupBy(link.id)
-                .fetchFirst()!!
+        val linkCount = queryFactory
+            .select(
+                Expressions.cases()
+                    .`when`(link.id.count().isNull)
+                    .then(0L)
+                    .otherwise(link.count()))
+            .from(link)
+            .where(link.userKey.eq(uuId))
+            .fetchOne()!!;
+
+        val visitCount = queryFactory
+            .select(
+                Expressions.cases()
+                    .`when`(visit.id.count().isNull)
+                    .then(0L)
+                    .otherwise(visit.count()))
+            .from(visit)
+            .where(visit.userKey.eq(uuId))
+            .fetchOne()!!;
+
+        return LinkTotalCount(
+            linkCount = linkCount,
+            visitCount = visitCount
+        )
+    }
+
+    private fun <T> buildPage(content: List<T>, pageable: Pageable, total: Long): Page<T> {
+        val fromIndex = pageable.offset.toInt()
+        val toIndex = (fromIndex + pageable.pageSize).coerceAtMost(content.size)
+
+        val paginatedContent = if (fromIndex < content.size) {
+            content.subList(fromIndex, toIndex)
+        } else {
+            emptyList()
+        }
+
+        return PageImpl(paginatedContent, pageable, total)
     }
 
 }

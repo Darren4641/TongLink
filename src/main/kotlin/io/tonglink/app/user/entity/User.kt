@@ -59,6 +59,7 @@ class User (
         this.endPoint = notificationDto.endpoint
         this.p256dh = notificationDto.keys.p256dh
         this.auth = notificationDto.keys.auth
+        this.isPushEnabled = true
     }
 
     fun switchPushEnable(isPushEnabled: Boolean) {

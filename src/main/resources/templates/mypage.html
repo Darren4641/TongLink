@@ -88,7 +88,7 @@
     </div>
     <!-- Fixed Button -->
     <div class="footer-top"></div>
-    <div th:replace="fragments/footer :: footer"></div>
+    <div th:replace="~{fragments/footer :: footer}"></div>
 </div>
 <div class="pwa-overlay hidden">
     <div class="pwa-banner">
@@ -180,7 +180,7 @@
                 }
             } else {
                 console.log("알림 권한 요청을 취소했습니다.");
-                switchNotificationSetting(true);
+                switchNotificationSetting(false);
 
             }
         });

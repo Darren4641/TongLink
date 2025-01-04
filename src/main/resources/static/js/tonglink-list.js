@@ -18,7 +18,10 @@ function initInfiniteScroll(uuId, container) {
     // Sentinel 요소 생성 및 추가
     const sentinel = document.createElement("div");
     sentinel.className = "scroll-sentinel";
+    sentinel.draggable = false;
     container.appendChild(sentinel);
+
+    setSentinelHeight(sentinel);
 
     // IntersectionObserver로 Sentinel 감지
     const observer = new IntersectionObserver(
@@ -34,6 +37,7 @@ function initInfiniteScroll(uuId, container) {
 
                     // 드래그 앤 드롭 활성화
                     enableDragAndDrop(container);
+
                 });
             }
         },
@@ -63,6 +67,7 @@ function initInfiniteScroll(uuId, container) {
             });
         }
     });
+
 
     // 첫 데이터 로드
     isLoading = true; // 첫 로딩 상태 설정
@@ -293,6 +298,7 @@ function enableDragAndDrop(container) {
     function onDragMove(pageX, pageY) {
         moveAt(pageX, pageY);
 
+
         const linkPreviews = Array.from(container.querySelectorAll(".link-preview")).filter(el => el !== draggedElement);
 
         let inserted = false;
@@ -309,6 +315,12 @@ function enableDragAndDrop(container) {
         if (!inserted) {
             container.appendChild(placeholder);
         }
+
+        // Sentinel을 항상 컨테이너의 맨 마지막으로 이동
+        const sentinel = container.querySelector(".scroll-sentinel");
+        if (sentinel) {
+            container.appendChild(sentinel);
+        }
     }
 
     function endDrag() {
@@ -317,6 +329,7 @@ function enableDragAndDrop(container) {
         placeholder.parentNode.insertBefore(draggedElement, placeholder);
         placeholder.remove();
         placeholder = null;
+
 
         // 스타일 복원
         draggedElement.style.position = "";
@@ -338,7 +351,7 @@ function enableDragAndDrop(container) {
         if (!handle) return;
 
         const target = e.target.closest(".link-preview");
-        if (target) {
+        if (target && !target.classList.contains("scroll-sentinel")) {
             startDrag(e.pageX, e.pageY, target);
 
             function onMouseMove(e) {
@@ -606,6 +619,12 @@ function deleteLink(body) {
         .catch((error) => {
             console.error("서버 오류:", error);
         });
+}
+
+function setSentinelHeight(sentinel) {
+    const viewportHeight = window.innerHeight;
+    const sentinelHeight = Math.max(50, viewportHeight * 0.1); // 최소 50px, 뷰포트 높이의 10%
+    sentinel.style.height = `${sentinelHeight}px`;
 }
 
 initModal();

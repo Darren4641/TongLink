@@ -39,7 +39,6 @@ class NavController (
         // 로그인 여부 판별
         if (loginUser.email != null) {
             // 로그인한 사용자일 경우
-            println("@@ LoggedIn UserUUID : ${loginUser.email}")
             model.addAttribute("UUID", loginUser.uuId)
             model.addAttribute("isPushEnabled", loginUser.isPushEnabled)
             model.addAttribute("isOauth", true)

@@ -15,7 +15,10 @@ function initPopularInfiniteScroll(uuId, container) {
     // Sentinel 요소 생성 및 추가
     const sentinel = document.createElement("div");
     sentinel.className = "scroll-sentinel";
+    sentinel.draggable = false;
     container.appendChild(sentinel);
+
+    setSentinelHeight(sentinel);
 
     // IntersectionObserver로 Sentinel 감지
     const observer = new IntersectionObserver(
@@ -28,9 +31,6 @@ function initPopularInfiniteScroll(uuId, container) {
                 getPopularTongLink(container, limit, currentPage, (nextPage) => {
                     currentPage = nextPage; // 다음 페이지 번호 업데이트
                     isLoading = false; // 로딩 상태 해제
-
-                    // 드래그 앤 드롭 활성화
-                    enableDragAndDrop(container);
                 });
             }
         },
@@ -54,9 +54,6 @@ function initPopularInfiniteScroll(uuId, container) {
             getPopularTongLink(container, limit, currentPage, (nextPage) => {
                 currentPage = nextPage;
                 isLoading = false;
-
-                // 드래그 앤 드롭 활성화
-                enableDragAndDrop(container);
             });
         }
     });
@@ -67,8 +64,6 @@ function initPopularInfiniteScroll(uuId, container) {
         currentPage = nextPage; // 첫 번째 페이지 번호 설정
         isLoading = false; // 로딩 상태 해제
 
-        // 드래그 앤 드롭 활성화
-        enableDragAndDrop(container);
     });
 }
 
@@ -235,6 +230,14 @@ function addMedalsToList(container) {
         }
     });
 }
+
+
+function setSentinelHeight(sentinel) {
+    const viewportHeight = window.innerHeight;
+    const sentinelHeight = Math.max(50, viewportHeight * 0.1); // 최소 50px, 뷰포트 높이의 10%
+    sentinel.style.height = `${sentinelHeight}px`;
+}
+
 
 // 리스트를 로드한 후 메달 추가
 document.addEventListener('DOMContentLoaded', () => {

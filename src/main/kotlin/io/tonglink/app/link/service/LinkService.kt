@@ -69,6 +69,7 @@ class LinkService (
         return linkRepository.getStatistics(uuId)
     }
 
+    @Transactional(readOnly = true)
     fun getMyTongLinkTotalCount(uuId: String) : LinkTotalCount {
         return linkRepository.getMyTongLinkTotalCount(uuId)
     }

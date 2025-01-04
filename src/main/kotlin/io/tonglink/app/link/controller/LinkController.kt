@@ -1,6 +1,7 @@
 package io.tonglink.app.link.controller
 
 import com.example.kopring.common.response.BaseResponse
+import io.tonglink.app.common.dto.SimplePageImpl
 import io.tonglink.app.link.dto.*
 import io.tonglink.app.link.service.LinkService
 import org.springframework.data.domain.Page
@@ -33,7 +34,7 @@ class LinkController (
     @GetMapping("/{uuId}")
     fun myTongLink(@PathVariable(name = "uuId") uuId: String,
                    @RequestParam(value = "limit", required = false, defaultValue = "5") limitParam: Int,
-                   @RequestParam(value = "page", required = false, defaultValue = "0") pageParam: Int) : BaseResponse<Page<LinkDto>> {
+                   @RequestParam(value = "page", required = false, defaultValue = "0") pageParam: Int) : BaseResponse<SimplePageImpl<LinkDto>> {
 
         var limit = limitParam
         var page = pageParam
@@ -41,12 +42,12 @@ class LinkController (
         if (page <= 0) page = 0
         val pageable: Pageable = PageRequest.of(page, limit)
 
-        return BaseResponse(data = linkService.getMyTongLink(uuId, pageable))
+        return BaseResponse(data = SimplePageImpl.from(linkService.getMyTongLink(uuId, pageable)))
     }
 
     @GetMapping("/popular")
     fun popularTongLink(@RequestParam(value = "limit", required = false, defaultValue = "10") limitParam: Int,
-                   @RequestParam(value = "page", required = false, defaultValue = "0") pageParam: Int) : BaseResponse<Page<PopularLinkDto>> {
+                   @RequestParam(value = "page", required = false, defaultValue = "0") pageParam: Int) : BaseResponse<SimplePageImpl<PopularLinkDto>> {
         var limit = limitParam
         var page = pageParam
         if (limit <= 0) limit = 10
@@ -54,7 +55,7 @@ class LinkController (
         if (page >= 9) page = 9
         val pageable: Pageable = PageRequest.of(page, limit)
 
-        return BaseResponse(data = linkService.getPopularTongLink(pageable))
+        return BaseResponse(data = SimplePageImpl.from(linkService.getPopularTongLink(pageable)))
     }
 
     @PostMapping("/{uuId}/update-order")
