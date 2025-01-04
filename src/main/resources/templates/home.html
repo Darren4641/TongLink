@@ -357,6 +357,13 @@
 
                 navigator.serviceWorker.register("/js/service-worker.js").then((registration) => {
                         console.log("서비스 워커 등록 성공:", registration);
+                        // 기존 구독 상태 확인
+                        const existingSubscription = registration.pushManager.getSubscription();
+                        if (existingSubscription) {
+                            console.log("이미 푸시 구독이 진행되었습니다:", existingSubscription);
+                            return; // 기존 구독이 존재하면 함수 종료
+                        }
+
                         registration.update();
 
                         registration.pushManager.subscribe({
