@@ -3,6 +3,7 @@ package io.tonglink.app.link.entity
 import com.fasterxml.jackson.annotation.JsonFormat
 import io.tonglink.app.common.entity.BaseEntity
 import io.tonglink.app.link.dto.UpdateLinkDto
+import io.tonglink.app.link.observer.LinkObserver
 import jakarta.persistence.*
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -10,6 +11,7 @@ import java.time.format.DateTimeFormatter
 
 @Entity
 @Table(name = "link")
+@EntityListeners(LinkObserver::class)
 class Link (
 
     @Column(nullable = false, length = 100)

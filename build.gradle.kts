@@ -82,6 +82,10 @@ dependencies {
 
     implementation("org.jsoup:jsoup:1.15.4")
 
+    implementation("org.springframework.boot:spring-boot-starter-data-redis")
+    implementation("org.springframework.boot:spring-boot-starter-cache")
+    implementation("org.springframework.boot:spring-boot-starter-aop")
+
 
     //implementation("org.bouncycastle:bcprov-jdk15on:1.70") // BouncyCastle
     implementation("org.bouncycastle:bcprov-jdk15on:1.70")
