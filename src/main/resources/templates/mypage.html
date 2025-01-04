@@ -127,6 +127,7 @@
         const refreshIcon = document.getElementById('refresh-icon');
         const targetElement = document.querySelector('.app-container');
         const toggle = document.getElementById("toggle");
+        let isInitializing = true; // 초기화 상태 플래그
 
         initializePullToRefresh({
             onRefresh: () => {
@@ -158,9 +159,14 @@
         }
 
         document.getElementById('toggle').checked = isPushEnabled
+
+        isInitializing = false; // 초기화 완료
+
         const installPwa = document.getElementById('install-pwa');
         fetchTotalCount(userUUID);
         toggle.addEventListener("change", async () => {
+            if(isInitializing) return;
+
             if (toggle.checked) {
                 console.log("알림 권한 요청 중...");
 
