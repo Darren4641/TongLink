@@ -20,7 +20,7 @@ function initPwaBanner(alwaysShow) {
     }
 
     // iOS일 경우 버튼 숨기고 설치 가이드 표시
-    if (!isIosDevice()) {
+    if (isIosDevice()) {
         if (installButton != null) {
             installButton.style.display = 'none'; // 버튼 숨기기
         }
