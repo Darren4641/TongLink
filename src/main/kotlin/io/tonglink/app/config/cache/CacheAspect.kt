@@ -6,6 +6,7 @@ import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
 import org.aspectj.lang.reflect.MethodSignature
 import org.springframework.stereotype.Component
+import org.springframework.data.domain.Pageable
 import java.lang.reflect.Type
 
 @Aspect
@@ -27,8 +28,14 @@ class CacheAspect(
 
         // 동적 키를 만들기 위해 메소드 파라미터를 기반으로 키2 생성
         if (key2.isBlank() && args.isNotEmpty()) {
-            key2 = args.filter { it is String || it is Number }
-                .joinToString(":") { it.toString() }
+            key2 = args.map { arg ->
+                when (arg) {
+                    is Pageable -> arg.pageNumber.toString() // Pageable 타입이면 pageNumber 가져옴
+                    is String, is Number -> arg.toString() // String 또는 Number 타입은 그대로 사용
+                    else -> "" // 기타 타입은 빈 문자열 처리
+                }
+            }.filter { it.isNotBlank() } // 빈 문자열 제외
+                .joinToString(":") // ':'로 구분
         }
 
         // 메서드의 리턴 타입 가져오기
