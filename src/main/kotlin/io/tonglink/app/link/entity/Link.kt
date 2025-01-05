@@ -5,12 +5,16 @@ import io.tonglink.app.common.entity.BaseEntity
 import io.tonglink.app.link.dto.UpdateLinkDto
 import io.tonglink.app.link.observer.LinkObserver
 import jakarta.persistence.*
+import org.hibernate.annotations.DynamicInsert
+import org.hibernate.annotations.DynamicUpdate
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
 @Entity
 @Table(name = "link")
+@DynamicUpdate
+@DynamicInsert
 @EntityListeners(LinkObserver::class)
 class Link (
 

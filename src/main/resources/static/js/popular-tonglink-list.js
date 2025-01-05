@@ -7,6 +7,7 @@ let isLoading = false;
 function initPopularInfiniteScroll(container) {
     let currentPage = 0; // 현재 페이지 번호
     const limit = 10; // 페이지당 데이터 개수
+    let isLoading = false; // 로딩 상태 플래그
 
     // Sentinel 요소 생성 및 추가
     const sentinel = document.createElement("div");
@@ -22,9 +23,16 @@ function initPopularInfiniteScroll(container) {
             if (target.isIntersecting && !isLoading) {
                 isLoading = true;
                 console.log(`Observer triggered for page: ${currentPage}`);
-                getPopularTongLink(container, limit, currentPage, (nextPage) => {
-                    currentPage = nextPage;
-                    isLoading = false;
+
+                getPopularTongLink(container, limit, currentPage, (nextPage, dataLength) => {
+                    currentPage = nextPage; // 다음 페이지 번호 업데이트
+
+                    if (dataLength < limit) {
+                        console.log("No more data to load. Disconnecting observer.");
+                        observer.unobserve(sentinel); // Sentinel 감시 중지
+                    }
+
+                    isLoading = false; // 로딩 상태 해제
                 });
             }
         },
@@ -39,8 +47,14 @@ function initPopularInfiniteScroll(container) {
 
     // 첫 데이터 로드
     isLoading = true;
-    getPopularTongLink(container, limit, 0, (nextPage) => {
+    getPopularTongLink(container, limit, 0, (nextPage, dataLength) => {
         currentPage = nextPage;
+
+        if (dataLength < limit) {
+            console.log("No more data to load. Disconnecting observer.");
+            observer.unobserve(sentinel);
+        }
+
         isLoading = false;
     });
 }
@@ -86,12 +100,7 @@ function getPopularTongLink(container, limit = 10, page = 0, callback) {
 
             console.log(`Current page loaded: ${page}`);
 
-            if (!data.data.last) {
-                callback(page + 1);
-            } else {
-                const sentinel = container.querySelector(".scroll-sentinel");
-                if (sentinel) sentinel.remove();
-            }
+            callback(page + 1, content.length); // 데이터 길이를 반환
 
             if (data.data.totalElements === 0) {
                 if (!container.querySelector(".empty-message")) {

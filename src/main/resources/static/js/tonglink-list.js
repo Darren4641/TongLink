@@ -5,15 +5,9 @@ let placeholder = null; // 자리 표시자
 let isDragging = false; // 드래그 상태 플래그
 
 
-/**
- * 무한 스크롤 초기화
- * @param {string} uuId - 사용자 UUID
- * @param {HTMLElement} container - 렌더링할 HTML 컨테이너
- */
 function initInfiniteScroll(uuId, container) {
     let currentPage = 0; // 현재 페이지 번호
     let isLoading = false; // 데이터 로딩 중 상태
-    let isLastPage = false; // 마지막 페이지 여부
     const limit = 5; // 페이지당 데이터 개수
 
     // Sentinel 요소 생성 및 추가
@@ -28,20 +22,20 @@ function initInfiniteScroll(uuId, container) {
     const observer = new IntersectionObserver(
         (entries) => {
             const target = entries[0];
-            if (target.isIntersecting && !isLoading && !isLastPage) {
-                isLoading = true;
-                console.log(`Observer triggered for page: ${currentPage}`); // Observer 호출 디버깅
+            if (target.isIntersecting && !isLoading) {
+                console.log(`Observer triggered for page: ${currentPage}`);
+                isLoading = true; // 로딩 중 상태 설정
 
-                getTongLinkList(uuId, container, limit, currentPage, (nextPage, lastPage) => {
+                // 다음 데이터를 가져옴
+                getTongLinkList(uuId, container, limit, currentPage, (nextPage, dataLength) => {
                     currentPage = nextPage; // 다음 페이지 번호 업데이트
-                    isLastPage = lastPage; // 마지막 페이지 여부 업데이트
-                    isLoading = false; // 로딩 상태 해제
 
-                    // 마지막 페이지라면 Observer 해제
-                    if (isLastPage) {
-                        console.log("Reached the last page, disconnecting observer.");
+                    if (dataLength < limit) {
+                        console.log("No more data to load. Disconnecting observer.");
                         observer.unobserve(sentinel); // Sentinel 감시 중지
                     }
+
+                    isLoading = false; // 로딩 상태 해제
                 });
             }
         },
@@ -52,44 +46,20 @@ function initInfiniteScroll(uuId, container) {
         }
     );
 
-    // Sentinel 감지 시작
+    // Observer 시작
     observer.observe(sentinel);
 
-    // Fallback: Scroll Event 추가
-    window.addEventListener("scroll", () => {
-        if (isLastPage || isLoading) return; // 마지막 페이지거나 로딩 중이면 호출 중단
-
-        const scrollPosition = window.innerHeight + window.scrollY;
-        const bottomPosition = document.documentElement.offsetHeight - 50; // 하단 여유 50px
-        if (scrollPosition >= bottomPosition && !isLastPage) {
-            console.log(`Scroll fallback triggered for page: ${currentPage}`);
-            isLoading = true;
-            getTongLinkList(uuId, container, limit, currentPage, (nextPage, lastPage) => {
-                currentPage = nextPage; // 다음 페이지 번호 업데이트
-                isLastPage = lastPage; // 마지막 페이지 여부 업데이트
-                isLoading = false; // 로딩 상태 해제
-
-                // 마지막 페이지라면 Observer 해제
-                if (isLastPage) {
-                    console.log("Reached the last page, disconnecting observer.");
-                    observer.unobserve(sentinel); // Sentinel 감시 중지
-                }
-            });
-        }
-    });
-
     // 첫 데이터 로드
-    isLoading = true; // 첫 로딩 상태 설정
-    getTongLinkList(uuId, container, limit, 0, (nextPage, lastPage) => {
-        currentPage = nextPage; // 첫 번째 페이지 번호 설정
-        isLastPage = lastPage; // 마지막 페이지 여부 설정
-        isLoading = false; // 로딩 상태 해제
+    isLoading = true;
+    getTongLinkList(uuId, container, limit, currentPage, (nextPage, dataLength) => {
+        currentPage = nextPage;
 
-        // 마지막 페이지라면 Observer 해제
-        if (isLastPage) {
-            console.log("Reached the last page, disconnecting observer.");
-            observer.unobserve(sentinel); // Sentinel 감시 중지
+        if (dataLength < limit) {
+            console.log("No more data to load. Disconnecting observer.");
+            observer.unobserve(sentinel);
         }
+
+        isLoading = false;
     });
 }
 
@@ -99,7 +69,7 @@ function initInfiniteScroll(uuId, container) {
  * @param {HTMLElement} container - 렌더링할 HTML 컨테이너
  * @param {number} limit - 한 페이지당 가져올 데이터 수
  * @param {number} page - 현재 페이지 번호
- * @param {Function} callback - 다음 페이지와 마지막 페이지 여부를 업데이트할 콜백 함수
+ * @param {Function} callback - 다음 페이지 번호와 가져온 데이터 길이를 전달하는 콜백 함수
  */
 function getTongLinkList(uuId, container, limit = 5, page = 0, callback) {
     const queryParams = new URLSearchParams({
@@ -117,24 +87,23 @@ function getTongLinkList(uuId, container, limit = 5, page = 0, callback) {
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
-            return response.json(); // JSON 데이터를 반환
+            return response.json();
         })
         .then((data) => {
-            // 처음 로딩 시, 기존 컨텐츠는 유지하고 초기화하지 않음
+            // 첫 페이지 로딩 시 기존 콘텐츠 제거
             if (page === 0 && container.querySelector(".link-preview")) {
                 container.querySelectorAll(".link-preview").forEach((el) => el.remove());
             }
 
-            // API 응답 데이터에서 바로 렌더링
-            data.data.content.forEach((link) => {
-                const linkPreview = createLinkPreview(link); // DOM 요소 생성
-                container.insertBefore(linkPreview, container.querySelector(".scroll-sentinel")); // Sentinel 앞에 추가
+            // 새로운 데이터 렌더링
+            const content = data.data.content || [];
+            content.forEach((link) => {
+                const linkPreview = createLinkPreview(link);
+                container.insertBefore(linkPreview, container.querySelector(".scroll-sentinel"));
             });
 
-            console.log(`Current page loaded: ${page}`); // 현재 페이지 출력
-
-            // 콜백으로 다음 페이지 번호와 마지막 페이지 여부 전달
-            callback(page + 1, data.data.last);
+            console.log(`Current page loaded: ${page}`);
+            callback(page + 1, content.length); // 데이터 길이를 반환
         })
         .catch((error) => {
             console.error("링크 목록 가져오기 실패:", error);

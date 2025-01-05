@@ -3,6 +3,7 @@ package io.tonglink.app.link.service
 import com.example.kopring.common.status.ResultCode
 import io.tonglink.app.common.dto.SimplePageImpl
 import io.tonglink.app.common.exception.TongLinkException
+import io.tonglink.app.common.util.CacheUtil
 import io.tonglink.app.config.cache.Cacheable
 import io.tonglink.app.config.cache.IgnoreCache
 import io.tonglink.app.config.cache.RedisKey
@@ -22,7 +23,8 @@ import java.time.format.DateTimeFormatter
 
 @Service
 class LinkService (
-    val linkRepository: LinkRepository
+    val linkRepository: LinkRepository,
+    val cacheUtil: CacheUtil
 ) {
 
     fun createLink(createLinkDto: CreateLinkDto) : String {
@@ -42,7 +44,6 @@ class LinkService (
     fun updateLink(updateLinkDto: UpdateLinkDto) : String {
         val targetLink = linkRepository.findByIdAndUserKey(updateLinkDto.id, updateLinkDto.uuId) ?: throw TongLinkException(ResultCode.ERROR)
         targetLink.updateLink(updateLinkDto)
-        linkRepository.save(targetLink)
 
         return targetLink.proxyUrl
     }
@@ -68,6 +69,7 @@ class LinkService (
     @Transactional
     fun updateOrderTongLink(uuId: String, updateOrderLinkDto: List<UpdateOrderLinkDto>) : String {
         linkRepository.updateOrderTongLink(uuId, updateOrderLinkDto)
+        cacheUtil.deleteCacheByPrefix(RedisKey.TONGLINK_HOME.name + ":" + uuId)
         return "OK"
     }
 
