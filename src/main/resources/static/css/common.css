@@ -1486,3 +1486,21 @@ footer a {
 .ios-install-guide li {
     margin-bottom: 8px;
 }
+
+.legal-links {
+    position: absolute;
+    bottom: 105px;
+    width: 100%;
+    text-align: center;
+    font-size: 14px;
+}
+
+.legal-links a {
+    color: #ffffff;
+    text-decoration: none;
+    margin: 0 15px; /* 링크 간 간격 */
+}
+
+.legal-links a:hover {
+    text-decoration: underline;
+}

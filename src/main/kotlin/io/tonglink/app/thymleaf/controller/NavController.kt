@@ -54,4 +54,14 @@ class NavController (
         model.addAttribute("nav", "mypage")
         return "mypage"
     }
+
+    @GetMapping("/terms-of-service")
+    fun terms(model: Model) : String {
+        return "terms-of-service"
+    }
+
+    @GetMapping("/privacy-policy")
+    fun privacy(model: Model) : String {
+        return "privacy-policy"
+    }
 }
