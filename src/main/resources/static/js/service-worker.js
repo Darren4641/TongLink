@@ -5,9 +5,6 @@ const FILES_TO_CACHE = [
     "/", // HTML
     "/css/common.css",
     "/js/user.js",
-    "/js/chart.js",
-    "/js/tonglink-list.js",
-    "/js/popular-tonglink-list.js",
     "/images/tonglink-logo-white.png",
     "/images/tonglink-logo-white.png",
     "/images/home.png",
