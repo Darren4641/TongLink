@@ -1,8 +1,19 @@
 // 캐시 이름에 버전 추가
-const CACHE_NAME = 'tonglink-v0.2.22'; // 매 배포 시 버전을 변경
+const CACHE_NAME = 'tonglink-v0.2.23'; // 매 배포 시 버전을 변경
 
 const FILES_TO_CACHE = [
-
+    "/", // HTML
+    "/css/common.css",
+    "/js/user.js",
+    "/js/chart.js",
+    "/js/tonglink-list.js",
+    "/js/popular-tonglink-list.js",
+    "/images/tonglink-logo-white.png",
+    "/images/tonglink-logo-white.png",
+    "/images/home.png",
+    "/images/star.png",
+    "/images/user.png",
+    "/images/icon_profile.png",
 ];
 
 // 설치 이벤트
