@@ -11,7 +11,7 @@ interface LinkRepositoryDsl {
 
     fun getMyTongLink(uuId: String, pageable: Pageable) : SimplePageImpl<LinkDto>
 
-    fun getPopularTongLink() : List<PopularLinkDto>
+    fun getPopularTongLink(pageable: Pageable) : SimplePageImpl<PopularLinkDto>
 
     fun updateOrderTongLink(uuId: String, updateOrderLinkDto: List<UpdateOrderLinkDto>)
 

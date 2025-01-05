@@ -1,9 +1,64 @@
+let isLoading = false;
+
 /**
- * 서버에서 인기 TongLink 데이터를 가져와 동적으로 렌더링
+ * 무한 스크롤 초기화
  * @param {HTMLElement} container - 렌더링할 HTML 컨테이너
  */
 function initPopularInfiniteScroll(container) {
-    fetch(`/api/link/popular`, {
+    let currentPage = 0; // 현재 페이지 번호
+    const limit = 10; // 페이지당 데이터 개수
+
+    // Sentinel 요소 생성 및 추가
+    const sentinel = document.createElement("div");
+    sentinel.className = "scroll-sentinel";
+    sentinel.draggable = false;
+    container.appendChild(sentinel);
+    setSentinelHeight(sentinel);
+
+    // IntersectionObserver로 Sentinel 감지
+    const observer = new IntersectionObserver(
+        (entries) => {
+            const target = entries[0];
+            if (target.isIntersecting && !isLoading) {
+                isLoading = true;
+                console.log(`Observer triggered for page: ${currentPage}`);
+                getPopularTongLink(container, limit, currentPage, (nextPage) => {
+                    currentPage = nextPage;
+                    isLoading = false;
+                });
+            }
+        },
+        {
+            root: null,
+            rootMargin: "0px",
+            threshold: 0.2, // 20% 보일 때 트리거
+        }
+    );
+
+    observer.observe(sentinel);
+
+    // 첫 데이터 로드
+    isLoading = true;
+    getPopularTongLink(container, limit, 0, (nextPage) => {
+        currentPage = nextPage;
+        isLoading = false;
+    });
+}
+
+/**
+ * 서버에서 사용자 TongLink 데이터를 가져와 동적으로 렌더링
+ * @param {HTMLElement} container - 렌더링할 HTML 컨테이너
+ * @param {number} limit - 한 페이지당 가져올 데이터 수
+ * @param {number} page - 현재 페이지 번호
+ * @param {Function} callback - 다음 페이지를 업데이트할 콜백 함수
+ */
+function getPopularTongLink(container, limit = 10, page = 0, callback) {
+    const queryParams = new URLSearchParams({
+        limit: limit.toString(),
+        page: page.toString(),
+    });
+
+    fetch(`/api/link/popular?${queryParams.toString()}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -13,80 +68,92 @@ function initPopularInfiniteScroll(container) {
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
-            return response.json(); // JSON 데이터를 반환
+            return response.json();
         })
-        .then((result) => {
-            // 기존 컨텐츠 초기화
-            container.innerHTML = "";
-
-            // 받아온 데이터를 렌더링
-            renderLinkPreviews(result.data, container);
-
-            // 데이터가 없으면 메시지 표시
-            if (result.data.size === 0) {
-                showEmptyMessage(container);
-            } else {
-                removeEmptyMessage(container);
+        .then((data) => {
+            if (page === 0 && container.querySelector(".link-preview")) {
+                container.querySelectorAll(".link-preview").forEach((el) => el.remove());
             }
 
+            data.data.content.forEach((link) => {
+                const linkPreview = createLinkPreview(link);
+                container.insertBefore(linkPreview, container.querySelector(".scroll-sentinel"));
+            });
+
+            if (page === 0) {
+                addMedalsToList(container);
+            }
+
+            console.log(`Current page loaded: ${page}`);
+
+            if (!data.data.last) {
+                callback(page + 1);
+            } else {
+                const sentinel = container.querySelector(".scroll-sentinel");
+                if (sentinel) sentinel.remove();
+            }
+
+            if (data.data.totalElements === 0) {
+                if (!container.querySelector(".empty-message")) {
+                    const emptyMessage = document.createElement("pre");
+                    emptyMessage.className = "empty-message";
+                    emptyMessage.textContent = "아직 링크가 없습니다.\n링크를 추가하고 조회 통계를 확인하세요!";
+                    container.appendChild(emptyMessage);
+                }
+            } else {
+                const existingEmptyMessage = container.querySelector(".empty-message");
+                if (existingEmptyMessage) existingEmptyMessage.remove();
+            }
         })
         .catch((error) => {
             console.error("링크 목록 가져오기 실패:", error);
         });
 }
 
+/**
+ * LinkDto 데이터를 기반으로 링크 프리뷰 HTML 요소 생성
+ * @param {Object} link - LinkDto 객체 (썸네일 URL 포함)
+ * @returns {HTMLElement} - 생성된 링크 프리뷰 요소
+ */
+function createLinkPreview(link) {
+    const wrapper = document.createElement("div");
+    wrapper.className = "link-preview";
+    wrapper.id = `link-preview-${link.id}`;
+    wrapper.setAttribute("data-id", link.id);
+    wrapper.setAttribute("data-order", link.order);
 
-function renderLinkPreviews(links, container) {
-    if (!(container instanceof HTMLElement)) {
-        return;
-    }
-
-    // `map`을 사용해 각 링크를 HTML 문자열로 변환
-    const html = links
-        .map(
-            (link) => `
-        <!-- 복사 완료 메시지 -->
-        <div class="link-preview" id="link-preview-${link.id}" data-id="${link.id}">
-            <div class="link-preview-content" style="margin-left: 7px; margin-top: 1px;">
-                <div class="title-container" style="align-items: center;">
-                    <h3 class="link-title">${link.title}</h3>
-                </div>
-                <button class="copy-button" style="padding: 0">
-                    <span class="link-url">${link.proxyUrl}</span>
-                </button>
-                <p class="link-description">조회수 ${link.count.toLocaleString()}</p>
+    wrapper.innerHTML = `
+        <div class="link-preview-content" style="margin-left: 7px; margin-top: 1px;">
+            <div class="title-container" style="align-items: center;">
+                <h3 class="link-title">${link.title}</h3>
             </div>
-            <div class="link-preview-thumbnail">
-                <a href="${link.proxyUrl}/${link.id}" target="_blank" rel="noopener noreferrer">
-                    <img src="${link.thumbnailUrl}">
-                </a>
-            </div>
+            <button class="copy-button" style="padding: 0">
+                <span class="link-url">${link.proxyUrl}</span>
+            </button>
+            <p class="link-description">조회수 ${link.count.toLocaleString()}</p>
         </div>
-    `
-        )
-        .join(""); // 문자열로 결합
+        <div class="link-preview-thumbnail">
+            <a href="${link.proxyUrl}/${link.id}" target="_blank" rel="noopener noreferrer">
+                <img src="${link.thumbnailUrl}">
+            </a>
+        </div>
+        <div id="copy-toast" class="copy-toast">복사되었습니다!</div>
+    `;
 
-    container.innerHTML = html; // 컨테이너에 HTML 삽입
-
-    addMedalsToList(container);
-
-    // 복사 버튼 클릭 이벤트 추가
-    container.querySelectorAll(".copy-button").forEach((button, index) => {
-        const link = links[index];
-        button.addEventListener("click", () => {
-            navigator.clipboard
-                .writeText(`${link.proxyUrl}/${link.id}`)
-                .then(() => {
-                    showToast("URL이 클립보드에 복사되었습니다!");
-                })
-                .catch((error) => {
-                    console.error("클립보드 복사 실패:", error);
-                    showToast("클립보드 복사 실패. 다시 시도해주세요!");
-                });
-        });
+    const copyButton = wrapper.querySelector(".copy-button");
+    copyButton.addEventListener("click", () => {
+        navigator.clipboard.writeText(link.proxyUrl + "/" + link.id)
+            .then(() => {
+                showToast("URL이 클립보드에 복사되었습니다!");
+            })
+            .catch((error) => {
+                console.error("클립보드 복사 실패:", error);
+                showToast("클립보드 복사 실패. 다시 시도해주세요!");
+            });
     });
-}
 
+    return wrapper;
+}
 
 /**
  * Toast 메시지 표시 함수
@@ -96,7 +163,10 @@ function showToast(message) {
     const toast = document.getElementById("copy-toast");
     toast.textContent = message;
     toast.classList.add("show");
-    setTimeout(() => toast.classList.remove("show"), 2000);
+
+    setTimeout(() => {
+        toast.classList.remove("show");
+    }, 2000);
 }
 
 /**
@@ -104,58 +174,34 @@ function showToast(message) {
  * @param {HTMLElement} container - 리스트 컨테이너
  */
 function addMedalsToList(container) {
-    const listItems = container.querySelectorAll('.link-preview'); // `.link-preview` 클래스 요소를 모두 선택
+    const listItems = container.querySelectorAll(".link-preview");
     listItems.forEach((item, index) => {
-        // 기존에 추가된 메달이 있으면 제거
-        const existingMedal = item.querySelector('.medal');
-        if (existingMedal) {
-            existingMedal.remove();
-        }
+        const medal = document.createElement("span");
+        medal.className = "medal";
 
-        // 메달 생성
-        const medal = document.createElement('span');
-        medal.className = 'medal';
-        if (index === 0) {
-            medal.classList.add('gold'); // 금메달
-        } else if (index === 1) {
-            medal.classList.add('silver'); // 은메달
-        } else if (index === 2) {
-            medal.classList.add('bronze'); // 동메달
-        } else {
-            return; // 4위 이하에는 메달 추가하지 않음
-        }
+        if (index === 0) medal.classList.add("gold");
+        else if (index === 1) medal.classList.add("silver");
+        else if (index === 2) medal.classList.add("bronze");
+        else return;
 
-        // 제목 앞에 메달 추가
-        const titleContainer = item.querySelector('.title-container');
+        const titleContainer = item.querySelector(".title-container");
         if (titleContainer) {
-            titleContainer.insertBefore(medal, titleContainer.firstChild); // 제목 앞에 메달 추가
+            titleContainer.insertBefore(medal, titleContainer.firstChild);
         }
     });
 }
 
 /**
- * "데이터 없음" 메시지를 추가
- * @param {HTMLElement} container - 데이터를 렌더링할 HTML 컨테이너
+ * Sentinel의 높이를 설정
+ * @param {HTMLElement} sentinel - Sentinel 요소
  */
-function showEmptyMessage(container) {
-    const emptyMessage = document.createElement("pre");
-    emptyMessage.className = "empty-message";
-    emptyMessage.textContent = "아직 링크가 없습니다.\n링크를 추가하고 조회 통계를 확인하세요!";
-    container.appendChild(emptyMessage);
+function setSentinelHeight(sentinel) {
+    const viewportHeight = window.innerHeight;
+    const sentinelHeight = Math.max(50, viewportHeight * 0.1);
+    sentinel.style.height = `${sentinelHeight}px`;
 }
 
-/**
- * "데이터 없음" 메시지를 제거
- * @param {HTMLElement} container - 데이터를 렌더링할 HTML 컨테이너
- */
-function removeEmptyMessage(container) {
-    const emptyMessageDiv = container.querySelector(".empty-message");
-    if (emptyMessageDiv) emptyMessageDiv.remove();
-}
-
-
-// 초기화
-document.addEventListener('DOMContentLoaded', () => {
-    const listContainer = document.getElementById('tonglink-list');
+document.addEventListener("DOMContentLoaded", () => {
+    const listContainer = document.getElementById("tonglink-list");
     initPopularInfiniteScroll(listContainer);
 });

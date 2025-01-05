@@ -55,14 +55,14 @@ class LinkService (
         return targetLink.proxyUrl
     }
 
-    @Cacheable(key1 = RedisKey.TONGLINK_HOME, ttl = 300)
+    @Cacheable(key1 = RedisKey.TONGLINK_HOME, key2 = "#{#uuId + ':' + #pageable.pageNumber}", ttl = 300)
     fun getMyTongLink(uuId: String, pageable: Pageable, @IgnoreCache ignoreCache: Boolean) : SimplePageImpl<LinkDto> {
         return linkRepository.getMyTongLink(uuId, pageable)
     }
 
-    @Cacheable(key1 = RedisKey.TONGLINK_RANK, ttl = 300)
-    fun getPopularTongLink() : List<PopularLinkDto> {
-        return linkRepository.getPopularTongLink()
+    @Cacheable(key1 = RedisKey.TONGLINK_RANK, key2 = "#{#pageable.pageNumber}", ttl = 300)
+    fun getPopularTongLink(pageable: Pageable) : SimplePageImpl<PopularLinkDto> {
+        return linkRepository.getPopularTongLink(pageable)
     }
 
     @Transactional

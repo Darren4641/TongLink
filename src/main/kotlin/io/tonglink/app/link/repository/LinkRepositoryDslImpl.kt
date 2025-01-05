@@ -63,7 +63,7 @@ class LinkRepositoryDslImpl (
         )
     }
 
-    override fun getPopularTongLink(): List<PopularLinkDto> {
+    override fun getPopularTongLink(pageable: Pageable): SimplePageImpl<PopularLinkDto> {
         val todayStart = LocalDate.now(ZoneId.of("Asia/Seoul")).atStartOfDay()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
         val todayStartString = todayStart.format(formatter)
@@ -80,13 +80,22 @@ class LinkRepositoryDslImpl (
             .leftJoin(visit).on(visit.linkId.eq(link.id))
             .where(link.isExposure.eq(true)
                 .and(link.endDate.gt(todayStartString)))
-            .orderBy(visit.id.count().desc()) // 조회 수 기준으로 정렬
-            .limit(100) // 최대 100개만 조회
-            .groupBy(link.id)
+            .offset(pageable.offset)
+            .limit(pageable.pageSize.toLong())
+            .orderBy(visit.id.count().desc())
+            .groupBy(link.id).having(visit.id.count().gt(0))
             .having(visit.id.count().gt(0))
             .fetch()
 
-        return results.map {
+        val total = queryFactory
+            .select(link.id.count())
+            .from(link)
+            .leftJoin(visit).on(visit.linkId.eq(link.id))
+            .where(link.isExposure.eq(true)
+                .and(link.endDate.gt(todayStartString)))
+            .fetchOne() ?: 0L
+
+        val content = results.map {
             PopularLinkDto(
                 id = it.get(link.id)!!,
                 title = it.get(link.title)!!,
@@ -95,6 +104,15 @@ class LinkRepositoryDslImpl (
                 count = it.get(visit.id.count())!!
             )
         }
+
+        return SimplePageImpl(
+            content = content,
+            page = pageable.pageNumber,
+            size = pageable.pageSize,
+            totalElements = total,
+            totalPages = if (total > 0) ((total - 1) / pageable.pageSize + 1).toInt() else 0,
+            isLast = pageable.offset + pageable.pageSize >= total
+        )
     }
 
     override fun updateOrderTongLink(uuId: String, updateOrderLinkDto: List<UpdateOrderLinkDto>) {
