@@ -48,7 +48,7 @@ class ProxyController (
             println("Bot@@@@")
         }
 
-        if(isPreviewVisit(isBot)) {
+        if(isPreviewVisit(isPreview)) {
             println("Preview@@@@")
         }
 
