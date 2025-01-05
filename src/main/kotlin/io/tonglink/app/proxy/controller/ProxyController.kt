@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 
 @Controller
 @RequestMapping("/proxy")
@@ -40,8 +41,10 @@ class ProxyController (
         val userAgent = request.getHeader("User-Agent") ?: "Unknown"
         val referrer = request.getHeader("Referer") ?: "Unknown"
 
+        val serverBaseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString()
+
         if(!isBotVisit(isBot) && !isPreviewVisit(isPreview)) {
-            proxyService.visitDataCollection(link, user, realIp, forwardedFor, userAgent, referrer)
+            proxyService.visitDataCollection(link, user, realIp, forwardedFor, userAgent, referrer, serverBaseUrl)
         }
 
 

@@ -23,8 +23,7 @@ class PushNotificationService (
         }
     }
 
-    fun sendPushNotification(subscription: Subscription, title: String) {
-        val serverBaseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString()
+    fun sendPushNotification(subscription: Subscription, title: String, serverBaseUrl: String) {
 
         val payloadData = mapOf(
             "title" to "통통🎉",

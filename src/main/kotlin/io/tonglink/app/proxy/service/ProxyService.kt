@@ -25,10 +25,10 @@ class ProxyService (
     }
 
     @Async
-    fun visitDataCollection(link: Link, user: UserDataDto, realIp: String?, forwardedFor: String?, userAgent: String, referrer: String) {
+    fun visitDataCollection(link: Link, user: UserDataDto, realIp: String?, forwardedFor: String?, userAgent: String, referrer: String, serverBaseUrl: String) {
         // 푸시알림
         if(user.endPoint != null && user.p256dh != null && user.auth != null && user.isPushEnabled) {
-            notificationService.sendPushNotification(Subscription(user.endPoint, Subscription.Keys(user.p256dh, user.auth)), link.title)
+            notificationService.sendPushNotification(Subscription(user.endPoint, Subscription.Keys(user.p256dh, user.auth)), link.title, serverBaseUrl)
         }
 
         // 방문 데이터 수집
