@@ -25,17 +25,14 @@ class ProxyService (
     }
 
     @Async
-    fun visitDataCollection(request: HttpServletRequest, link: Link, user: UserDataDto, realIp: String?, forwardedFor: String?) {
+    fun visitDataCollection(link: Link, user: UserDataDto, realIp: String?, forwardedFor: String?, userAgent: String, referrer: String) {
         // 푸시알림
-        println("방문 데이터 수집")
         if(user.endPoint != null && user.p256dh != null && user.auth != null && user.isPushEnabled) {
             notificationService.sendPushNotification(Subscription(user.endPoint, Subscription.Keys(user.p256dh, user.auth)), link.title)
         }
 
         // 방문 데이터 수집
         val userIp = forwardedFor?.split(",")?.firstOrNull() ?: realIp ?: "Unknown IP"
-        val userAgent = request.getHeader("User-Agent")
-        val referrer = request.getHeader("Referer")
         saveVisit(link.id!!, link.userKey, userIp, userAgent, referrer)
     }
 

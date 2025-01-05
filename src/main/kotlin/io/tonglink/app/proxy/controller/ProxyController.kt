@@ -37,10 +37,11 @@ class ProxyController (
         }
 
         val user = userService.getUserInfo(link.userKey)
+        val userAgent = request.getHeader("User-Agent") ?: "Unknown"
+        val referrer = request.getHeader("Referer") ?: "Unknown"
 
-        println("isBot = $isBot, isPreview = $isPreview")
         if(!isBotVisit(isBot) && !isPreviewVisit(isPreview)) {
-            proxyService.visitDataCollection(request, link, user, realIp, forwardedFor)
+            proxyService.visitDataCollection(link, user, realIp, forwardedFor, userAgent, referrer)
         }
 
 
