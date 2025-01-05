@@ -44,8 +44,11 @@ class ProxyController (
             notificationService.sendPushNotification(Subscription(user.endPoint, Subscription.Keys(user.p256dh, user.auth)), link.title)
         }
 
+        println("isPreview = $isPreview")
+        println("isBot = $isBot")
         if(isBotVisit(isBot)) {
             println("Bot@@@@")
+
         }
 
         if(isPreviewVisit(isPreview)) {
