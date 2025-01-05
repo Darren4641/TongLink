@@ -27,6 +27,7 @@ class ProxyService (
     @Async
     fun visitDataCollection(request: HttpServletRequest, link: Link, user: UserDataDto, realIp: String?, forwardedFor: String?) {
         // 푸시알림
+        println("방문 데이터 수집")
         if(user.endPoint != null && user.p256dh != null && user.auth != null && user.isPushEnabled) {
             notificationService.sendPushNotification(Subscription(user.endPoint, Subscription.Keys(user.p256dh, user.auth)), link.title)
         }

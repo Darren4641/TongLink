@@ -39,7 +39,7 @@ class ProxyController (
         val user = userService.getUserInfo(link.userKey)
 
         println("isBot = $isBot, isPreview = $isPreview")
-        if(!isBotVisit(isBot) && isPreviewVisit(isPreview)) {
+        if(!isBotVisit(isBot) && !isPreviewVisit(isPreview)) {
             proxyService.visitDataCollection(request, link, user, realIp, forwardedFor)
         }
 
