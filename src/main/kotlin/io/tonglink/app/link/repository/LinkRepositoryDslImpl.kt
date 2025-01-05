@@ -4,6 +4,7 @@ import com.querydsl.core.types.Projections
 import com.querydsl.core.types.dsl.CaseBuilder
 import com.querydsl.core.types.dsl.Expressions
 import com.querydsl.jpa.impl.JPAQueryFactory
+import io.tonglink.app.common.dto.SimplePageImpl
 import io.tonglink.app.link.dto.*
 import io.tonglink.app.link.entity.Link
 import io.tonglink.app.link.entity.QLink.link
@@ -20,7 +21,7 @@ import java.time.format.DateTimeFormatter
 class LinkRepositoryDslImpl (
     private val queryFactory: JPAQueryFactory
 ) : LinkRepositoryDsl {
-    override fun getMyTongLink(uuId: String, pageable: Pageable): Page<LinkDto> {
+    override fun getMyTongLink(uuId: String, pageable: Pageable): SimplePageImpl<LinkDto> {
         val results = queryFactory
             .select(link)
             .from(link)
@@ -52,10 +53,17 @@ class LinkRepositoryDslImpl (
         }
 
 
-        return PageImpl(content, pageable, total)
+        return SimplePageImpl(
+            content = content,
+            page = pageable.pageNumber,
+            size = pageable.pageSize,
+            totalElements = total,
+            totalPages = if (total > 0) ((total - 1) / pageable.pageSize + 1).toInt() else 0,
+            isLast = pageable.offset + pageable.pageSize >= total
+        )
     }
 
-    override fun getPopularTongLink(pageable: Pageable): Page<PopularLinkDto> {
+    override fun getPopularTongLink(): List<PopularLinkDto> {
         val todayStart = LocalDate.now(ZoneId.of("Asia/Seoul")).atStartOfDay()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
         val todayStartString = todayStart.format(formatter)
@@ -72,21 +80,13 @@ class LinkRepositoryDslImpl (
             .leftJoin(visit).on(visit.linkId.eq(link.id))
             .where(link.isExposure.eq(true)
                 .and(link.endDate.gt(todayStartString)))
-            .offset(pageable.offset)
-            .limit(pageable.pageSize.toLong())
-            .orderBy(visit.id.count().desc())
-            .groupBy(link.id).having(visit.id.count().gt(0))
+            .orderBy(visit.id.count().desc()) // 조회 수 기준으로 정렬
+            .limit(100) // 최대 100개만 조회
+            .groupBy(link.id)
+            .having(visit.id.count().gt(0))
             .fetch()
 
-        val total = queryFactory
-            .select(link.id.count())
-            .from(link)
-            .leftJoin(visit).on(visit.linkId.eq(link.id))
-            .where(link.isExposure.eq(true)
-                .and(link.endDate.gt(todayStartString)))
-            .fetchOne() ?: 0L
-
-        val content = results.map {
+        return results.map {
             PopularLinkDto(
                 id = it.get(link.id)!!,
                 title = it.get(link.title)!!,
@@ -95,8 +95,6 @@ class LinkRepositoryDslImpl (
                 count = it.get(visit.id.count())!!
             )
         }
-
-        return PageImpl(content, pageable, total)
     }
 
     override fun updateOrderTongLink(uuId: String, updateOrderLinkDto: List<UpdateOrderLinkDto>) {

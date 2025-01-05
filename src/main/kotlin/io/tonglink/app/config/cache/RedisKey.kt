@@ -1,8 +1,9 @@
 package io.tonglink.app.config.cache
 
 enum class RedisKey (val key: String) {
-    WEB_MAIN("WebMainIndexModel"),
-    WEB_MAIN_COLLECTION("WebMainCollectionModel"),
+    TONGLINK_HOME("TongLinkHomeModel"),
+    TONGLINK_RANK("TongLinkRankModel");
+    /*WEB_MAIN_COLLECTION("WebMainCollectionModel"),
     WEB_MAIN_SERVICE("WebMainServiceSettingModel"),
     WEB_MAIN_PROFILE("WebMainProfileModel"),
 
@@ -18,7 +19,7 @@ enum class RedisKey (val key: String) {
     WEB_RANK_USER_LIST("WebRankUserList"),
 
     CONFIG("Config"),
-    CONFIG_MAINTENANCE_USER("ConfigMaintenanceUser");
+    CONFIG_MAINTENANCE_USER("ConfigMaintenanceUser");*/
 
     companion object {
         fun fromKey(key: String): RedisKey? {

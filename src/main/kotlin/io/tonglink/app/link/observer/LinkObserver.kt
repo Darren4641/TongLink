@@ -1,14 +1,14 @@
 package io.tonglink.app.link.observer
 
 import io.tonglink.app.common.util.CacheUtil
+import io.tonglink.app.config.cache.RedisKey
 import io.tonglink.app.link.entity.Link
 import jakarta.persistence.PostPersist
 import jakarta.persistence.PostRemove
 import jakarta.persistence.PostUpdate
 
-class LinkObserver() {
+class LinkObserver(private val cacheUtil: CacheUtil) {
 
-    private lateinit var cacheUtil: CacheUtil
 
     @PostPersist
     fun afterInsert(link: Link) {
@@ -25,9 +25,9 @@ class LinkObserver() {
         refreshCache(link)
     }
 
-    private fun refreshCache(story: Link) {
+    private fun refreshCache(link: Link) {
         // 메인 페이지 캐시 삭제
-        //cacheUtil.deleteCache(RedisConst.WEB_MAIN, "")
+        cacheUtil.deleteCache(RedisKey.TONGLINK_HOME, link.userKey)
 
         // 사연 메인 캐시 삭제
         //cacheUtil.deleteCacheByPrefix(RedisConst.WEB_MAIN_COLLECTION)

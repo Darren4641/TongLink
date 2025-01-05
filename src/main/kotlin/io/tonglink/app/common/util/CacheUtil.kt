@@ -1,6 +1,7 @@
 package io.tonglink.app.common.util
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.tonglink.app.config.cache.RedisKey
 import org.slf4j.LoggerFactory
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Component
@@ -55,8 +56,8 @@ class CacheUtil(
         return if (key2.isBlank()) key1 else "$key1:$key2"
     }
 
-    fun deleteCache(key1: String, key2: String): Boolean {
-        val cacheKey = getCacheKey(key1, key2)
+    fun deleteCache(key1: RedisKey, key2: String): Boolean {
+        val cacheKey = getCacheKey(key1.name, key2)
         return try {
             redisTemplate.delete(cacheKey)
             log.debug("Cache deleted - $cacheKey")

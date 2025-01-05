@@ -18,7 +18,7 @@ class CacheAspect(
     @Throws(Throwable::class)
     fun cacheAround(joinPoint: ProceedingJoinPoint, cacheable: Cacheable): Any {
         // 기본 캐시 키를 어노테이션에서 가져옴
-        val key1 = cacheable.key1
+        val key1 = cacheable.key1.name
         var key2 = cacheable.key2
         val ttl = cacheable.ttl
 

@@ -1,7 +1,11 @@
 package io.tonglink.app.link.service
 
 import com.example.kopring.common.status.ResultCode
+import io.tonglink.app.common.dto.SimplePageImpl
 import io.tonglink.app.common.exception.TongLinkException
+import io.tonglink.app.config.cache.Cacheable
+import io.tonglink.app.config.cache.IgnoreCache
+import io.tonglink.app.config.cache.RedisKey
 import io.tonglink.app.link.dto.*
 import io.tonglink.app.link.entity.Link
 import io.tonglink.app.link.repository.LinkRepository
@@ -51,12 +55,14 @@ class LinkService (
         return targetLink.proxyUrl
     }
 
-    fun getMyTongLink(uuId: String, pageable: Pageable) : Page<LinkDto> {
+    @Cacheable(key1 = RedisKey.TONGLINK_HOME, ttl = 300)
+    fun getMyTongLink(uuId: String, pageable: Pageable, @IgnoreCache ignoreCache: Boolean) : SimplePageImpl<LinkDto> {
         return linkRepository.getMyTongLink(uuId, pageable)
     }
 
-    fun getPopularTongLink(pageable: Pageable) : Page<PopularLinkDto> {
-        return linkRepository.getPopularTongLink(pageable)
+    @Cacheable(key1 = RedisKey.TONGLINK_RANK, ttl = 300)
+    fun getPopularTongLink() : List<PopularLinkDto> {
+        return linkRepository.getPopularTongLink()
     }
 
     @Transactional
