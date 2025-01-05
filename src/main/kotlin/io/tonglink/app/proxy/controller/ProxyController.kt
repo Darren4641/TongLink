@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 class ProxyController (
     val proxyService: ProxyService,
     val userService: UserService,
-    val notificationService: PushNotificationService
+
 ) {
 
     @GetMapping("/{uuId}/{linkId}")
@@ -29,8 +29,6 @@ class ProxyController (
                   @RequestHeader("X-Is-Preview", required = false, defaultValue = "0") isPreview: String,
                   @PathVariable(name = "uuId") uuId: String,
                   @PathVariable(name = "linkId") linkId: Long) : String {
-        println("uuId = " + uuId);
-        println("linkId = " + linkId);
         val link = proxyService.getRedirectLink(linkId)
 
         // 기간이 만료되었는지 확인
@@ -38,28 +36,13 @@ class ProxyController (
             throw ExpirationException(ResultCode.EXPRIRATION)
         }
 
-
         val user = userService.getUserInfo(link.userKey)
-        if(user.endPoint != null && user.p256dh != null && user.auth != null && user.isPushEnabled) {
-            notificationService.sendPushNotification(Subscription(user.endPoint, Subscription.Keys(user.p256dh, user.auth)), link.title)
+
+
+        if(!isBotVisit(isBot) && isPreviewVisit(isPreview)) {
+            proxyService.visitDataCollection(request, link, user, realIp, forwardedFor)
         }
 
-        println("isPreview = $isPreview")
-        println("isBot = $isBot")
-        if(isBotVisit(isBot)) {
-            println("Bot@@@@")
-
-        }
-
-        if(isPreviewVisit(isPreview)) {
-            println("Preview@@@@")
-        }
-
-        // 방문 데이터 수집
-        val userIp = forwardedFor?.split(",")?.firstOrNull() ?: realIp ?: "Unknown IP"
-        val userAgent = request.getHeader("User-Agent")
-        val referrer = request.getHeader("Referer")
-        proxyService.saveVisit(link.id!!, link.userKey, userIp, userAgent, referrer)
 
         return "redirect:${link.originUrl}"
     }

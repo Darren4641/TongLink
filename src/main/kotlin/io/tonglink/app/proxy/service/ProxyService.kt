@@ -4,10 +4,16 @@ import io.tonglink.app.link.entity.Link
 import io.tonglink.app.link.entity.Visit
 import io.tonglink.app.link.repository.LinkRepository
 import io.tonglink.app.link.repository.VisitRepository
+import io.tonglink.app.notification.service.PushNotificationService
+import io.tonglink.app.user.dto.UserDataDto
+import jakarta.servlet.http.HttpServletRequest
+import nl.martijndwars.webpush.Subscription
+import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 
 @Service
 class ProxyService (
+    val notificationService: PushNotificationService,
     val linkRepository: LinkRepository,
     val visitRepository: VisitRepository
 ) {
@@ -17,6 +23,21 @@ class ProxyService (
 
         return link
     }
+
+    @Async
+    fun visitDataCollection(request: HttpServletRequest, link: Link, user: UserDataDto, realIp: String?, forwardedFor: String?) {
+        // 푸시알림
+        if(user.endPoint != null && user.p256dh != null && user.auth != null && user.isPushEnabled) {
+            notificationService.sendPushNotification(Subscription(user.endPoint, Subscription.Keys(user.p256dh, user.auth)), link.title)
+        }
+
+        // 방문 데이터 수집
+        val userIp = forwardedFor?.split(",")?.firstOrNull() ?: realIp ?: "Unknown IP"
+        val userAgent = request.getHeader("User-Agent")
+        val referrer = request.getHeader("Referer")
+        saveVisit(link.id!!, link.userKey, userIp, userAgent, referrer)
+    }
+
 
     fun saveVisit(linkId: Long, uuId: String, userIp: String?, userAgent: String?, referrer: String?) {
         val (deviceType, browser) = extractDeviceAndBrowser(userAgent)
@@ -31,6 +52,7 @@ class ProxyService (
             browser = browser
         ))
     }
+
 
 
     private fun extractDeviceAndBrowser(userAgent: String?): Pair<String, String> {
