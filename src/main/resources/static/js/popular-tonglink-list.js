@@ -134,7 +134,7 @@ function createLinkPreview(link) {
     wrapper.innerHTML = `
         <div class="link-preview-content" style="margin-left: 7px; margin-top: 1px;">
             <div class="title-container" style="align-items: center;">
-                <h3 class="link-title">${link.title}</h3>
+                <h3 class="link-title" style="max-width: 275px;">${link.title}</h3>
             </div>
             <button class="copy-button" style="padding: 0">
                 <span class="link-url">${link.proxyUrl}</span>
