@@ -17,9 +17,13 @@ class NavController (
 ) {
 
     @GetMapping
+    fun index(model: Model) : String {
+        return "index"
+    }
+
+    @GetMapping("/home")
     fun home(model: Model) : String {
         model.addAttribute("nav", "home")
-        //VapidUtil.generateVapidKeyPair()
         return "home"
     }
 

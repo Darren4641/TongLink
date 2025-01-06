@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>TongLink</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="android-touch-icon" sizes="72x72" th:href="@{/images/android-icon-72x72.png}">
+    <link rel="apple-touch-icon" sizes="72x72" th:href="@{/images/icons/icon-128x128-v2.png}">
+    <link rel="icon" type="image/png" sizes="32x32" th:href="@{/images/favicon-32x32.png}">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <!-- 커스텀 CSS -->
+    <link rel="stylesheet" href="/css/styles.css" th:href="@{/css/common.css}">
+
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(45deg, #262626, rgb(38, 38, 38));
+        }
+
+        .container {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin-bottom: 10px;
+        }
+        .first-parent-container {
+            display: flex;
+            flex-direction: row;
+        }
+        .first-container-left {
+            flex: 1;
+        }
+        .first-container-right {
+            flex: 1;
+        }
+
+        footer {
+            background: #333;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+<header class="bg-primary text-white text-center py-4">
+    <div class="container">
+        <img src="/images/tonglink-logo-white.png" alt="서비스명 로고" class="header&#45;&#45;logo-img">
+        <img src="/images/tonglink-textlogo-white.png" alt="서비스명 로고" class="header&#45;&#45;logo-img">
+    </div>
+    <div class="first-parent-container">
+        <div class="first-container-left">
+            <p class="lead">링크의 새로운 시작, 더 많은 가치를 만들어 보세요!</p>
+            <p>한 번의 등록으로 더 나은 링크 관리와 통계를 경험하세요.</p>
+        </div>
+        <div class="first-container-right">
+            <img src="/images/tonglink-logo-white.png" alt="서비스명 로고" class="header&#45;&#45;logo-img">
+        </div>
+    </div>
+
+
+</header>
+
+<main>
+    <!-- Hero Section -->
+    <section class="py-5 bg-light text-center">
+        <div class="container">
+            <h2>당신의 문제를 해결하는 완벽한 솔루션</h2>
+            <p class="lead">간단하고 직관적인 서비스로 더 나은 삶을 경험하세요.</p>
+            <a href="#features" class="btn btn-primary mt-3">자세히 알아보기</a>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-5">
+        <div class="container">
+            <div class="row text-center">
+                <div class="col-md-4">
+                    <i class="bi bi-check-circle fs-1 text-success"></i>
+                    <h3>특장점 1</h3>
+                    <p>서비스의 첫 번째 특징과 장점을 설명합니다.</p>
+                </div>
+                <div class="col-md-4">
+                    <i class="bi bi-lightning-fill fs-1 text-warning"></i>
+                    <h3>특장점 2</h3>
+                    <p>서비스의 두 번째 특징과 장점을 설명합니다.</p>
+                </div>
+                <div class="col-md-4">
+                    <i class="bi bi-people-fill fs-1 text-info"></i>
+                    <h3>특장점 3</h3>
+                    <p>서비스의 세 번째 특징과 장점을 설명합니다.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-5 bg-primary text-white text-center ">
+        <div class="container">
+            <h2>지금 바로 시작해보세요</h2>
+            <p class="lead">서비스를 무료로 체험하고 더 나은 결과를 만들어보세요.</p>
+            <a href="/signup" class="btn btn-light btn-lg mt-3" th:href="@{/signup}">무료 가입</a>
+        </div>
+    </section>
+</main>
+
+<footer class="bg-dark text-white text-center py-3">
+    <div class="container">
+        <p>&copy; 2025 서비스 이름. 모든 권리 보유.</p>
+    </div>
+</footer>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+
+<!--
+히어로 섹션 (Hero Section)
+
+“링크 하나로, 더 많은 가능성을 열어보세요.”
+특정 링크를 등록하면 새로운 링크를 생성하고, 통계와 푸시 알림으로 스마트한 링크 관리를 시작하세요.
+지금 시작하기
+
+특장점 섹션 (Features Section)
+	1.	스마트 링크 생성
+원래의 링크를 새로운 링크로 변환! 생성된 링크로 접속하면 자동으로 원래 링크로 이동합니다.
+	2.	실시간 통계 확인
+언제, 어디에서 클릭되었는지 확인하고 홍보 효과를 극대화하세요.
+	3.	푸시 알림
+클릭이 발생할 때마다 즉시 알림을 받아 중요한 순간을 놓치지 마세요.
+	4.	동기화된 관리
+로그인만 하면 다른 기기에서도 기존에 사용하던 링크를 바로 사용할 수 있습니다.
+	5.	Top 100 링크
+조회수가 높은 링크를 모아 보여주는 Top 100 목록으로 홍보 효과를 확인하고 새로운 아이디어를 얻으세요.
+
+CTA (Call-To-Action) 섹션
+
+“링크 관리의 새로운 시대, 지금 시작하세요!”
+지금 무료로 가입하고, 간편하게 통계와 알림을 설정하세요.
+무료로 시작하기
+
+Top 100 섹션 (추가 가능)
+
+“최고의 링크를 한눈에, Top 100 리스트”
+조회수가 가장 높은 링크들을 확인하고, 나만의 성공 전략을 만들어 보세요.
+
+푸터
+
+“서비스 이름”
+스마트한 링크 관리와 통계의 모든 것.
+© 2025 서비스 이름. 모든 권리 보유.
+
+-->
