@@ -27,17 +27,20 @@
             justify-content: flex-start;
             margin-bottom: 10px;
         }
-        .first-parent-container {
-            display: flex;
-            flex-direction: row;
-        }
-        .first-container-left {
-            flex: 1;
-        }
-        .first-container-right {
-            flex: 1;
+        .image-banner-section {
+            background-color: #262626; /* 섹션 배경색 */
         }
 
+        .image-container {
+            text-align: center;
+        }
+
+        .responsive-image {
+            margin: 0 auto;
+            max-width: 60%; /* 이미지가 화면의 60% 너비로 제한 */
+            max-height: 80vh; /* 이미지의 최대 높이를 화면 높이의 80%로 제한 */
+            object-fit: contain; /* 이미지가 잘리지 않도록 비율 유지 */
+        }
         footer {
             background: #333;
             color: #aaa;
@@ -46,65 +49,37 @@
 </head>
 <body>
 <header class="bg-primary text-white text-center py-4">
-    <div class="container">
+    <div class="container" style="max-width: 100%">
         <img src="/images/tonglink-logo-white.png" alt="서비스명 로고" class="header&#45;&#45;logo-img">
         <img src="/images/tonglink-textlogo-white.png" alt="서비스명 로고" class="header&#45;&#45;logo-img">
     </div>
-    <div class="first-parent-container">
-        <div class="first-container-left">
-            <p class="lead">링크의 새로운 시작, 더 많은 가치를 만들어 보세요!</p>
-            <p>한 번의 등록으로 더 나은 링크 관리와 통계를 경험하세요.</p>
+    <section class="image-banner-section">
+        <div class="image-container">
+            <img src="/images/banner1.png" alt="Tong Link 배너 이미지" class="responsive-image">
         </div>
-        <div class="first-container-right">
-            <img src="/images/tonglink-logo-white.png" alt="서비스명 로고" class="header&#45;&#45;logo-img">
+    </section>
+    <section class="image-banner-section">
+        <div class="image-container">
+            <img src="/images/banner1.png" alt="Tong Link 배너 이미지" class="responsive-image">
         </div>
-    </div>
-
-
+    </section>
+    <section class="image-banner-section">
+        <div class="image-container">
+            <img src="/images/banner1.png" alt="Tong Link 배너 이미지" class="responsive-image">
+        </div>
+    </section>
+    <section class="image-banner-section">
+        <div class="image-container">
+            <img src="/images/banner1.png" alt="Tong Link 배너 이미지" class="responsive-image">
+        </div>
+    </section>
+    <section class="image-banner-section">
+        <div class="image-container">
+            <img src="/images/banner1.png" alt="Tong Link 배너 이미지" class="responsive-image">
+        </div>
+    </section>
 </header>
 
-<main>
-    <!-- Hero Section -->
-    <section class="py-5 bg-light text-center">
-        <div class="container">
-            <h2>당신의 문제를 해결하는 완벽한 솔루션</h2>
-            <p class="lead">간단하고 직관적인 서비스로 더 나은 삶을 경험하세요.</p>
-            <a href="#features" class="btn btn-primary mt-3">자세히 알아보기</a>
-        </div>
-    </section>
-
-    <!-- Features Section -->
-    <section id="features" class="py-5">
-        <div class="container">
-            <div class="row text-center">
-                <div class="col-md-4">
-                    <i class="bi bi-check-circle fs-1 text-success"></i>
-                    <h3>특장점 1</h3>
-                    <p>서비스의 첫 번째 특징과 장점을 설명합니다.</p>
-                </div>
-                <div class="col-md-4">
-                    <i class="bi bi-lightning-fill fs-1 text-warning"></i>
-                    <h3>특장점 2</h3>
-                    <p>서비스의 두 번째 특징과 장점을 설명합니다.</p>
-                </div>
-                <div class="col-md-4">
-                    <i class="bi bi-people-fill fs-1 text-info"></i>
-                    <h3>특장점 3</h3>
-                    <p>서비스의 세 번째 특징과 장점을 설명합니다.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- CTA Section -->
-    <section class="py-5 bg-primary text-white text-center ">
-        <div class="container">
-            <h2>지금 바로 시작해보세요</h2>
-            <p class="lead">서비스를 무료로 체험하고 더 나은 결과를 만들어보세요.</p>
-            <a href="/signup" class="btn btn-light btn-lg mt-3" th:href="@{/signup}">무료 가입</a>
-        </div>
-    </section>
-</main>
 
 <footer class="bg-dark text-white text-center py-3">
     <div class="container">
