@@ -89,7 +89,7 @@ class SecurityConfig (
             }
             .logout { logout ->
                 logout.logoutUrl("/logout")
-                logout.logoutSuccessUrl("/")
+                logout.logoutSuccessUrl("/home")
             }
 
         http.addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter::class.java)

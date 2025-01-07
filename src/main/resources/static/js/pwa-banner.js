@@ -35,15 +35,14 @@ function initPwaBanner(alwaysShow) {
     closeButton.addEventListener('click', () => dismissPwaBanner(overlay));
 
     // 앱 설치 버튼 동작 (Android 전용)
-    if(!isIosDevice) {
-        installButton.addEventListener('click', () => {
-            if (deferredPrompt) {
-                installPwa(deferredPrompt, overlay);
-            } else {
-                alert('이 브라우저는 앱 설치를 지원하지 않습니다.');
-            }
-        });
-    }
+    installButton.addEventListener('click', () => {
+        if (deferredPrompt) {
+            installPwa(deferredPrompt, overlay);
+        } else {
+            alert('이 브라우저는 앱 설치를 지원하지 않습니다.');
+        }
+    });
+
 
 }
 
