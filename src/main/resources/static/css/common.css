@@ -990,6 +990,11 @@ form input {
         background-color: #c6c6c6;
         transform: scale(1.1); /* 버튼 크기 확대 효과 */
     }
+
+    .index-footer .footer_infor {
+        display: block;
+        margin-left: 10px;
+    }
 }
 
 
