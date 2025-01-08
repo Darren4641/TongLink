@@ -38,7 +38,10 @@ class User (
     var auth: String? = null,
 
     @Column(name = "is_push_enabled", nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
-    var isPushEnabled: Boolean = true
+    var isPushEnabled: Boolean = false,
+
+    @Column(name = "token", columnDefinition = "text")
+    var token: String? = null
 
     ) : BaseEntity() {
 
@@ -49,6 +52,10 @@ class User (
     fun loginOauth2(email: String) {
         this.email = email
         this.password = "NO_PASS"
+    }
+
+    fun updateToken(token: String) {
+        this.token = token
     }
 
     fun updateIsPwa(isPwa: Boolean) {

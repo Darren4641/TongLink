@@ -23,7 +23,7 @@
             </a>
         </div>
         <div class="footer--item">
-            <a href="#" id="mypageLink">
+            <a href="/mypage" id="mypageLink">
                 <div class="footer--content">
                     <img src="/images/user.png" alt="My Page" th:classappend="${nav == 'mypage'} ? 'selected'">
                 </div>
@@ -37,9 +37,30 @@
 
 <script type="text/javascript" th:inline="javascript">
     document.addEventListener('DOMContentLoaded', function() {
-        const userUUID = localStorage.getItem("userUUID");
-        if (userUUID) {
-            document.getElementById('mypageLink').href = '/mypage?uuId=' + userUUID;
-        }
-    })
+        const myPageLink = document.getElementById('mypageLink');
+        const token = localStorage.getItem("token");
+        console.log(token);
+        myPageLink.addEventListener('click', function(event) {
+            event.preventDefault(); // 기본 클릭 동작 방지
+            if (token) {
+                console.log("token 존재")
+                fetch('/mypage', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                })
+                    .then(response => response.text()) // HTML 응답 받기
+                    .then(html => {
+                        // 받은 HTML을 페이지에 렌더링
+                        document.open();
+                        document.write(html);
+                        document.close();
+                    })
+                    .catch(error => console.error('Error:', error));
+            } else {
+                location.href="/mypage"
+            }
+        });
+    });
 </script>

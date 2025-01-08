@@ -35,7 +35,6 @@ class UserController (
 
     @GetMapping("/info/{uuId}")
     fun userInfo(@PathVariable(name = "uuId") uuId: String) : BaseResponse<UserDataDto> {
-        val temp = userService.getUserInfo(uuId);
         return BaseResponse(data = userService.getUserInfo(uuId))
     }
 

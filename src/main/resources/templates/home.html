@@ -228,10 +228,6 @@
             initPwaBanner(false);
         }
 
-        const userUUID = localStorage.getItem("userUUID");
-        if (userUUID) {
-            document.getElementById('mypageLink').href = '/mypage?uuId=' + userUUID;
-        }
 
         /* 모달 관련 */
         const modal = document.getElementById("modal");

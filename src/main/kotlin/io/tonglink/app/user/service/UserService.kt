@@ -34,7 +34,30 @@ class UserService (
             endPoint = loginUser.endPoint,
             p256dh = loginUser.p256dh,
             auth = loginUser.auth,
-            isPushEnabled = loginUser.isPushEnabled
+            isPushEnabled = loginUser.isPushEnabled,
+            createdDate = loginUser.createdDate
+        )
+    }
+
+    fun getUser(uuId: String) : User? {
+        return userRepository.findByUUID(uuId)?.let { it }
+    }
+
+    @Transactional
+    fun getOauth2UserInfo(uuId: String, token: String) : UserDataDto {
+        val loginUser = userRepository.findByUUID(uuId)!!
+
+        loginUser.updateToken(token)
+        userRepository.save(loginUser)
+
+        return UserDataDto(
+            email = loginUser.email,
+            uuId = loginUser.uuid,
+            endPoint = loginUser.endPoint,
+            p256dh = loginUser.p256dh,
+            auth = loginUser.auth,
+            isPushEnabled = loginUser.isPushEnabled,
+            createdDate = loginUser.createdDate
         )
     }
 

@@ -92,6 +92,7 @@ async function fetchUserInfo(uuId) {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("token")}`
         },
     })
         .then(response => {

@@ -30,7 +30,7 @@
 
     <main class="main-content">
         <!-- OAuth가 true일 때만 Google 로그인 버튼 표시 -->
-        <div th:if="${!isOauth}">
+        <div id="noOauth">
             <div class="google-login">
                 <div class="google-login-button" onclick="startGoogleLogin()">
                     <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google Logo" class="google-icon">
@@ -41,7 +41,7 @@
         </div>
 
         <!-- OAuth가 false일 때만 마이페이지 내용 표시 -->
-        <div th:if="${isOauth}">
+        <div id="oauth">
             <header class="mypage-header">
                 <div class="myprofile-section">
                     <img src="/images/icon_profile.png" alt="프로필 이미지" class="profile-img">
@@ -129,7 +129,7 @@
 <script type="text/javascript" th:inline="javascript">
     var UUID = /*[[ ${UUID} ]]*/;
     var isPushEnabled = /*[[ ${isPushEnabled} ]]*/;
-
+    const token = localStorage.getItem("token");
 
     document.addEventListener('DOMContentLoaded', async () => {
 
@@ -166,6 +166,19 @@
 
         if (UUID != null) {
             localStorage.setItem("userUUID", UUID);
+            console.log("1번");
+        } else {
+            // UUID가 없으면 새로 생성
+            let userUUID = localStorage.getItem("userUUID");
+
+            if (!userUUID) {
+                // UUID가 없으면 새로 생성
+                userUUID = generateUUID();
+                localStorage.setItem("userUUID", userUUID);
+                sendUUIDToServer(userUUID);
+            }
+            console.log("2번");
+
         }
 
         const userUUID = localStorage.getItem("userUUID");
@@ -173,12 +186,26 @@
             document.getElementById('mypageLink').href = '/mypage?uuId=' + userUUID;
         }
 
-        const userDataDto = await fetchUserInfo(userUUID);
-        console.log("userDataDto : " + userDataDto.isPushEnabled);
-        document.getElementById('toggle').checked = userDataDto.isPushEnabled;
+        if (token) {
+            try {
+                // 토큰이 있으면 fetchUserInfo 호출
+                const userDataDto = await fetchUserInfo(userUUID);
+                console.log("User Data DTO:", userDataDto);
+                document.getElementById('toggle').checked = userDataDto.isPushEnabled;
+
+                // 로그인 상태 UI 렌더링
+                showLoggedInUI(userDataDto, userUUID);
+            } catch (error) {
+                console.error("유저 정보를 불러오는 중 오류 발생:", error);
+                showLoginUI();
+            }
+        } else {
+            // 토큰이 없으면 로그인 UI 표시
+            showLoginUI();
+        }
+
 
         const installPwa = document.getElementById('install-pwa');
-        fetchTotalCount(userUUID);
         toggle.addEventListener("change", async () => {
 
             if (toggle.checked) {
@@ -218,6 +245,7 @@
     function logout() {
         userUUID = generateUUID();
         localStorage.setItem("userUUID", userUUID);
+        localStorage.removeItem("token");
         window.location.href = `/logout`;
     }
 
@@ -364,6 +392,28 @@
 
     function isPWA() {
         return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+    }
+
+    // 로그인 상태 UI 표시 함수
+    function showLoggedInUI(userDataDto, userUUID) {
+        // 로그인 UI를 숨기고 마이페이지 UI를 표시
+        document.querySelector('#noOauth').style.display = 'none';
+        const loggedInSection = document.querySelector('#oauth');
+        loggedInSection.style.display = 'block';
+
+        // 유저 데이터 업데이트
+        document.querySelector('.profile-email').textContent = userDataDto.email || "Unknown";
+        document.querySelector('.signup-date').textContent = `가입 날짜 : ${userDataDto.createdDate || "Unknown"}`;
+
+        // Summary 데이터 렌더링
+        fetchTotalCount(userUUID);
+    }
+
+    // 로그인 UI 표시 함수
+    function showLoginUI() {
+        // 마이페이지 UI를 숨기고 로그인 UI를 표시
+        document.querySelector('#noOauth').style.display = 'block';
+        document.querySelector('#oauth').style.display = 'none';
     }
 </script>
 </html>

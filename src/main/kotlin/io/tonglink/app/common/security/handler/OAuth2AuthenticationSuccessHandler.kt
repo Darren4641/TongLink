@@ -44,15 +44,21 @@ class OAuth2AuthenticationSuccessHandler (
         val authToken: OAuth2AuthenticationToken = authentication as OAuth2AuthenticationToken
         val user = authentication.principal as UserPrincipal
         val providerType = ProviderType.valueOf(authToken.authorizedClientRegistrationId.uppercase(Locale.getDefault()))
+
+
         println(request.getParameter("userUUID"))
         val userInfo: OAuth2UserInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(providerType, user.attributes)
         val roles: MutableList<String> = user.authorities
             .map { it.authority }
             .toMutableList()
 
-        return UriComponentsBuilder.fromUriString("/mypage")
+        val token = authTokenProvider.createToken(userInfo.getEmail()!!, roles);
+
+
+        return UriComponentsBuilder.fromUriString("/oauth2")
             .queryParam("uuId", user.uuId)
             .queryParam("firstLogin", true)
+            .queryParam("token", token)
             .build().toUriString()
 
     }

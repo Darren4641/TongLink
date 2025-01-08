@@ -15,5 +15,6 @@ class UserDataDto (
     val endPoint: String?,
     val p256dh: String?,
     val auth: String?,
-    val isPushEnabled: Boolean
+    val isPushEnabled: Boolean,
+    val createdDate: String
 )

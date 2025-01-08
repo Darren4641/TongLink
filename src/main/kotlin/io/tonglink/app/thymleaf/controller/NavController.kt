@@ -6,6 +6,7 @@ import io.tonglink.app.common.util.VapidUtil
 import io.tonglink.app.user.service.UserService
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
@@ -34,29 +35,39 @@ class NavController (
     }
 
     @GetMapping("/mypage")
-    fun myPage(model: Model, @RequestParam("uuId") uuId: String) : String {
-//        val authentication = SecurityContextHolder.getContext().authentication
-//        val principal = authentication?.principal
-
-        val loginUser = userService.getUserInfo(uuId)
-
-        // 로그인 여부 판별
-        if (loginUser.email != null) {
-            // 로그인한 사용자일 경우
-            model.addAttribute("UUID", loginUser.uuId)
-            model.addAttribute("isPushEnabled", loginUser.isPushEnabled)
-            model.addAttribute("isOauth", true)
-            model.addAttribute("email", loginUser.email)
-        } else {
-            // 비로그인 사용자 (anonymousUser)
-            println("@@ Anonymous User")
-            model.addAttribute("UUID", null)
-            model.addAttribute("isPushEnabled", false)
-            model.addAttribute("isOauth", false)
-        }
+    fun myPage(model: Model) : String {
+        val authentication = SecurityContextHolder.getContext().authentication
 
         model.addAttribute("nav", "mypage")
+
+        // 로그인 여부 판별
+        if (authentication is OAuth2AuthenticationToken) {
+            // 로그인한 사용자일 경우
+            val principal = authentication.principal as UserPrincipal
+            val loginUser = userService.getUserInfo(principal.uuId!!)
+            model.addAttribute("UUID", loginUser.uuId)
+            model.addAttribute("isPushEnabled", loginUser.isPushEnabled)
+            model.addAttribute("email", loginUser.email)
+            return "mypage"
+        }
+
+        // 비로그인 사용자 (anonymousUser)
+        model.addAttribute("UUID", null)
+        model.addAttribute("isPushEnabled", false)
+
         return "mypage"
+    }
+
+    @GetMapping("/oauth2")
+    fun oauth2(model: Model,
+               @RequestParam("uuId") uuId: String,
+               @RequestParam("token") token: String) : String {
+
+        val loginUser = userService.getOauth2UserInfo(uuId, token)
+        model.addAttribute("uuId", uuId)
+        model.addAttribute("token", token)
+
+        return "oauth2"
     }
 
     @GetMapping("/terms-of-service")

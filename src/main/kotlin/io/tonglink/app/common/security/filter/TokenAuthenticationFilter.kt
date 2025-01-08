@@ -28,7 +28,6 @@ class TokenAuthenticationFilter (
 
         try {
             val tokenStr: String? = HeaderUtil.getAccessToken(request)
-
             tokenStr?.let {
                 val authentication : Authentication = tokenProvider.getAuthentication(it)
 

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>TongLink</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="android-touch-icon" sizes="72x72" th:href="@{/images/android-icon-72x72.png}">
+    <link rel="apple-touch-icon" sizes="72x72" th:href="@{/images/icons/icon-128x128-v2.png}">
+    <link rel="icon" type="image/png" sizes="32x32" th:href="@{/images/favicon-32x32.png}">
+    <link rel="stylesheet" th:href="@{/css/common.css}" />
+    <link rel="manifest" th:href="@{/manifest.json}">
+    <meta property="og:title" content="TongLink" />
+    <meta property="og:description" content="링크의 새로운 시작, 더 많은 가치를 만들어 보세요!" />
+    <meta property="og:image" content="https://app.tonglink.site/images/preview.png" />
+    <meta property="og:url" content="https://app.tonglink.site/mypage" />
+    <meta property="og:type" content="website" />
+</head>
+<body>
+
+</body>
+<script type="text/javascript" th:inline="javascript">
+    var uuId = /*[[ ${uuId} ]]*/;
+    var token = /*[[ ${token} ]]*/;
+    document.addEventListener('DOMContentLoaded', () => {
+        localStorage.setItem("userUUID", uuId);
+        localStorage.setItem("token", token);
+
+        location.href="/mypage"
+    });
+</script>
+</html>
