@@ -51,7 +51,7 @@ function initInfiniteScroll(uuId, container, ignoreCache) {
 
     // 첫 데이터 로드
     isLoading = true;
-    getTongLinkList(uuId, container, limit, currentPage, false, (nextPage, dataLength) => {
+    getTongLinkList(uuId, container, limit, currentPage, ignoreCache, (nextPage, dataLength) => {
         currentPage = nextPage;
 
         if (dataLength < limit) {

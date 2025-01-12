@@ -27,8 +27,6 @@ class LinkObserver(private val cacheUtil: CacheUtil) {
 
     private fun refreshCache(link: Link) {
         // 메인 페이지 캐시 삭제
-        println("캐시삭제")
-        println(RedisKey.TONGLINK_HOME.name + ":" + link.userKey)
         cacheUtil.deleteCacheByPrefix(RedisKey.TONGLINK_HOME.name + ":" + link.userKey)
 
         // 사연 메인 캐시 삭제

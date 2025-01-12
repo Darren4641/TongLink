@@ -11,6 +11,7 @@ enum class ResultCode (
     ERROR("D-99", "ERROR"),
     INVALID_PARAMETER("D-01", "입력값이 올바르지 않습니다."),
     EXPRIRATION("D-02", "기간이 만료되었습니다."),
+    NO_SAFE_URL("D-03", "해당 링크는 유해한 사이트입니다."),
     FILE_SIZE_EXCEEDED("D-11", "파일 용량[5MB]이 초과하였습니다."),
 
     ILLEGAL_REDIRECT_URL_ERROR("D-994", "Redirect URL 경로가 잘못되었습니다."),

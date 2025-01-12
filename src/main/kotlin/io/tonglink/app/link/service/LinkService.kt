@@ -26,10 +26,17 @@ import java.time.temporal.ChronoUnit
 @Service
 class LinkService (
     val linkRepository: LinkRepository,
+    val googleSafeService: GoogleSafeService,
     val cacheUtil: CacheUtil
 ) {
 
     fun createLink(createLinkDto: CreateLinkDto) : String {
+        val isSafeUrl = googleSafeService.isSafeUrl(createLinkDto.originUrl)
+
+        if(!isSafeUrl) {
+            throw TongLinkException(ResultCode.NO_SAFE_URL)
+        }
+
         val savedLink = linkRepository.save(Link(
             userKey = createLinkDto.uuId,
             title = createLinkDto.title,
@@ -77,9 +84,6 @@ class LinkService (
             // 1주일 연장
             val extendedDate = endDate.plusWeeks(1)
             targetLink.endDate = extendedDate.format(formatter) // String으로 저장
-
-            // 저장소에 업데이트
-            linkRepository.save(targetLink)
         }
 
         return extendLinkDto.uuId
