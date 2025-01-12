@@ -82,7 +82,7 @@
                                 </div>
                             </div>
 
-                            <p class="modal-warning">생성일로부터 14일간만 유지됩니다.</p>
+                            <p class="modal-warning">생성일로부터 7일간만 유지됩니다.</p>
                             <div class="modal-buttons">
                                 <button type="button" class="btn btn-cancel" id="close-modal">취소</button>
                                 <button type="submit" class="btn btn-submit">저장</button>
@@ -118,6 +118,9 @@
                             <div class="modal-buttons">
                                 <button type="button" class="btn btn-delete" id="delete-modal">삭제</button>
                                 <button type="submit" class="btn btn-submit">변경</button>
+                            </div>
+                            <div class="modal-buttons" style="margin-top: 10px;">
+                                <button type="submit" class="btn btn-submit" id="extend">연장하기</button>
                             </div>
                         </form>
                     </div>
@@ -306,7 +309,7 @@
                 .then((newLink) => {
                     modal.style.display = "none"; // 모달 숨김
 
-                    initInfiniteScroll(localStorage.getItem("userUUID"), container);
+                    initInfiniteScroll(localStorage.getItem("userUUID"), container, true);
 
                     console.log("새 링크가 성공적으로 추가되었습니다.");
                 })
@@ -320,7 +323,7 @@
 
         });
         // 초기 데이터 렌더링
-        initInfiniteScroll(localStorage.getItem("userUUID"), container);
+        initInfiniteScroll(localStorage.getItem("userUUID"), container, false);
 
         enableDragAndDrop(container);
         const ctx = document.getElementById('stats-chart').getContext('2d');

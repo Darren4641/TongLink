@@ -76,6 +76,7 @@ class CacheUtil(
 
         return try {
             val keys = redisTemplate.keys("$prefix*")
+            println("delete Key = " + keys)
             keys?.let { redisTemplate.delete(it) }
             log.debug("Caches deleted by prefix - $prefix")
             true

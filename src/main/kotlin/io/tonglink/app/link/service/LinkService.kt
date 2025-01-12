@@ -16,10 +16,12 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 
 @Service
 class LinkService (
@@ -54,6 +56,33 @@ class LinkService (
         linkRepository.delete(targetLink)
 
         return targetLink.proxyUrl
+    }
+
+    @Transactional
+    fun extendLink(extendLinkDto: ExtendLinkDto): String {
+        val targetLink = linkRepository.findByIdAndUserKey(extendLinkDto.id, extendLinkDto.uuId)
+            ?: throw TongLinkException(ResultCode.ERROR)
+
+        // 현재 시간을 LocalDateTime으로 가져오기
+        val now = LocalDateTime.now()
+
+        // endDate 파싱
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+        val endDate = LocalDateTime.parse(targetLink.endDate, formatter)
+
+        // 오늘 날짜와 endDate 간의 차이 계산 (일 단위)
+        val daysBetween = ChronoUnit.DAYS.between(now.toLocalDate(), endDate.toLocalDate())
+
+        if (daysBetween <= 3) {
+            // 1주일 연장
+            val extendedDate = endDate.plusWeeks(1)
+            targetLink.endDate = extendedDate.format(formatter) // String으로 저장
+
+            // 저장소에 업데이트
+            linkRepository.save(targetLink)
+        }
+
+        return extendLinkDto.uuId
     }
 
     @Cacheable(key1 = RedisKey.TONGLINK_HOME, ttl = 300)

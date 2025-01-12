@@ -5,7 +5,7 @@ let placeholder = null; // 자리 표시자
 let isDragging = false; // 드래그 상태 플래그
 
 
-function initInfiniteScroll(uuId, container) {
+function initInfiniteScroll(uuId, container, ignoreCache) {
     let currentPage = 0; // 현재 페이지 번호
     let isLoading = false; // 데이터 로딩 중 상태
     const limit = 5; // 페이지당 데이터 개수
@@ -27,9 +27,9 @@ function initInfiniteScroll(uuId, container) {
                 isLoading = true; // 로딩 중 상태 설정
 
                 // 다음 데이터를 가져옴
-                getTongLinkList(uuId, container, limit, currentPage, (nextPage, dataLength) => {
+                getTongLinkList(uuId, container, limit, currentPage, ignoreCache, (nextPage, dataLength) => {
                     currentPage = nextPage; // 다음 페이지 번호 업데이트
-
+                    console.log("@@@");
                     if (dataLength < limit) {
                         console.log("No more data to load. Disconnecting observer.");
                         observer.unobserve(sentinel); // Sentinel 감시 중지
@@ -51,7 +51,7 @@ function initInfiniteScroll(uuId, container) {
 
     // 첫 데이터 로드
     isLoading = true;
-    getTongLinkList(uuId, container, limit, currentPage, (nextPage, dataLength) => {
+    getTongLinkList(uuId, container, limit, currentPage, false, (nextPage, dataLength) => {
         currentPage = nextPage;
 
         if (dataLength < limit) {
@@ -71,16 +71,18 @@ function initInfiniteScroll(uuId, container) {
  * @param {number} page - 현재 페이지 번호
  * @param {Function} callback - 다음 페이지 번호와 가져온 데이터 길이를 전달하는 콜백 함수
  */
-function getTongLinkList(uuId, container, limit = 5, page = 0, callback) {
+function getTongLinkList(uuId, container, limit = 5, page = 0, ignoreCache = false, callback) {
     const queryParams = new URLSearchParams({
         limit: limit.toString(),
         page: page.toString(),
+        ignoreCache: ignoreCache
     });
 
     fetch(`/api/link/${uuId}?${queryParams.toString()}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
+            'Cache-Control': 'no-cache, no-store, must-revalidate'
         },
     })
         .then((response) => {
@@ -426,6 +428,7 @@ function updateDday(container, endDate) {
 
 function initModal() {
     const modal = document.getElementById("update-modal");
+    const extend = document.getElementById("extend");
     const deleteButton = document.getElementById("delete-modal");
     const form = modal.querySelector("#link-update-form");
     // 삭제 버튼 클릭 이벤트
@@ -449,7 +452,7 @@ function initModal() {
                 deleteLink(body)
                     .then((updateLink) => {
                         modal.style.display = "none";
-                        initInfiniteScroll(localStorage.getItem("userUUID"), container);
+                        initInfiniteScroll(localStorage.getItem("userUUID"), container, true);
                     })
                     .catch((error) => {
                         console.error("링크 삭제 실패:", error);
@@ -467,6 +470,33 @@ function initModal() {
         }
     });
 
+    extend.addEventListener("click", () => {
+        const linkId = modal.getAttribute("data-id");
+        if (linkId) {
+            const body = {
+                id: linkId,
+                uuId: localStorage.getItem("userUUID")
+            }
+            showLoadingOverlay();
+
+            const container = document.getElementById("tonglink-list");
+            extendLink(body)
+                .then((extendLink) => {
+                    modal.style.display = "none";
+                    initInfiniteScroll(localStorage.getItem("userUUID"), container, true);
+                })
+                .catch((error) => {
+                    console.error("링크 연장 실패:", error);
+                })
+                .finally(() => {
+                    hideLoadingOverlay();
+                    form.reset();
+                });
+            // 모달 닫기
+            closeModal(form);
+        }
+    });
+
 
     // 모달 외부 클릭 시 닫기 이벤트 등록 (한 번만 실행)
     modal.addEventListener("click", (event) => {
@@ -478,6 +508,7 @@ function initModal() {
 
 function openModal(link) {
     const modal = document.getElementById("update-modal");
+    const extend = document.getElementById("extend");
     const closeModalButton = document.getElementById("update-close-modal");
     const form = modal.querySelector("#link-update-form");
     const toggle = document.getElementById("update-toggle");
@@ -488,6 +519,32 @@ function openModal(link) {
     form.title.value = link.title || ""; // 제목
     form.originUrl.value = link.originUrl || ""; // 원본 URL
     form.color.value = link.color || "#ff0000"; // 그래프 색상 기본값
+
+    // ISO 8601 형식으로 변환
+    const parsedDate = link.endDate.replace(" ", "T"); // 공백을 'T'로 교체
+    const expiryDate = new Date(`${parsedDate}+09:00`); // KST 타임존 추가
+    const today = new Date(); // 현재 시간
+
+    const diffTime = expiryDate - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    console.log(diffDays);
+
+    extend.textContent = `${diffDays}`;
+
+    if(diffDays > 3) {
+        extend.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+        extend.disabled = true;
+        extend.style.cursor = "not-allowed";
+        extend.textContent = "종료 3일전 부터 연장 가능합니다!";
+    } else {
+        extend.style.backgroundColor = "rgb(111 177 113)";
+        extend.disabled = false;
+        extend.style.cursor = "pointer";
+        extend.textContent = "링크 기간 연장하기";
+
+    }
+
     if(link.isExposure) {
         toggle.checked = true;
     }
@@ -520,7 +577,7 @@ function openModal(link) {
         updateLink(body)
             .then((updateLink) => {
                 modal.style.display = "none";
-                initInfiniteScroll(localStorage.getItem("userUUID"), container);
+                initInfiniteScroll(localStorage.getItem("userUUID"), container, true);
             })
             .catch((error) => {
                 console.error("새 링크 추가 실패:", error);
@@ -570,6 +627,25 @@ function deleteLink(body) {
         .then((response) => {
             if (!response.ok) {
                 throw new Error("링크 저장 실패");
+            }
+            return response.json(); // 서버에서 반환된 링크 데이터
+        })
+        .catch((error) => {
+            console.error("서버 오류:", error);
+        });
+}
+
+function extendLink(body) {
+    return fetch("/api/link/extend", {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+    })
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error("링크 연장 실패");
             }
             return response.json(); // 서버에서 반환된 링크 데이터
         })

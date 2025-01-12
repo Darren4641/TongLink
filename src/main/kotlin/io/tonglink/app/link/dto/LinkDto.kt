@@ -43,6 +43,11 @@ class DeleteLinkDto (
     val uuId: String
 )
 
+class ExtendLinkDto (
+    val id: Long,
+    val uuId: String
+)
+
 class UpdateOrderLinkRequestDto (
     val id: String,
     val order: Int
