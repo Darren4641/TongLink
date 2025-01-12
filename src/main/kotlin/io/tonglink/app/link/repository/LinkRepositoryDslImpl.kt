@@ -63,12 +63,12 @@ class LinkRepositoryDslImpl (
         )
     }
 
-    override fun getPopularTongLink(pageable: Pageable): SimplePageImpl<PopularLinkDto> {
+    override fun getPopularTongLink(): List<PopularLinkDto> {
         val todayStart = LocalDate.now(ZoneId.of("Asia/Seoul")).atStartOfDay()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
         val todayStartString = todayStart.format(formatter)
 
-        val results = queryFactory
+        /*val results = queryFactory
             .select(
                 link.id,
                 link.title,
@@ -112,7 +112,28 @@ class LinkRepositoryDslImpl (
             totalElements = total,
             totalPages = if (total > 0) ((total - 1) / pageable.pageSize + 1).toInt() else 0,
             isLast = pageable.offset + pageable.pageSize >= total
-        )
+        )*/
+
+        return queryFactory
+            .select(
+                Projections.constructor(
+                    PopularLinkDto::class.java,
+                    link.id,
+                    link.title,
+                    link.proxyUrl,
+                    link.thumbnailUrl,
+                    visit.id.count()
+                )
+            )
+            .from(link)
+            .leftJoin(visit).on(visit.linkId.eq(link.id))
+            .where(link.isExposure.eq(true)
+                .and(link.endDate.gt(todayStartString)))
+            .limit(100)
+            .orderBy(visit.id.count().desc())
+            .groupBy(link.id).having(visit.id.count().gt(0))
+            .having(visit.id.count().gt(0))
+            .fetch()
     }
 
     override fun updateOrderTongLink(uuId: String, updateOrderLinkDto: List<UpdateOrderLinkDto>) {

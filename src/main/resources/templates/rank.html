@@ -17,6 +17,7 @@
     <script th:src="@{/js/reload.js}" defer></script>
     <script th:src="@{/js/index-modal.js}" defer></script>
     <script th:src="@{/js/popular-tonglink-list.js}" defer></script>
+    <script th:src="@{/js/popular-tonglink-list-v2.js}" defer></script>
     <script th:src="@{/js/service-worker.js}" defer></script>
     <meta name="theme-color" content="#262626">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -31,9 +32,9 @@
         <section class="profile-section">
             <div class="header-logo" style="align-items: center;">
                 <img src="/images/tonglink-logo-white.png" alt="서비스명 로고" class="header&#45;&#45;logo-img">
-                <h2>통링 랭킹</h2>
+                <h2>Tong Rank</h2>
             </div>
-            <p class="profile-subtitle">인기있는 링크 TOP100을 모아봤어요! 🥳 <br></p>
+            <p class="profile-subtitle">인기있는 링크 TOP100을 모아봤어요! 🥳 <br>매 랭킹은 정각에 초기화됩니다!</p>
             <p class="profile-description"></p>
         </section>
         <section class="popular-section" style="margin-top: 30px;">
@@ -85,8 +86,7 @@
             document.getElementById('mypageLink').href = '/mypage?uuId=' + userUUID;
         }
 
-
-        initPopularInfiniteScroll(localStorage.getItem("userUUID"), container);
+        //initPopularInfiniteScroll(localStorage.getItem("userUUID"), container);
 
     });
 

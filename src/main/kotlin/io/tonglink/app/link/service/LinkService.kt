@@ -12,11 +12,9 @@ import io.tonglink.app.link.entity.Link
 import io.tonglink.app.link.repository.LinkRepository
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -94,9 +92,9 @@ class LinkService (
         return linkRepository.getMyTongLink(uuId, pageable)
     }
 
-    @Cacheable(key1 = RedisKey.TONGLINK_RANK, ttl = 300)
-    fun getPopularTongLink(pageable: Pageable) : SimplePageImpl<PopularLinkDto> {
-        return linkRepository.getPopularTongLink(pageable)
+    @Cacheable(key1 = RedisKey.TONGLINK_RANK, ttl = 3600)
+    fun getPopularTongLink(@IgnoreCache ignoreCache: Boolean) : List<PopularLinkDto> {
+        return linkRepository.getPopularTongLink()
     }
 
     @Transactional

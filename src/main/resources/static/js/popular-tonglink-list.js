@@ -211,6 +211,6 @@ function setSentinelHeight(sentinel) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    const listContainer = document.getElementById("tonglink-list");
-    initPopularInfiniteScroll(listContainer);
+    /*const listContainer = document.getElementById("tonglink-list");
+    initPopularInfiniteScroll(listContainer);*/
 });
