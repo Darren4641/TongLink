@@ -2,6 +2,7 @@ package io.tonglink.app.common.exception.handler
 
 import com.example.kopring.common.status.ResultCode
 import io.tonglink.app.common.exception.ExpirationException
+import io.tonglink.app.common.exception.IpBlockException
 import io.tonglink.app.common.exception.TongLinkException
 import io.tonglink.app.common.exception.dto.ExceptionMsg
 import org.springframework.http.HttpStatus
@@ -27,9 +28,9 @@ class ExceptionHandler {
         return "expiration"
     }
 
-    @ExceptionHandler(ExpirationException::class)
+    @ExceptionHandler(IpBlockException::class)
     fun ipBlockException(
-        ex : ExpirationException
+        ex : IpBlockException
     ) : String {
 
         return "ipblock"
