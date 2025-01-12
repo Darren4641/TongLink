@@ -82,7 +82,7 @@ class LinkService (
 
         if (daysBetween <= 3) {
             // 1주일 연장
-            val extendedDate = endDate.plusWeeks(1)
+            val extendedDate = now.plusWeeks(1)
             targetLink.endDate = extendedDate.format(formatter) // String으로 저장
         }
 
