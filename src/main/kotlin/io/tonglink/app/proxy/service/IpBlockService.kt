@@ -22,18 +22,26 @@ class IpBlockService(
     fun incrementRequest(ip: String) {
         val requestKey = RedisKey.REQUEST_COUNT.withParams(ip)
 
-        // 현재 요청 횟수 가져오기
+        // 요청 키가 없을 경우 초기화
+        val isNewKey = redisTemplate.opsForValue().setIfAbsent(requestKey, "1", requestIntervalSeconds, TimeUnit.SECONDS)
+
+        if (isNewKey == true) {
+            // 키가 새로 생성된 경우, 값이 이미 1로 설정됨
+            return
+        }
+
+        // 기존 키의 요청 횟수 증가
         val currentCount = redisTemplate.opsForValue().get(requestKey)?.toIntOrNull() ?: 0
 
         if (currentCount >= maxRequests) {
             // 요청 초과: IP 블록 처리
             blockIp(ip)
         } else {
-            // 요청 증가
             redisTemplate.opsForValue().increment(requestKey)
-            redisTemplate.expire(requestKey, requestIntervalSeconds, TimeUnit.SECONDS)
+            // expire 호출 제거 (기존 TTL 유지)
         }
     }
+
 
     private fun blockIp(ip: String) {
         val blockKey = RedisKey.BLOCKED_IP.withParams(ip)
