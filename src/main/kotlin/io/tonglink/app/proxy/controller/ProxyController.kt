@@ -2,7 +2,9 @@ package io.tonglink.app.proxy.controller
 
 import com.example.kopring.common.status.ResultCode
 import io.tonglink.app.common.exception.ExpirationException
+import io.tonglink.app.common.exception.IpBlockException
 import io.tonglink.app.notification.service.PushNotificationService
+import io.tonglink.app.proxy.service.IpBlockService
 import io.tonglink.app.proxy.service.ProxyService
 import io.tonglink.app.user.service.UserService
 import jakarta.servlet.http.HttpServletRequest
@@ -19,6 +21,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 class ProxyController (
     val proxyService: ProxyService,
     val userService: UserService,
+    val ipBlockService: IpBlockService
 
 ) {
 
@@ -32,6 +35,15 @@ class ProxyController (
                   @PathVariable(name = "linkId") linkId: Long) : String {
         val link = proxyService.getRedirectLink(linkId)
 
+        val ip = realIp ?: request.remoteAddr
+        // 1. IP 차단 여부 확인
+        if (ipBlockService.isBlocked(ip)) {
+            throw IpBlockException(ResultCode.IPBLOCK)
+        }
+
+        // 2. 요청 수 증가
+        ipBlockService.incrementRequest(ip)
+
         // 기간이 만료되었는지 확인
         if(link.isEndDatePassed()) {
             throw ExpirationException(ResultCode.EXPRIRATION)
@@ -44,7 +56,7 @@ class ProxyController (
         val serverBaseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString()
 
         if(!isBotVisit(isBot) && !isPreviewVisit(isPreview)) {
-            proxyService.visitDataCollection(link, user, realIp, forwardedFor, userAgent, referrer, serverBaseUrl)
+            proxyService.visitDataCollection(link, user, ip, forwardedFor, userAgent, referrer, serverBaseUrl)
         }
 
 

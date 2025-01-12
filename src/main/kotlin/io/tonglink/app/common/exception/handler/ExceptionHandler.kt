@@ -27,6 +27,14 @@ class ExceptionHandler {
         return "expiration"
     }
 
+    @ExceptionHandler(ExpirationException::class)
+    fun ipBlockException(
+        ex : ExpirationException
+    ) : String {
+
+        return "ipblock"
+    }
+
     @ExceptionHandler(TongLinkException::class)
     fun tongLinkException(
         ex : TongLinkException

@@ -1,6 +1,8 @@
 package io.tonglink.app.config.cache
 
 enum class RedisKey (val key: String) {
+    BLOCKED_IP("BlockedIP"), // IP 차단 키
+    REQUEST_COUNT("RequestCount"), // 요청 횟수 키
     TONGLINK_HOME("TongLinkHomeModel"),
     TONGLINK_RANK("TongLinkRankModel");
     /*WEB_MAIN_COLLECTION("WebMainCollectionModel"),
@@ -20,6 +22,11 @@ enum class RedisKey (val key: String) {
 
     CONFIG("Config"),
     CONFIG_MAINTENANCE_USER("ConfigMaintenanceUser");*/
+
+
+    fun withParams(vararg params: String): String {
+        return key + params.joinToString(separator = ":", prefix = ":")
+    }
 
     companion object {
         fun fromKey(key: String): RedisKey? {
