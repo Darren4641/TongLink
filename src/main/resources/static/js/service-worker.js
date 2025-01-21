@@ -1,5 +1,5 @@
 // 캐시 이름에 버전 추가
-const CACHE_NAME = 'tonglink-v0.2.37'; // 매 배포 시 버전을 변경
+const CACHE_NAME = 'tonglink-v0.2.38'; // 매 배포 시 버전을 변경
 
 const FILES_TO_CACHE = [
     "/", // HTML
@@ -84,7 +84,7 @@ self.addEventListener('push', (event) => {
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
 
-    const targetUrl = event.notification.data.url || '/';
+    const targetUrl = event.notification.data.url || '/home';
 
     event.waitUntil(
         clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientsArr) => {
