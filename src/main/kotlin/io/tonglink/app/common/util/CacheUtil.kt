@@ -27,15 +27,25 @@ class CacheUtil(
         val cacheKey = getCacheKey(key1, key2)
 
         if (!ignoreCache) {
-            val cachedData = redisTemplate.opsForValue()[cacheKey]
-            if (!cachedData.isNullOrEmpty()) {
-                return try {
-                    objectMapper.readValue(cachedData, objectMapper.constructType(returnType))
-                } catch (e: Exception) {
-                    throw RuntimeException("Failed to deserialize cached data - $cacheKey", e)
+            try {
+                // Redis 연결에서 데이터 조회 시도
+                val cachedData = redisTemplate.opsForValue()[cacheKey]
+                // 캐시된 데이터가 있으면 반환
+                if (!cachedData.isNullOrEmpty()) {
+                    return try {
+                        objectMapper.readValue(cachedData, objectMapper.constructType(returnType))
+                    } catch (e: Exception) {
+                        throw RuntimeException("Failed to deserialize cached data - $cacheKey", e)
+                    }
                 }
+            } catch (e: Exception) {
+                // Redis 서버가 다운되었거나 연결 문제 발생 시
+                log.error("Redis server is down or unreachable. Falling back to DB for cache key: $cacheKey", e)
+                // 즉시 DB로 fallback 처리하도록 하고 더 이상 Redis에서 대기하지 않음
+                return dataSupplier()
             }
         }
+
 
         val data = dataSupplier()
         setCache(key1, key2, ttl, data!!)
