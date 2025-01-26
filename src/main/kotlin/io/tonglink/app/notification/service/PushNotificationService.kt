@@ -28,7 +28,8 @@ class PushNotificationService (
         val payloadData = mapOf(
             "title" to "통통🎉",
             "body" to "누군가 ${title} 에 방문했습니디!",
-            "icon" to "$serverBaseUrl/images/app_logo.png"
+            "icon" to "$serverBaseUrl/images/app_logo.png",
+            "url" to "$serverBaseUrl/home"
         )
 
         try {
